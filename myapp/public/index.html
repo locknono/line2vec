@@ -98,9 +98,7 @@
     <script src="lib/d3.v3.min.js"></script>
     <script src="lib/mds.js"></script>
     <script src="lib/numeric.min.js"></script>
-    <script src='js/addTimingView.js'></script>
     <script src="lib/d3.v4.min.js"></script>
-    <script src="js/loadData.js"></script>
     <script src="lib/leaflet.js"></script>
     <script src="lib/jquery-3.3.1.min.js"></script>
     <script src="lib/bootstrap.min.js"></script>
@@ -108,7 +106,6 @@
     <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
     <script src="lib/L.PixiOverlay.js"></script>
     <script src="lib/jquery-ui.min.js"></script>
-    <script src='js/myUtils.js'></script>
     <script src="lib/d3-color.v1.min.js"></script>
     <script src="lib/d3-interpolate.v1.min.js"></script>
     <script src="lib/d3-scale-chromatic.v1.min.js"></script>
@@ -116,6 +113,13 @@
     <script src="lib/bootstrap-switch.min.js"></script>
     <script src="lib/leaflet.pm.min.js"></script>
     <script src="lib/L.D3SvgOverlay.min.js"></script>
+    <script src="lib/mapView.js"></script>
+
+
+    <script src="js/loadData.js"></script>
+    <script src='js/myUtils.js'></script>
+    <script src='js/addTimingView.js'></script>
+    <script src='js/mapView.js' type='module'></script>
     <script src="js/pcp.js"></script>
     <script src="js/hcluster.js"></script>
     <script src="js/radarView.js"></script>
@@ -433,10 +437,6 @@
             .attr("y", 14)
             .text("Overlap");
 
-
-
-
-
         var stage = new PIXI.Container();
         var scatterCircleGraphics = new PIXI.Graphics();
         var selectedCircleGraphics = new PIXI.Graphics();
@@ -624,25 +624,6 @@
                     );
                 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                 leafletPixiOverlay = L.pixiOverlay(function (utils) {
                         var zoom = utils.getMap().getZoom();
                         var container = utils.getContainer();
@@ -665,8 +646,6 @@
 
                         $('.leaflet-pm-icon-circle').unbind();
                         var d3Overlay = L.d3SvgOverlay(function (selection, projection) {
-
-
                             map.off('pm:create');
                             map.on('pm:create', function (e) {
                                 ////console.log("pmCreateE", e)
@@ -1706,6 +1685,8 @@
                                         "click", null);
                                 }
                             });
+                        }, {
+                            zoomDraw: false
                         });
 
                         d3Overlay.addTo(map);
