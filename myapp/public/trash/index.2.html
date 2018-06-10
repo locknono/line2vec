@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="stylesheets/leaflet.css" rel="stylesheet" />
+    <link href="js/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="js/bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="stylesheets/bootstrap-combobox.css" type="text/css" rel="stylesheet">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.css' rel='stylesheet' />
+    <link rel="stylesheet" href="stylesheets/jquery-ui.min.css">
+    <link rel="stylesheet" href="customStyle.css">
+    <link href="js/bootstrap-switch-master/dist/css/bootstrap3/bootstrap-switch.min.css" rel="stylesheet">
+    <title>Document</title>
+    <style type="text/css">
+        fieldset {
+            border: 0;
+        }
+
+        label {
+            display: block;
+            margin: 30px 0 0 0;
+        }
+
+        .overflow {
+            height: 200px;
+        }
+    </style>
+    <script src="js/d3.v3.min.js"></script>
+    <script src="js/d3.v4.min.js"></script>
+    <script src="js/leaflet.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="js/pixi.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <script type="text/javascript" src="js/GPUEdgeBundling-master/gpu-forcebundling.js"></script>
+    <script type="text/javascript" src="js/GPUEdgeBundling-master/arrayUtilities.js"></script>
+    <script type="text/javascript" src="js/GPUEdgeBundling-master/GPGPUtility.js"></script>
+    <script type="text/javascript" src="js/GPUEdgeBundling-master/three.min.js"></script>
+    <script type="text/javascript" src="js/GPUEdgeBundling-master/d3-ForceEdgeBundling.js"></script>
+    <script src="js/L.D3SvgOverlay.min.js"></script>
+    <script src="js/L.PixiOverlay.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src='js/myUtils.js'></script>
+    <script src="https://d3js.org/d3-color.v1.min.js"></script>
+    <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+    <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+    <script src="js/d3-tip.js"></script>
+    <script src="js/bootstrap-switch-master/dist/js/bootstrap-switch.min.js"></script>
+</head>
+
+<body>
+    <div id='headLine' class='panel panel-default' style="background-color:rgba(176,215,241,0.3);">
+        <a class="navbar-brand" href="#" style="padding-top:7px;color:black">HeadLine</a>
+        <ul class="nav navbar-nav">
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" style="padding-top:8px;margin-left:20px;" data-toggle="dropdown" role="button" aria-haspopup="true"
+                    aria-expanded="false">Load Data
+                    <span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    <li>
+                        <a id='Chicago' href="#">Chicago</a>
+                    </li>
+                    <li>
+                        <a id='Wenzhou' href="#">Wenzhou</a>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div id="lSide">
+        <div class='panel panel-default' id='dataOverview'>
+
+        </div>
+
+
+
+        <div id='controlPanel' class='panel panel-default'>
+            <div class="panel-heading" style="height:20px">
+                <h3 class="panel-title" style="margin-left:28px;margin-top:-6px;font-size:13px;">
+                    <b>The Control Panel</b>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default" id='initialize'>Reset</button>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default" id='sample'>Sample</button>
+                    </div>
+                </div>
+
+                <div class="btn-group btn-group-justified" role="group" aria-label="...">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default" id='edgeBundle'>Edge Bundle</button>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div id='parameterSet' class='panel panel-default'>
+            <div class="panel-heading" style="height:20px">
+                <h3 class="panel-title" style="margin-left:25px;margin-top:-6px;font-size:13px;">
+                    <b>The Configuration Panel</b>
+                </h3>
+            </div>
+            <div class="panel-body">
+                <div id="slider1" class="slider" style="margin-top:8px">
+                    <label for="amount" style="color:#000000; font-weight:normal;position:absolute;top:-23px;left:-37px;">parameter1:</label>
+                    <input type="text" id="amount" readonly style="border:0px;color:#000000;position:absolute;top:-24px;left:40px;font-weight:normal;">
+                </div>
+                <div id="slider2" class="slider">
+                    <span class="sliderStyle">parameter2</span>
+                </div>
+                <div id="slider3" class="slider">
+                    <span class="sliderStyle">parameter3</span>
+                </div>
+            </div>
+        </div>
+
+
+        <div id='pixelView' class='panel panel-default'>
+            <ul class="nav nav-tabs" role="tablist" style='height:20px'>
+                <li role="presentation" class="active">
+                    <a href="#pixelWindow1" id='pixelWindow1' aria-controls="pixelWindow1" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 6.5px;">Original</a>
+                </li>
+                <li role="presentation">
+                    <a href="#pixelWindow2" id='pixelWindow2' aria-controls="pixelWindow2" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 6.5px;">Random Sample</a>
+                </li>
+                <li role="presentation">
+                    <a href="#pixelWindow3" id='pixelWindow3' aria-controls="pixelWindow3" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 7px;">Sample</a>
+                </li>
+            </ul>
+            <div id='pixelDraw' class='panel panel-default tabWindow' style="height:160px;width:270px;">
+                <canvas id='pixelCanvas'>
+                </canvas>
+            </div>
+        </div>
+        <!--<span style="display:block;text-align:center;margin-top:-5px;padding-top:0px;">
+                <h6>
+                    <b>The Pixel View</b>
+                </h6>
+            </span>
+            <canvas id='pixelCanvas' width='240px' height="180px">
+
+            </canvas> -->
+
+        <div id='histogramView' class='panel panel-default'>
+            <ul class="nav nav-tabs" role="tablist" style='height:20px'>
+                <li role="presentation" class="active">
+                    <a href="#home" id='hisWindow1' aria-controls="hisWindow1" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 6.5px;">Original</a>
+                </li>
+                <li role="presentation">
+                    <a href="#profile" id='hisWindow2' aria-controls="hisWindow2" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 6.5px;">Random Sample</a>
+                </li>
+                <li role="presentation">
+                    <a href="#messages" id='hisWindow3' aria-controls="hisWindow3" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 7px;">Sample</a>
+                </li>
+            </ul>
+            <div id='histogramDraw' class='panel panel-default tabWindow' style="width:270px;">
+                <svg id='hisSvg' style="width:270px;height:160px;"> </svg>
+            </div>
+        </div>
+        <div id='matrixView1' class='panel panel-default'>
+            <ul class="nav nav-tabs" role="tablist" style='height:20px'>
+                <li role="presentation" class="active">
+                    <a href="#home" id='cmWindow1' aria-controls="cmWindow1" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 6.5px;">Original</a>
+                </li>
+                <li role="presentation">
+                    <a href="#profile" id='cmWindow2' aria-controls="cmWindow2" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 6.5px;">Random Sample</a>
+                </li>
+                <li role="presentation">
+                    <a href="#messages" id='cmWindow3' aria-controls="cmWindow3" role="tab" data-toggle="tab" class='tabTitle' style="padding:3px 7px;">Sample</a>
+                </li>
+            </ul>
+            <div id='communityMatrixDraw' class='panel panel-default tabWindow' style="width:270px;">
+                <!--svg id='cmSvg' style="width:270px;height:160px;"> </svg-->
+            </div>
+        </div>
+
+    </div>
+
+    <div id='middle'>
+        <div id='map' class='panel panel-default'>
+
+        </div>
+        <div id='underMap'>
+            <div id='flowVolumnView' class='panel panel-default'>
+                <svg id='flowVolumnSvg' width="360px" height="360px" style="position:absolute;top:0px;">
+                    <g id="status">
+                        <g class="first">
+                            <text class="time" x="180" y="150"></text>
+                            <text class="value" x="180" y="170"></text>
+                        </g>
+                        <g class="second">
+                            <text class="time" x="180" y="195"></text>
+                            <text class="value" x="180" y="215"></text>
+                        </g>
+                    </g>
+
+                    <span style="display:block;text-align:center;margin-top:-8px">
+                        <h6>
+                            <b>The Flow Volumn View</b>
+                        </h6>
+                    </span>
+                </svg>
+            </div>
+            <div id='matrixView' class='panel panel-default'>
+            </div>
+        </div>
+        <!--    <div id='evaluate' class='panel panel-default'>
+         
+            <ul class="nav nav-tabs" role="tablist" style='height:25px'>
+                <li role="presentation" class="active">
+                    <a href="#home" id='window1' aria-controls="Window1" role="tab" data-toggle="tab" class='mytab' style="padding-top:5px;">Window1</a>
+                </li>
+                <li role="presentation">
+                    <a href="#profile" id='window2' aria-controls="Window2" role="tab" data-toggle="tab" class='mytab' style="padding-top:5px;">Edge Betweenness</a>
+                </li>
+                <li role="presentation">
+                    <a href="#messages" id='window3' aria-controls="Window3" role="tab" data-toggle="tab" class='mytab' style="padding-top:5px;">Pixel View</a>
+                </li>
+                <li role="presentation">
+                    <a href="#settings" aria-controls="Window4" role="tab" data-toggle="tab" class='mytab' style="padding-top:5px;">Window4</a>
+                </li>
+            </ul>
+            <div id='evaluateDraw' class='panel panel-body' style="position:absolute;top:25px;height:323px;width:853px;padding-left:10px;padding-top:0px;padding-right:10px;padding-bottom:5px;">
+                
+            </div>
+            <div id='histogramDraw' class='panel panel-body' style="position:absolute;top:25px;height:323px;width:853px;padding-left:10px;padding-top:0px;padding-right:10px;padding-bottom:5px;">
+                <svg id='hisSvg' height="323px" width="853px" style="position:absolute;top:0x;left:0px;"> </svg>
+            </div>
+            <div id='matrixDraw' class='panel panel-body' style="position:absolute;top:25px;height:323px;width:853px;padding-left:10px;padding-top:0px;padding-right:10px;padding-bottom:5px;">
+                <canvas id='pixelCanvas' height="323px" width="853px" style="position:absolute;top:0x;left:0px;"> </canvas>
+            </div>
+
+            <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="Window1"></div>
+                <div role="tabpanel" class="tab-pane" id="Window2"></div>
+                <div role="tabpanel" class="tab-pane" id="Window3"></div>
+                <div role="tabpanel" class="tab-pane" id="Window4"></div>
+            </div>
+
+        </div>
+    -->
+    </div>
+
+
+    <div id="rSide">
+        <div id="scatterPlot" class="panel panel-default">
+
+            <span style="display:block;text-align:center;margin-top:-8px;">
+                <h6>
+                    <b>The Projection View</b>
+                </h6>
+            </span>
+            <canvas id='scatterCanvas' width="360px" height="420px" style="position:absolute;top:0px;left:0px;"></canvas>
+            <div id="scatterPlotWidgets">
+
+                <button type="button" class="btn btn-default" id="reset" data-toggle="tooltip" data-placement="left" title="Reset" align="center"
+                    style="border:white;fill:white; padding-left:2px;padding-top:3px;position:absolute;top:7px;z-index:2;right:5px;width:20px;height:20px;">
+                    <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                </button>
+                <button type="button" class="btn btn-default" id="selectAll" data-toggle="tooltip" data-placement="left" title="Select All"
+                    align="middle" style="border:white;fill:white; padding-left:2px;padding-top:2px;position:absolute;top:5px;z-index:2;right:30px;width:20px;height:20px">
+                    <img src='images/select.png' width='19px' height='19px'>
+                </button>
+                <button type="button" class="btn btn-default" name='false' id="BrushButton" data-toggle="tooltip" data-placement="left" title="Brush"
+                    align="middle" style="border:0px;padding-left:2px;padding-top:2px;position:absolute;top:5px;z-index:2;right:55px;width:20px;height:20px">
+                    <img id='brushImg' src='images/brushClose.png' width='19px' height='19px'>
+                </button>
+            </div>
+        </div>
+        <div id='underProjectionView' class="panel panel-default">
+            <!--input type="checkbox" name="my-checkbox" data-size="mini" checked-->
+        </div>
+
+        <!--    <div id="flowVolumnView" class='panel panel-default'>
+            <svg id='flowVolumnSvg' width="320px" height="350px" style="position:absolute;top:0px;">
+                <g id="status">
+                    <g class="first">
+                        <text class="time" x="160" y="150"></text>
+                        <text class="value" x="160" y="170"></text>
+                    </g>
+                    <g class="second">
+                        <text class="time" x="160" y="195"></text>
+                        <text class="value" x="160" y="215"></text>
+                    </g>
+                </g>
+
+                <span style="position:absolute;top:-5px;left:94px;">
+                    <h6>
+                        <b>The Flow Volumn View</b>
+                    </h6>
+                </span>
+            </svg>
+        </div>
+    -->
+
+    </div>
+
+
+
+    <script type="text/javascript">
+
+        $(function () {
+            $("#slider1").slider({
+                //range:true,
+                min: 0,
+                max: 100,
+                step: 10,
+                value: 0,
+                // value:[0,100],
+                slide: function (event, ui) {
+                    $("#amount").val(ui.value);
+                },
+                stop: function (event, ui) {
+                    // console.log(ui);
+                    // console.log(event);
+                    // console.log(ui.value);
+                    //console.log(ui.values);
+                }
+            });
+            $("#amount").val($("#slider1").slider("value"));
+            $("#slider2").slider();
+            $("#slider3").slider();
+            $("#slider4").slider();
+            $("#slider5").slider();
+            $("#slider6").slider();
+            $(function () {
+                $("#tabs").tabs();
+            });
+            $('[data-toggle="tooltip"]').tooltip()
+            /* $(function () {
+                 $("input").checkboxradio();
+             });*/
+            $("#Chicago").on("click", function () {
+                removeBeforeChangeDataSet();
+                map.setView([41.89001, -87.700386]);
+                load(CHIFileList[0], CHIFileList[1], CHIFileList[2], CHIFileList[3], CHIFileList[4]);
+            });
+            $("#Wenzhou").on("click", function () {
+                removeBeforeChangeDataSet();
+                map.setView([28.0092688, 120.658735]);
+                load(BSFileList[0], BSFileList[1], BSFileList[2], BSFileList[3], BSFileList[4]);
+            });
+            $(function () {
+                $('[data-toggle="popover"]').popover()
+            })
+
+            /*   $('#histogramDraw').hide();
+               $('#matrixDraw').hide();
+               $("#window1").on("click", function () {
+                   $('#evaluateDraw').show();
+                   $('#histogramDraw').hide();
+                   $('#matrixDraw').hide();
+               });
+               $("#window2").on("click", function () {
+                   $('#evaluateDraw').hide();
+                   $('#histogramDraw').show();
+                   $('#matrixDraw').hide();
+               });
+               $("#window3").on("click", function () {
+                   $('#evaluateDraw').hide();
+                   $('#histogramDraw').hide();
+                   $('#matrixDraw').show();
+               });
+               */
+
+            $("#pixelWindow1").on("click", function () {
+                $('#pixelDraw').show();
+            });
+            $("#pixelWindow2").on("click", function () {
+                $('#pixelDraw').hide();
+            });
+            $("#pixelWindow3").on("click", function () {
+                $('#pixelDraw').hide();
+            });
+            $("[name='my-checkbox']").bootstrapSwitch();
+
+
+            // jQuery("body").attr("style","overflow-x:hidden");  
+            // jQuery("body").attr("style","overflow-y:hidden");  
+        });
+
+        //use css display:none or $.hide() to hide the svg or div
+        //
+        var dataOverViewSvg = d3.select("#dataOverViewSvg");
+        var scatterPlotWidth = 360,
+            scatterPlotHeight = 420;
+        /* var map = L.map('map', {
+             renderer: L.canvas()
+         }).setView([28.0092688, 120.658735], 12)
+         var osmUrl = 'https://api.mapbox.com/styles/v1/juyon/cjeldepcn1bbj2qqgc1mnhe7e/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoianV5b24iLCJhIjoiY2plbGM1NGQxMWtxcTJybnV0YndxMDFseiJ9.F7Y1JBjDJL2skCZ7DkMbzg',
+             layer = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+         L.tileLayer(osmUrl, {
+             minZoom: 1,
+             maxZoom: 17,
+             //用了mapbox的图层
+             attribution: layer,
+             //访问令牌
+             accessToken: 'your.mapbox.access.token'
+         }).addTo(map);
+         */
+        var map = L.map('map', {
+            renderer: L.canvas()
+        }).setView([41.89001, -87.700386], 12)
+        var osmUrl = 'https://api.mapbox.com/styles/v1/juyon/cjeldepcn1bbj2qqgc1mnhe7e/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoianV5b24iLCJhIjoiY2plbGM1NGQxMWtxcTJybnV0YndxMDFseiJ9.F7Y1JBjDJL2skCZ7DkMbzg',
+            layer = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+        L.tileLayer(osmUrl, {
+            minZoom: 1,
+            maxZoom: 17,
+            //用了mapbox的图层
+            attribution: layer,
+            //访问令牌
+            accessToken: 'your.mapbox.access.token'
+        }).addTo(map);
+        map.zoomControl.remove();
+        var stage = new PIXI.Container();
+        var scatterCanvas = document.getElementById("scatterCanvas");
+        var renderer = PIXI.autoDetectRenderer(scatterPlotWidth, scatterPlotHeight,
+            { view: scatterCanvas, forceFXAA: true, antialias: false, transparent: !0, resolution: 1 });
+        document.getElementById("scatterPlot").appendChild(renderer.view);
+        var CHIFileList = ["data/CHIstationIDLocation.csv",
+            "data/CHIlinedetail_label.csv",
+            "data/CHIlinedetail_label_sample.csv",
+            "data/CHIflowVolumnData.json",
+            "data/CHIpixel.json"
+        ];
+        var BSFileList = ["data/BSstationIDLocation.csv",
+            "data/BSlinedetail_label.csv",
+            "data/BSlinedetail_label_sample.csv",
+            "data/CHIflowVolumnData.json",
+            "data/BSpixel.json"
+        ];
+        // load(BSFileList[0], BSFileList[1], BSFileList[2], BSFileList[3]);
+        load(CHIFileList[0], CHIFileList[1], CHIFileList[2], CHIFileList[3], CHIFileList[4]);
+        function load(stationIDLocationFile, linedetail_labelFile, linedetail_label_sampleFile, flowVolumnFile, pixelFile) {
+
+            Promise.all([getMapData(stationIDLocationFile),
+            getScatterData(linedetail_labelFile),
+            getSampledScatterData(linedetail_label_sampleFile),
+            getFlData(flowVolumnFile),
+            getPixelData(pixelFile),
+            ]).then(function (values) {
+                console.log(values);
+                var mapData = values[0];
+                var scatterData = values[1];
+                var sampledScatterData = values[2];
+                var flData = values[3];
+                var pData = values[4];
+
+                console.log("pData", pData);
+                console.log(typeof pData[0][0]);
+                if (stationIDLocationFile == CHIFileList[0]) {
+                    var labelColorScale = d3.scaleOrdinal(d3.schemeCategory10);
+                } else {
+                    var labelColorScale = d3.scaleOrdinal(d3.schemeCategory20);
+                }
+                var brushTime = 0;
+                var formerSelectedCircle = [];
+                var laterSelectedCircle = [];
+                var recorder = [];
+                var polylines = [];
+                var sampled = false;
+                var word2vecFlag = false;
+                var leafletSvgOverlay;
+                var leafletPixiContaioner = new PIXI.Container();
+                var firstDraw = true;
+                var prevZoom;
+                var line = new PIXI.Graphics();
+                var mapCircleGraphics = new PIXI.Graphics();
+                var selectedCircles = [];
+                leafletPixiContaioner.addChild(mapCircleGraphics);
+                leafletPixiContaioner.addChild(line);
+                var brush = d3.brush();
+                if (d3.selectAll("#scatterSvg").empty()) {
+                    var scatterSvg = d3.select("#scatterPlot")
+                        .append("svg")
+                        .attr("id", "scatterSvg")
+                        .attr("width", 360)
+                        .attr("height", 420)
+                        .attr("class", "sSvg")
+                        .style("position", "absolute")
+                        .style("top", 0)
+                        .style("left", 0);
+                }
+                drawScatterPlot(scatterData, labelColorScale, scatterPlotWidth, scatterPlotHeight, stage);
+                //draw community rects   represent count of communities
+                var Com_arr = []
+                console.log(scatterData);
+                for (var i = 0; i < scatterData[0].label + 2; i++) {
+                    Com_arr[i] = i - 1;
+                }
+                var Com_rec_color = scatterSvg.selectAll("rec")
+                    .data(Com_arr)
+                    .enter().append("rect")
+                    .attr("x", function (d, i) { return (i + 1) * 10 - 5; })
+                    .attr("y", function (d, i) { return 403; })
+                    .attr("stroke", "white")
+                    .attr("stroke-width", "0.5px")
+                    .attr("width", '10px')
+                    .attr("height", '15px')
+                    .style("fill", function (d, i) {
+                        return labelColorScale(i);
+                    });
+                max_Com = Com_arr[Com_arr.length - 1] + 2;
+                scatterSvg.append("text")
+                    .text(max_Com + " communities")
+                    .attr("x", max_Com * 10 + 15)
+                    .attr("y", "415px");
+                leafletPixiOverlay = L.pixiOverlay(function (utils) {
+                    var zoom = utils.getMap().getZoom();
+                    var container = utils.getContainer();
+                    //console.log(zoom);
+                    var leafletRenderer = utils.getRenderer();
+                    var project = utils.latLngToLayerPoint;
+                    var scale = utils.getScale();
+
+                    var xyScale = getScatterXYScale(scatterData, scatterPlotWidth, scatterPlotHeight),
+                        xScale = xyScale[0],
+                        yScale = xyScale[1];
+                    if (firstDraw) {
+                        brush.on("start brush", brushed)
+                            .on("end", brushEnded);
+                    }
+
+                    function drawBundlingLines() {
+                        if (stationIDLocationFile === CHIFileList[0]) {
+                            var bundleFile = 'data/CHIBundle.csv';
+                        }
+                        else {
+                            var bundleFile = 'data/BSBundle.csv';
+                        }
+                        getEdgeBundlingData(bundleFile).then(function (bundleData) {
+                            console.log(bundleData);
+                            line.clear();
+                            line.lineStyle(0.1, 0x3446B0, 0.5);
+                            for (var i = 0; i < bundleData.length; i++) {
+                                //line.lineStyle(0.1,bundleData[i].label,0.5);
+                                let layerSourcePoint = project(bundleData[i].scor)
+                                let layerTargetPoint = project(bundleData[i].tcor)
+                                let midPoint = project(bundleData[i].midcor)
+                                line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+                                line.lineTo(midPoint.x, midPoint.y);
+                                line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+                                //     line.bezierCurveTo(midPoint.x, midPoint.y, midPoint.x, midPoint.y, layerTargetPoint.x, layerTargetPoint.y);
+                            }
+                            leafletRenderer.render(container);
+                        })
+                    }
+
+                    function drawLines(scatterData) {
+                        line.clear();
+                        line.lineStyle(0.1, 0x3446B0, 0.5);
+                        for (var i = 0; i < scatterData.length; i++) {
+                            line.beginFill(0x3446B0, 0.2);
+                            let layerSourcePoint = project(scatterData[i].scor)
+                            let layerTargetPoint = project(scatterData[i].tcor)
+                            line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+                            line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+                            line.endFill();
+                        }
+
+                        //  console.time("render");
+                        leafletRenderer.render(container);
+                        //  console.timeEnd("render");
+                    }
+                    // drawLines(selectedCircles);
+                    function drawMapCircle(mapData) {
+                        mapCircleGraphics.clear();
+                        mapCircleGraphics.lineStyle(0.04, 0xffffff, 0.4);
+                        for (var i = 0; i < mapData.length; i++) {
+                            mapCircleGraphics.beginFill(labelColorScale(mapData[i].label).replace('#', '0x'), 0.7);
+                            mapCircleGraphics.drawCircle(project(mapData[i].stationLocation).x, project(mapData[i].stationLocation).y, 0.3);
+                            mapCircleGraphics.endFill();
+                        }
+                        leafletRenderer.render(container);
+                    }
+                    drawMapCircle(mapData);
+                    function drawScatterCircles(graphics, data, selectedBool) {
+                        if (selectedBool == true) {
+                            drawLines(data);
+                            selectedCircles = data;
+                        }
+                    }
+                    function brushed() {
+                        brushTime++;
+                        if (brushTime === 2) {
+                            var firstSeletedCircle = [];
+                            unSelectedCircle = [];
+                            for (var i = 0; i < scatterData.length; i++) {
+                                var thisPoint = scatterData[i];
+                                var cx = xScale(thisPoint.x);
+                                var cy = yScale(thisPoint.y);
+                                var s = d3.event.selection,
+                                    x1 = s[0][0],
+                                    y1 = s[0][1],
+                                    x2 = s[1][0],
+                                    y2 = s[1][1];
+                                if (cx > x1 && cx < x2 && cy > y1 && cy < y2) {
+                                    firstSeletedCircle.push(thisPoint);
+                                } else {
+                                    unSelectedCircle.push(thisPoint);
+                                }
+                            }
+                            formerSelectedCircle = firstSeletedCircle;
+                            recorder.push(firstSeletedCircle);
+                            var firstCircle = new PIXI.Graphics();
+                            drawScatterCircles(firstCircle, firstSeletedCircle, true);
+                            stage.addChild(firstCircle);
+                            var firstUsCircle = new PIXI.Graphics();
+                            drawScatterCircles(firstUsCircle, unSelectedCircle, false);
+                            stage.addChild(firstUsCircle);
+                            renderer.render(stage);
+                        } else if (brushTime > 2) {
+                            console.time("select");
+                            var s = d3.event.selection,
+                                x1 = s[0][0],
+                                y1 = s[0][1],
+                                x2 = s[1][0],
+                                y2 = s[1][1];
+                            var unSelectedCircle = [];
+                            var laterSelectedCircle = [];
+                            for (var i = 0; i < scatterData.length; i++) {
+                                var thisPoint = scatterData[i];
+                                var cx = xScale(thisPoint.x);
+                                var cy = yScale(thisPoint.y);
+                                if (cx > x1 && cx < x2 && cy > y1 && cy < y2) {
+                                    laterSelectedCircle.push(thisPoint);
+                                } else {
+                                    unSelectedCircle.push(thisPoint);
+                                }
+                            }
+                            recorder.push(laterSelectedCircle);
+                            if (recorder.length >= 2) {
+                                formerSelectedCircle = recorder[0];
+                                recorder.splice(0, 1);
+                            }
+                            var usRedrawCircle = [];
+                            for (var i = 0; i < formerSelectedCircle.length; i++) {
+                                if ($.inArray(formerSelectedCircle[i], laterSelectedCircle) == -1) {
+                                    usRedrawCircle.push(formerSelectedCircle);
+                                }
+                            }
+                            console.timeEnd("select");
+                            stage.removeChildAt(2);
+                            stage.removeChildAt(1);
+                            var sCircle = new PIXI.Graphics();
+                            drawScatterCircles(sCircle, laterSelectedCircle, true);
+                            stage.addChild(sCircle);
+                            var usCircle = new PIXI.Graphics();
+                            drawScatterCircles(usCircle, usRedrawCircle, false);
+                            stage.addChild(usCircle);
+                            renderer.render(stage);
+                        }
+                    }
+                    function brushSample() {
+                        brushTime++;
+                        if (brushTime === 2) {
+                            var firstSeletedCircle = [];
+                            unSelectedCircle = [];
+                            for (var i = 0; i < sampledScatterData.length; i++) {
+                                var thisPoint = sampledScatterData[i];
+                                var cx = xScale(thisPoint.x);
+                                var cy = yScale(thisPoint.y);
+                                var s = d3.event.selection,
+                                    x1 = s[0][0],
+                                    y1 = s[0][1],
+                                    x2 = s[1][0],
+                                    y2 = s[1][1];
+                                if (cx > x1 && cx < x2 && cy > y1 && cy < y2) {
+                                    firstSeletedCircle.push(thisPoint);
+                                } else {
+                                    unSelectedCircle.push(thisPoint);
+                                }
+                            }
+
+                            formerSelectedCircle = firstSeletedCircle;
+                            recorder.push(firstSeletedCircle);
+                            var firstCircle = new PIXI.Graphics();
+                            drawScatterCircles(firstCircle, firstSeletedCircle, true);
+                            stage.addChild(firstCircle);
+                            var firstUsCircle = new PIXI.Graphics();
+                            drawScatterCircles(firstUsCircle, unSelectedCircle, false);
+                            stage.addChild(firstUsCircle);
+                            renderer.render(stage);
+                        } else if (brushTime > 2) {
+                            var s = d3.event.selection,
+                                x1 = s[0][0],
+                                y1 = s[0][1],
+                                x2 = s[1][0],
+                                y2 = s[1][1];
+                            var unSelectedCircle = [];
+                            var laterSelectedCircle = [];
+                            for (var i = 0; i < sampledScatterData.length; i++) {
+                                var thisPoint = sampledScatterData[i];
+                                var cx = xScale(thisPoint.x);
+                                var cy = yScale(thisPoint.y);
+                                if (cx > x1 && cx < x2 && cy > y1 && cy < y2) {
+                                    laterSelectedCircle.push(thisPoint);
+                                } else {
+                                    unSelectedCircle.push(thisPoint);
+                                }
+                            }
+                            recorder.push(laterSelectedCircle);
+
+                            if (recorder.length >= 2) {
+                                formerSelectedCircle = recorder[0];
+                                recorder.splice(0, 1);
+                            }
+                            var usRedrawCircle = [];
+                            for (var i = 0; i < formerSelectedCircle.length; i++) {
+                                if ($.inArray(formerSelectedCircle[i], laterSelectedCircle) == -1) {
+                                    usRedrawCircle.push(formerSelectedCircle);
+                                }
+                            }
+                            stage.removeChildAt(2);
+                            stage.removeChildAt(1);
+                            var sCircle = new PIXI.Graphics();
+                            drawScatterCircles(sCircle, laterSelectedCircle, true);
+                            stage.addChild(sCircle);
+                            var usCircle = new PIXI.Graphics();
+                            drawScatterCircles(usCircle, usRedrawCircle, false);
+                            stage.addChild(usCircle);
+                            renderer.render(stage);
+                        }
+                    }
+                    if (firstDraw) {
+                        unbindEvents();
+                        $('#BrushButton').on("click", function () {
+                            console.log($('#BrushButton').attr('name'));
+                            if ($('#BrushButton').attr('name') === 'false') {
+                                scatterSvg.append("g")
+                                    .attr("class", "brush")
+                                    .call(brush);
+                                document.getElementById('BrushButton').setAttribute('name', 'true');
+                                document.getElementById('brushImg').setAttribute('src', 'images/brushOpen.png');
+                            } else {
+                                d3.selectAll(".brush").remove();
+                                document.getElementById('BrushButton').setAttribute('name', 'false');
+                                selectedCircles = [];
+                                drawLines(selectedCircles);
+                                document.getElementById('brushImg').setAttribute('src', 'images/brushClose.png');
+                            }
+                        })
+                        $("#reset").click(function () {
+                            console.log("resetAA");
+                            if ($('#BrushButton').attr('name') === 'false') {
+                                selectedCircles = [];
+                                drawLines(selectedCircles);
+                            } else {
+                                d3.select(".selection")
+                                    .transition()
+                                    .duration(750)
+                                    .attr("x", 0)
+                                    .attr("y", 0)
+                                    .attr("height", 50)
+                                    .attr("width", 50);
+                                setTimeout(function () {
+                                    d3.selectAll(".brush")
+                                        .call(brush)
+                                        .call(brush.move, [[0, 0], [50, 50]]);
+                                }, 100);
+                            }
+
+                            // renderer.render(stage);
+                        });
+                        $("#word2vec").click(function () {
+                            d3.select(".selection")
+                                .transition()
+                                .duration(750)
+                                .attr("x", 0)
+                                .attr("y", 0)
+                                .attr("height", 50)
+                                .attr("width", 50);
+                            d3.selectAll(".brush")
+                                .call(brush)
+                                .call(brush.move, [[0, 0], [50, 50]]);
+                            if (sampled === false) {
+                                drawLines(scatterData)
+                            } else if (sampled === true) {
+                                drawLines(sampledScatterData);
+                            }
+                            word2vecFlag = true;
+
+                        });
+                        $("#sample").click(function () {
+                            stage.removeChildren();
+                            drawScatterPlot(sampledScatterData, labelColorScale, scatterPlotWidth, scatterPlotHeight, stage);
+                            sampled = true;
+                            brush.on("start brush", brushSample)
+                                .on("end", brushEnded);
+                            brushTime = 0;
+                            let sRect = $(".selection");
+                            let brushX = parseFloat(sRect.attr("x"));
+                            let brushY = parseFloat(sRect.attr("y"));
+                            let brushWidth = parseFloat(sRect.attr("width"));
+                            let brushHeight = parseFloat(sRect.attr("height"));
+
+                            if (selectedCircles.length === scatterData.length) {
+                                drawLines(sampledScatterData);
+                                selectedCircles = sampledScatterData;
+                            } else {
+                                d3.selectAll(".brush")
+                                    .call(brush)
+                                    .call(brush.move, [[brushX, brushY], [brushX + brushWidth, brushY + brushHeight]]);
+                            }
+                        });
+                        $("#initialize").on('click', function () {
+                            console.time("initialize");
+                            stage.removeChildren();
+                            drawScatterPlot(scatterData, labelColorScale, scatterPlotWidth, scatterPlotHeight, stage);
+                            sampled = false;
+                            brush.on("start brush", brushed)
+                                .on("end", brushEnded);
+                            brushTime = 0;
+                            d3.selectAll(".brush").remove();
+                            document.getElementById("BrushButton").setAttribute('name', 'false');
+                            selectedCircles = [];
+                            drawLines(selectedCircles);
+                            //d3.selectAll(".brush")
+                            //   .call(brush)
+                            //   .call(brush.move, [[0, 0], [50, 50]]);
+                            console.timeEnd("initialize");
+                            //    renderer.render(stage);
+                        });
+                        $("#edgeBundle").on('click', function () {
+                            drawBundlingLines();
+                        });
+                        $("#selectAll").click(function () {
+                            if (sampled === true) {
+                                d3.select(".selection")
+                                    .transition()
+                                    .duration(750)
+                                    .attr("x", 0)
+                                    .attr("y", 0)
+                                    .attr("height", 50)
+                                    .attr("width", 50);
+                                d3.selectAll(".brush")
+                                    .call(brush.move, [[0, 0], [50, 50]]);
+                                drawLines(sampledScatterData);
+                                selectedCircles = sampledScatterData;
+                            } else {
+                                d3.select(".selection")
+                                    .transition()
+                                    .duration(750)
+                                    .attr("x", 0)
+                                    .attr("y", 0)
+                                    .attr("height", 50)
+                                    .attr("width", 50);
+                                d3.selectAll(".brush")
+                                    .call(brush.move, [[0, 0], [50, 50]]);
+                                drawLines(scatterData);
+                                selectedCircles = scatterData;
+                            }
+                        });
+                    }
+                    prevZoom = zoom;
+                    firstDraw = false;
+                }, leafletPixiContaioner);
+                leafletPixiOverlay.addTo(map);
+
+
+
+                addFlowVolumnView(flData[11]);
+                //add flow Volumn View
+                var selectedSourceTarget = [];
+                d3.select("#scatterSvg").on("click", function (d) {
+                    var selectedCoords = d3.mouse(document.getElementById('scatterSvg'));
+                    var selectedX = selectedCoords[0];
+                    var selectedY = selectedCoords[1];
+                    var xyScale = getScatterXYScale(scatterData, scatterPlotWidth, scatterPlotHeight),
+                        xScale = xyScale[0],
+                        yScale = xyScale[1];
+                    // if (sampled === false) {
+                    for (var i = 0; i < scatterData.length; i++) {
+                        var thisPoint = scatterData[i];
+                        var cx = xScale(thisPoint.x);
+                        var cy = yScale(thisPoint.y);
+                        if (selectedX > cx - 1.5 && selectedX < cx + 1.5 && selectedY > cy - 1.5 && selectedY < cy + 1.5) {
+                            selectedSourceTarget = [thisPoint.source, thisPoint.target];
+                            break;
+                        }
+                    }
+                    showflux(selectedSourceTarget[0], selectedSourceTarget[1]).then(function (volumnData) {
+                        console.log(volumnData);
+                        addFlowVolumnView(volumnData[0]);
+                    });
+                    //   }
+                })
+                function addFlowVolumnView(volumnData) {
+                    var fvSvg = d3.select("#flowVolumnSvg");
+                    fvSvg.selectAll(".g")
+                        .transition(750)
+                        .remove();
+                    var minRadius = 50;
+                    var arcColor = d3.scaleThreshold();
+                    arcColor.domain([0, 2, 4, 8, 16, 32, 64, 128, 256, 512])
+                        .range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]);
+                    var arc = d3.arc()
+                        .startAngle(function (d) { return d.startAngle })
+                        .endAngle(function (d) { return d.endAngle })
+                        .innerRadius(function (d) { return d.innerRadius })
+                        .outerRadius(function (d) { return d.outerRadius });
+                    var arcArray = [];
+                    console.log(volumnData);
+                    for (var i = 0; i < volumnData.value.length; i++) {
+                        for (var j = 0; j < volumnData.value[i].length - 1; j++) {
+                            var thisArc = new Object();
+                            thisArc.startAngle = (2 * Math.PI / 24) * j;
+                            thisArc.endAngle = (2 * Math.PI / 24) * (j + 1)
+                            thisArc.innerRadius = minRadius + i * 12;
+                            thisArc.outerRadius = minRadius + (i + 1) * 12;
+                            thisArc.count = volumnData.value[i][j];
+                            thisArc.weekday = i;
+                            thisArc.hour = j;
+                            thisArc.total = volumnData.value[i][24];
+                            arcArray.push(thisArc);
+                        }
+                    }
+                    var arr = [0, 2, 4, 8, 16, 32, 64, 128, 256, 512];
+                    var flArcsG = fvSvg.append("g")
+                        .attr("class", "g");
+                    var flInfoG = fvSvg.append("g")
+                        .attr("class", "g");
+                    var flColorEncodingRects = flInfoG
+                        .selectAll(".rect")
+                        .data(arr)
+                        .enter()
+                        .append("rect")
+                        .attr("x", function (d, i) { return (i + 1) * 27 + 13; })
+                        .attr("y", function (d, i) { return 318 + 12; })
+                        .attr("stroke", "white")
+                        .attr("stroke-width", "0.5px")
+                        .attr("width", '27px')
+                        .attr("height", '15px')
+                        .style("fill", function (d, i) {
+                            return d3.interpolateYlGnBu(arcColor(d));
+                        });
+                    var flColorText = flInfoG.selectAll(".flColorText")
+                        .data(arr)
+                        .enter().append("text")
+                        .text(function (d) { return d; })
+                        .attr("x", function (d, i) { return (i + 1) * 27 + 13; })
+                        .attr("y", 338 + 16)
+                        .style("text-anchor", "middle")
+                        .style("font-size", "10px");
+
+                    var fl = flArcsG.selectAll(".path")
+                        .data(arcArray)
+                        .enter()
+                        .append("path")
+                        .attr("d", arc)
+                        .style("stroke", "steelblue")
+                        .style('stroke-width', '0.2px')
+                        .style("fill", function (d) {
+                            return d3.interpolateYlGnBu(arcColor(d.count));
+                        })
+                        .attr("transform", "translate(180,170)")
+                        .on("mouseover", function (d, i) {
+                            var days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+                            var day = Math.floor(i / 24); //day index
+                            var h = i % 24; //hour index
+                            //Update times
+                            d3.select('#status g.first text.time').text(days[d.weekday]);
+                            d3.select('#status g.second text.time').text(convert_to_ampm(d.hour) + ' - ' + convert_to_ampm(parseInt(d.hour) + 1));
+                            //Update value
+                            d3.select('#status g.first text.value').text(d.total);
+                            d3.select('#status g.second text.value').text(d.count);
+                        });//add event
+                    var day_labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    var label_rad = 106;
+                    var rad_offset = 12
+                    for (var i = 0; i < 7; i++) {
+                        label = day_labels[i];
+                        label_angle = 4.73;
+                        flInfoG.append("def")
+                            .append("path")
+                            .attr("id", "day_path" + i)
+                            .attr("d", "M185 224 m" + label_rad * Math.cos(label_angle) + " " + label_rad * Math.sin(label_angle) + "H 185 323");
+                        flInfoG.append("text")
+                            .attr("font-size", '10px')
+                            .append("textPath")
+                            .attr("xlink:href", "#day_path" + i)
+                            .text(label);
+                        label_rad += rad_offset;
+                    }
+                    label_rad = 138;
+
+                    flInfoG.append("def")
+                        .append("path")
+                        .attr("id", "time_path")
+                        .attr("d", "M182 " + 33 + " a" + label_rad + " " + label_rad + " 0 1 1 -1 0");
+                    for (var i = 0; i < 24; i++) {
+                        label_angle = (i - 6) * (2 * Math.PI / 24);
+                        large_arc = i < 6 || i > 18 ? 0 : 1;
+                        flInfoG.append("text")
+                            .append("textPath")
+                            .attr("font-size", '11px')
+                            .style("color", "black")
+                            .style("font-weight", "bold")
+                            .attr("xlink:href", "#time_path")
+                            .attr("startOffset", i * 100 / 24 + "%")
+                            .text(i);
+                    }
+                    function convert_to_ampm(h) {
+                        if (h == '0' || h == '24')
+                            return 'Midnight';
+                        var suffix = 'am';
+                        if (h > 11) suffix = 'pm';
+                        if (h > 12)
+                            return (h - 12) + suffix;
+                        else
+                            return h + suffix;
+                    }
+                    //add flow volumn view finished
+                }
+
+
+
+
+                //add pixel view
+                var pCanvas = document.getElementById("pixelCanvas");
+                let pStage = new PIXI.Container();
+                let pRenderer = PIXI.autoDetectRenderer(270, 160,
+                    { view: pCanvas, forceFXAA: true, antialias: false, transparent: !0, resolution: 1 });
+                document.getElementById("pixelDraw").appendChild(pRenderer.view);
+
+                var pMax = d3.max(pData, d => {
+                    return d3.max(d);
+                })
+                function colorRGB2Hex(color) {
+                    var rgb = color.split(',');
+                    var r = parseInt(rgb[0].split('(')[1]);
+                    var g = parseInt(rgb[1]);
+                    var b = parseInt(rgb[2].split(')')[0]);
+                    var hex = "0x" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
+                    return hex;
+                }
+                console.log(pData);
+                var linear = d3.scale.linear()
+                    .domain([0, pMax])
+                    .range([0, 1]);
+                var pixelGraphics = new PIXI.Graphics();
+                pixelGraphics.lineStyle(1, 0xFFF9F6, 0.3);
+                var pixelLength = 9;
+                //  pixelGraphics.lineStyle(1);
+                for (var i = 0; i < pData.length; i++) {
+                    for (var j = 0; j < pData[i].length; j++) {
+                        if (pData[i][j] === 0) {
+                            pixelGraphics.beginFill(0xFFFFFF);
+                        } else {
+                            pixelGraphics.beginFill(colorRGB2Hex(d3.interpolateGnBu(linear(pData[i][j]))));
+                        }
+                        if (stationIDLocationFile == CHIFileList[0]) {
+                            pixelGraphics.drawRect(pixelLength * i, pixelLength * (pData[i].length - j), pixelLength, pixelLength);
+                        } else {
+                            pixelGraphics.drawRect(pixelLength * (pData[i].length - j), pixelLength * (16 - i), pixelLength, pixelLength);
+                        }
+                        pixelGraphics.endFill();
+                    }
+                }
+                if (stationIDLocationFile == CHIFileList[0]) {
+                    pixelGraphics.x = 70;
+                    pixelGraphics.y = -5;
+                } else {
+                    pixelGraphics.x = 65;
+                    pixelGraphics.y = -5;
+                }
+                pStage.addChild(pixelGraphics);
+                pRenderer.render(pStage);
+                //add pixel view finished
+
+
+
+
+                //add Edge Betweenness histogram view
+                function addHistogram(file) {
+                    getEbData(file).then(function (intervalData) {
+                        var hisSvg = d3.select("#hisSvg");
+                        hisSvg.selectAll('g').remove();
+                        var hisMargin = { top: 15, right: 0, bottom: 20, left: 25 },
+                            width = 240 - hisMargin.left - hisMargin.right,
+                            height = 160 - hisMargin.top - hisMargin.bottom;
+
+                        var y = d3.scaleLinear()
+                            .rangeRound([height, 0]);
+
+                        var x = d3.scaleLinear()
+                            .range([0, width]);
+
+
+                        var x2 = d3.scaleLinear()
+                            .domain([0, d3.max(intervalData, function (d) { return d.max; })])
+                            .range([0, width]);
+
+                        d3.format
+                        var tip = d3.tip()
+                            .attr('class', 'd3-tip')
+                            .offset([-10, 0])
+                            .html(function (d) {
+                                return "<span style='color:black'>" + d3.format(".4")(d.frequency) + "</span>";
+                            })
+
+                        var g = hisSvg.append("g")
+                            .attr("transform", "translate(" + hisMargin.left + "," + hisMargin.top + ")")
+                            .call(tip);
+
+                        x.domain([0, intervalData.length]);
+                        y.domain([d3.min(intervalData, function (d) { return d.frequency; }), d3.max(intervalData, function (d) { return d.frequency; })]);
+
+
+                        g.selectAll(".bar")
+                            .data(intervalData)
+                            .enter().append("rect")
+                            .attr("class", "bar")
+                            .attr("x", function (d, i) { console.log(i); return x(i); })
+                            .attr("width", function (d, i) {
+                                return x(i + 1) - x(i);
+                            })
+                            .attr("y", function (d) { return y(d.frequency); })
+                            .attr("height", function (d) { return height - y(d.frequency); })
+                            .on('mouseover', tip.show)
+                            .on('mouseout', tip.hide)
+
+                        g.append("g")
+                            .attr("class", "x axis")
+                            .attr("transform", function () {
+                                return "translate(0," + height + ")";
+                            })
+                            .call(d3.axisBottom(x2).ticks(5));
+
+                        g.append("g")
+                            .attr("class", "y axis")
+                            .call(d3.axisLeft(y).ticks(5));
+
+                        g.append("text")
+                            .attr("transform", "translate(5,-18)")
+                            .attr("y", 6)
+                            .attr("dy", ".71em")
+                            .style("text-anchor", "end")
+                            .text("Freq");
+
+                        g.append("text")
+                            .attr("transform", "translate(" + (width + 3) + "," + (height - 10) + ")")
+                            .attr("y", 6)
+                            .attr("dy", ".71em")
+                            .style("text-anchor", "start")
+                            .text("EB");
+                        //add Edge Betweenness histogram view
+                    });
+                }
+                addHistogram('data/CHIedgeBetweenness.csv');
+                $("#hisWindow1").on("click", function () {
+                    addHistogram('data/CHIedgeBetweenness.csv')
+                });
+                $("#hisWindow2").on("click", function () {
+                    addHistogram('data/CHIedgeBetweennessRandomSample.csv')
+                });
+                $("#hisWindow3").on("click", function () {
+                    addHistogram('data/CHIedgeBetweennessSample.csv')
+                });
+
+
+
+                function addCommunityMatrix(file) {
+                    getCommunityMatrixData(file).then(function (matrixData) {
+                        console.log("matrixData", matrixData);
+                        var labels = ['0', '1', '2', '3', '4', '5'];
+                        Matrix({
+                            container: '#communityMatrixDraw',
+                            data: matrixData,
+                            labels: labels,
+                            start_color: '#ffffff',
+                            end_color: '#3498db'
+                        });
+                    })
+                }
+                addCommunityMatrix('data/CHIcommunityMatrix.json');
+                $("#cmWindow1").on("click", function () {
+                    addCommunityMatrix('data/CHIcommunityMatrix.json')
+                });
+                $("#cmWindow2").on("click", function () {
+                    addCommunityMatrix('data/CHIcommunityMatrixRandomSample.json')
+                });
+
+
+                //  showflux(125, 284)
+
+
+
+
+            });//promise.then
+
+        }//load()
+
+
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,92 @@
+var express = require("express");
+var router = express.Router();
+var fluxModel = require("../models/flux");
+var basefluxModel = require("../models/baseflux");
+var fs=require('fs');
+
+/* GET home page. */
+router.get("/", function (req, res, next) {
+  res.render("index", {
+    title: query.id
+  });
+});
+
+router.get("/getTraffic", function (req, res) {
+  var id = req.param("id");
+  console.log(id);
+  var query = linecon.find({
+      id: id
+    }, {
+      traffic: {
+        $slice: [0, 1]
+      }
+    },
+    function (err, data) {
+      if (err) console.log(err);
+      else {
+        console.log("查询结果：" + data);
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.json(data);
+      }
+    }
+  );
+});
+
+router.get("/getFlux", function (req, res) {
+  var source = parseInt(req.param("source"));
+  var target = parseInt(req.param("target"));
+  console.log(typeof source);
+  var query = fluxModel.find({
+    track: [source, target]
+  }, function (err, data) {
+    if (err) console.log(err);
+    else {
+      console.log("查询结果：" + data);
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      res.json(data);
+    }
+  });
+});
+
+router.get('/getBaseFlux', function (req, res) {
+  var sites = req.param('sites');
+  /*var reverseSites=[];
+  for(var i = 0;i<sites.length;i++){
+    name=sites[i].split("-")[1]+"-"+sites[i].split("-")[0]
+    reverseSites.push(name);
+  }
+  sites.push.apply(sites,reverseSites);
+  */
+  console.log(typeof (sites))
+  var query = basefluxModel.find({
+    "track": {
+      "$in": sites
+    }
+  }, function (err, data) {
+    if (err) console.log(err);
+    else {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.json(data);
+    }
+  });
+});
+
+router.post('/writeMetric', function (req, res) {
+  let data = req.body.data;
+  let directory = req.body.directory;
+  console.log(data, directory);
+  fs.writeFile(directory, data, (err) => {
+    var result = {};
+    if (err) {
+      result.success = false;
+      result.errMsg = err;
+    } else {
+      console.log('数据写入成功');
+      result.success = true;
+    }
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.json(result);
+  })
+})
+
+module.exports = router;

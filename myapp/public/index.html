@@ -1,0 +1,2877 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/leaflet.css" rel="stylesheet" />
+    <link href="css/bootstrap-theme.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-combobox.css" type="text/css" rel="stylesheet">
+    <link href='css/mapbox-gl.css' rel='stylesheet' />
+    <link href="css/jquery-ui.min.css" rel="stylesheet">
+    <link href="css/customStyle.css" rel="stylesheet">
+    <link href="css/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="css/leaflet.pm.css" rel="stylesheet">
+
+    <title>Document</title>
+    <style type="text/css">
+        .overflow {
+            height: 200px;
+        }
+
+        .resize {
+            fill-opacity: .5;
+            cursor: move;
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        .extent {
+            fill-opacity: .25;
+            fill: rgb(205, 130, 42);
+            cursor: grab;
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        .e {
+            fill: rgb(111, 111, 111);
+            cursor: move;
+        }
+
+        .w {
+            fill: rgb(169, 169, 169);
+            cursor: move;
+        }
+
+        path.piehours {
+            fill: rgb(246, 139, 51);
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        .axis--grid .domain {
+            fill: #ddd;
+            stroke: none;
+        }
+
+        .axis--x .domain,
+        .axis--grid .tick line {
+            stroke: #fff;
+        }
+
+        .axis--grid .tick--minor line {
+            stroke-opacity: .5;
+        }
+
+        .background path {
+            fill: none;
+            stroke: #ddd;
+            shape-rendering: crispEdges;
+        }
+
+        .foreground path {
+            fill: none;
+            stroke: steelblue;
+        }
+
+        .brush .extent {
+            fill-opacity: .3;
+            stroke: #fff;
+            shape-rendering: crispEdges;
+        }
+
+        .axis line,
+        .axis path {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+            cursor: move;
+        }
+    </style>
+    <script src="js/d3.v3.min.js"></script>
+    <script src="js/mds.js"></script>
+    <script src="js/numeric.min.js"></script>
+    <script src='js/addTimingView.js'></script>
+    <script src="js/d3.v4.min.js"></script>
+    <script src="js/loadData.js"></script>
+    <script src="js/leaflet.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/pixi.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <script src="js/L.PixiOverlay.js"></script>
+    <script src="js/jquery-ui.min.js"></script>
+    <script src='js/myUtils.js'></script>
+    <script src="js/d3-color.v1.min.js"></script>
+    <script src="js/d3-interpolate.v1.min.js"></script>
+    <script src="js/d3-scale-chromatic.v1.min.js"></script>
+    <script src="js/d3-tip.js"></script>
+    <script src="js/bootstrap-switch.min.js"></script>
+    <script src="js/leaflet.pm.min.js"></script>
+    <script src="js/L.D3SvgOverlay.min.js"></script>
+    <script src="js/pcp.js"></script>
+    <script src="js/hcluster.js"></script>
+    <script src="js/radarView.js"></script>
+    <script src="js/histogramView.js"></script>
+    <script src="js/pixelView.js"></script>
+    <script src="js/flowVolumeView.js"></script>
+    <script src="js/UnderMap.js"></script>
+</head>
+
+<body>
+    <ul class="dropdown-menu">
+        <li>
+            <a id='Chicago' href="#">Chicago</a>
+        </li>
+        <li>
+            <a id='Wenzhou' href="#">Wenzhou</a>
+        </li>
+    </ul>
+    <div id="lSide">
+        <div id='dataInfomation' class='panel panel-default'>
+            <div class="panel-heading">
+                Data Overview
+            </div>
+            <div class="panel-body" style="line-height: 25px;">
+                <label style="font-weight: normal; font-size: 12px;padding-left: 5px;">Data Set :</label>
+                <select id="selectdata" class="selectpicker show-tick" data-width="fit">
+                    <option value="1">Mobile Phone Locations</option>
+                    <option value="2">Bicycle Sharing </option>
+                    <option value="3">Taxi Track</option>
+                </select>
+                <div style="background-color: #f0f0f0;padding: 4px 5px;color: #000">
+                    <span id='stationNumber' class='dataInfo'>Location count: 582</span>
+                    <span id='linesNumberBeforeSample' class='dataInfo'>Original Flow Count:</span>
+                    <span id='linesNumberAfterSample' class='dataInfo'>Sampled Flow Count:</span>
+                    <span id='selectedNumber' class='dataInfo'>Selected Flows:0</span>
+                </div>
+            </div>
+        </div>
+        <div id="traditional" class="panel panel-default">
+            <div class="panel-heading">
+                Traditional Flow Map
+            </div>
+            <div class="panel-body">
+                <li style="display:inline-block;height:20px;width: 285px;padding: 0px 5px">
+                    <span style="float:left;line-height: 20px;  font-size: 10px;">Filter(Flow Volume):
+                        <input type="text" id="amount1" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 26px">
+                    </span>
+                    <div id="slider1" class="slider"></div>
+                </li>
+                <div>
+                    <ul style=" padding: 0px 5px; line-height: 15px; font-size: 10px;vertical-align: text-bottom;margin:0px;">
+                        <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" style="margin-top:4px;">EdgeBundling
+                        <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" style="margin-left: 10px;">Cluster of flows
+                        <br/>
+                        <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" id='comDetec'>Community Detection
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div id='controlPanel' class='panel panel-default'>
+            <div class="panel-heading">
+                Flow Map Abstraction
+            </div>
+            <div class="panel-body">
+                <div>
+                    <li style="display:inline-block;height:20px;width: 285px;padding: 1px 5px">
+                        <span style="float:left;line-height: 20px;  font-size: 10px;">Sample Rate:
+                            <input type="text" id="amount2" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 23px">%
+                        </span>
+                        <div id="slider2" class="slider"></div>
+                    </li>
+                    <div>
+                        <ul id="sortable" style=" list-style-type: none; margin: 0; padding: 0px 5px; line-height: 20px; font-size: 10px;cursor: move;">
+                            <li>
+                                <input type="checkbox" name="our_sample" id='checkBtw' />
+                                <span>Betweeness</span>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="our_sample" id='checkOverlap' />
+                                <span>Overlap</span>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="our_sample" id='checkComm' />
+                                <span>Community Proportion</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="btn-group btn-group-justified " role="group" aria-label="..." style="margin-left: 8px;position: absolute; top:125px;width: 200px">
+                    <p>
+                        <button type="button" class="btn btn-default btn-xs" id='sample' style="width: 80px;margin-left: 16px;">Sample</button>
+                        <button type="button" class="btn btn-default btn-xs" id='initialize' style="width: 80px;margin-left: 5px;">Reset</button>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div id='pixelView' class='panel panel-default'>
+            <div id='pixelHeading' class="panel-heading">
+                Pixel Map
+            </div>
+            <div class="panel-body">
+                <div style="z-index: 3;position:absolute; font-size: 10px;font-weight: 500">
+                    <span id="pixelOriginal">Original</span>
+                    <span id="pixelSampling">Our Sampling</span>
+                </div>
+                <canvas id='pixelCanvas' style="z-index:0;position:absolute;top:20px;left:0px;">
+                </canvas>
+            </div>
+        </div>
+
+
+        <div id='histogramView' class='panel panel-default'>
+            <div class="panel-heading">Edge Betweeness </div>
+            <svg id='hisSvg' width="230" height='135'> </svg>
+        </div>
+    </div>
+
+    <div id='middle'>
+        <div id='mapview' class='panel panel-default'>
+            <div class="panel-heading">Flow Map View</div>
+            <div class="panel-body">
+                <div id="map"></div>
+            </div>
+        </div>
+        <div id='timingView' class='panel panel-default'>
+
+            <div class="panel-heading">Trajectory Segment View
+                <div id="toposlider">
+                    <span style="float:left;line-height: 20px;  font-size: 10px;font-weight: 500;">Flow Volume Filter:
+                        <input type="text" id="flowSliderAmount" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 23px;background-color: transparent">
+                    </span>
+                    <div id="flowSlider" class="slider"></div>
+                </div>
+            </div>
+            <svg id='underMapView' width='700' height='160' style="position: absolute;top:0px;left:0px">
+        </div>
+    </div>
+    <div id="rSide">
+        <div id="scatterPlot" class='panel panel-default'>
+            <div class="panel-heading">
+                Flow Representation
+            </div>
+            <canvas id='scatterCanvas' width="360px" height="350px" style="position:absolute;top:0px;left:0px;"></canvas>
+            <div id="scatterPlotWidgets">
+                <button type="button" id="reset" data-toggle="tooltip" data-placement="left" title="Reset" align="center" style="background-color: #fff0;border:none; padding-left:1px;padding-top:1px;position:absolute;top:1px;z-index:2;right:5px;width:20px;height:20px;">
+                    <span width='16px' height='16px' style='line-height:0.1;width:15px;height:15px;' class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                </button>
+                <button type="button" id="selectAll" data-toggle="tooltip" data-placement="left" title="Select All" align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:30px;width:20px;height:20px">
+                    <img src='images/select.png' width='16px' height='16px'>
+                </button>
+                <button type="button" class="btn btn-default" name='false' id="BrushButton" data-toggle="tooltip" data-placement="left" title="Brush"
+                    align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:55px;width:20px;height:20px">
+                    <img id='brushImg' src='images/brushClose.png' width='16px' height='16px'>
+                </button>
+                <button type="button" class="btn btn-default" name='false' id="selectPointButton" data-toggle="tooltip" data-placement="left"
+                    title="selectPoint" align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:80px;width:20px;height:20px">
+                    <img id='selectPointImg' src='images/selection-tool.png' width='16px' height='16px'>
+                </button>
+            </div>
+        </div>
+        <div class="panel panel-default" id="raderpic">
+            <div class="panel-heading">
+                Statistic View
+            </div>
+            <div class="panel-body">
+                <svg width="360" height="320" id='raderSvg' style="position: absolute;top:0px;left:0px;"></svg>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        var dataOverViewSvg = d3.select("#dataOverViewSvg");
+        var scatterPlotWidth = 360,
+            scatterPlotHeight = 380;
+
+        var map = L.map('map', {
+            renderer: L.canvas()
+        }).setView([28.0092688, 120.658735], 14)
+        var osmUrl =
+            'https://api.mapbox.com/styles/v1/mrfree/cjey70d4p3zik2so7zlwfws32/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibXJmcmVlIiwiYSI6ImNqZWR4MDM4ZzB6eHMzM28ycWtxcjRuOXEifQ._9nOwiQoVwA974vWGY2vRg',
+            layer =
+            'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+        L.tileLayer(osmUrl, {
+            minZoom: 1,
+            maxZoom: 17,
+            //用了mapbox的图层
+            attribution: layer,
+            //访问令牌
+            accessToken: 'your.mapbox.access.token'
+        }).addTo(map);
+        map.zoomControl.remove();
+
+        var options = {
+            position: 'topleft', // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
+            drawMarker: false, // adds button to draw markers
+            drawPolyline: false, // adds button to draw a polyline
+            drawRectangle: false, // adds button to draw a rectangle
+            drawPolygon: false, // adds button to draw a polygon
+            drawCircle: true, // adds button to draw a cricle
+            cutPolygon: false, // adds button to cut a hole in a polygon
+            editMode: true, // adds button to toggle edit mode for all layers
+            removalMode: true, // adds a button to remove layers
+        };
+        map.pm.addControls(options);
+
+        var selectTime = 0;
+        var clickSourceLatLng;
+        var clickProjectSourceLatLng;
+        var clickTargetLatLng;
+        var clickProjectTargetLatLng;
+        var containerPoint1;
+        var containerPoint2;
+        var d3SvgLayer;
+        var allSelectedMapLines = [];
+        var transformArray = [];
+        var svgLayerArray = [];
+        var lastLayer;
+        var lastLayers = [];
+        var bars = [];
+        var minRadius;
+        var allArcArray = [];
+        var arcArray = [];
+        var comDetecFlag = false;
+        var originalColor = 0xC2C2C2;
+        var selectedColor = 0x3388ff;
+        var fromValue = 100;
+        var toValue = 0;
+        var sampleRate = 40;
+        var startIndex = 0;
+        var endIndex = 200;
+        var timeString = '6-8';
+        var selectAllFlag = false;
+        // add leaflet.pm controls to the map
+        var a = '#fff4b3';
+        var b = '#F22613';
+
+        var circleBarsInterpolate = d3.interpolate(a, b);
+
+        var underMapColorDefs = d3.select("#underMapView").append("defs");
+        var linearGradient = underMapColorDefs
+            .append("linearGradient")
+            .attr("id", "underMapColorBar")
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "100%")
+            .attr("y2", "0%");
+        var stop1 = linearGradient
+            .append("stop")
+            .attr("offset", "0%")
+            .style("stop-color", circleBarsInterpolate(0).toString());
+
+        var stop2 = linearGradient
+            .append("stop")
+            .attr("offset", "100%")
+            .style("stop-color", circleBarsInterpolate(1).toString());
+
+
+
+        d3.select("#underMapView")
+            .append("rect")
+            .attr("x", 640)
+            .attr("y", 5)
+            .attr("width", 55)
+            .attr("height", 10)
+            .attr("fill", "url(#" +
+                linearGradient.attr(
+                    "id") + ")");
+        d3.select("#underMapView")
+            .append("text")
+            .attr("font-size", "10px")
+            .attr("x", 575)
+            .attr("y", 13.5)
+            .text("Flow Volume");
+
+
+
+
+        //像素图的color bar
+        var pixelSvg = d3.select("#pixelView")
+            .append("svg")
+            .attr("width", 228)
+            .attr("height", 21.8)
+            .style("position", "absolute")
+            .style("top", "0px")
+            .style("left", "0px");
+        var pixelColorDefs = pixelSvg.append("defs");
+        var pixelLinearGradient = pixelColorDefs
+            .append("linearGradient")
+            .attr("id", "pixelColorBar")
+            .attr("x1", "0%")
+            .attr("y1", "0%")
+            .attr("x2", "100%")
+            .attr("y2", "0%");
+        var stop1 = pixelLinearGradient
+            .append("stop")
+            .attr("offset", "0%")
+            .style("stop-color", d3.interpolateBlues(0).toString());
+
+        var stop2 = pixelLinearGradient
+            .append("stop")
+            .attr("offset", "100%")
+            .style("stop-color", d3.interpolateBlues(1).toString());
+
+        pixelSvg.append("rect")
+            .attr("x", 170)
+            .attr("y", 5)
+            .attr("width", 55)
+            .attr("height", 10)
+            .attr("fill", "url(#" +
+                pixelLinearGradient.attr(
+                    "id") + ")");
+        pixelSvg.append("text")
+            .attr("font-size", "10px")
+            .attr("x", 130)
+            .attr("y", 14)
+            .text("Overlap");
+
+
+
+
+
+        var stage = new PIXI.Container();
+        var scatterCircleGraphics = new PIXI.Graphics();
+        var selectedCircleGraphics = new PIXI.Graphics();
+        var allSelectedCirclesGraphics = new PIXI.Graphics();
+        var dragDrawCricleGraphics = new PIXI.Graphics();
+        stage
+            .addChild(
+                scatterCircleGraphics);
+        stage
+            .addChild(
+                dragDrawCricleGraphics);
+        stage.addChild(
+            allSelectedCirclesGraphics);
+        stage.addChild(selectedCircleGraphics);
+        var scatterCanvas = document.getElementById("scatterCanvas");
+        var renderer = PIXI.autoDetectRenderer(scatterPlotWidth, scatterPlotHeight, {
+            view: scatterCanvas,
+            forceFXAA: false,
+            antialias: true,
+            transparent: !0,
+            resolution: 1
+        });
+        document.getElementById("scatterPlot").appendChild(renderer.view);
+        var pCanvas = document.getElementById("pixelCanvas");
+        var pStage = new PIXI.Container();
+        var pixelGraphics = new PIXI.Graphics();
+        var pRenderer = PIXI.autoDetectRenderer(230, 135, {
+            view: pCanvas,
+            forceFXAA: true,
+            antialias: false,
+            transparent: !0,
+            resolution: 1
+        });
+        document.getElementById("pixelView").appendChild(pRenderer.view);
+
+        var mapCircleRadius = 0.03;
+        var CHIFileList = ["data/CHIstationIDLocation.csv",
+            "data/CHIlinedetail_label.csv",
+            "data/CHIlinedetail_label_sample.csv",
+            "data/CHIlinedetail_label_randomSample.csv",
+        ];
+        var BSFileList = ["data/BSstationIDLocation.csv",
+            "data/BSlinedetail_label.csv",
+            "data/BSlinedetail_label_sample.csv",
+        ];
+        // load(BSFileList[0], BSFileList[1], BSFileList[2], BSFileList[3]);
+        /*  var positionY = Math.random() * 300;
+                         var positionX = Math.random() * 700;
+                         // ////console.log(position);
+                         d3.selectAll("#asd").remove();
+                         d3.select("#map")
+                             .append("div")
+                             .attr("id", "asd")
+                             .style("height", "200px")
+                             .style("width", "200px")
+                             .style("position", "absolute")
+                             .style("top", positionY.toString() + "px")
+                             .style("left", positionX.toString() + "px")
+                             .style("opacity", 0.5)
+                             .attr("class", "panel panel-default")
+                             .style("border", "1px black solid")
+                             .style("z-index", 2000);
+                         */
+        $('#stationNumber').text("Location count:2970");
+        $('#linesNumberBeforeSample').text("Original Flow Count:65952");
+        $('#linesNumberAfterSample').text("Sampled Flow Count:10342");
+        load(BSFileList[0], BSFileList[1], BSFileList[2]);
+
+        function load(stationIDLocationFile, linedetail_labelFile, linedetail_label_sampleFile) {
+
+            Promise.all([getMapData(stationIDLocationFile),
+                getScatterData(linedetail_labelFile),
+                getScatterData(linedetail_label_sampleFile),
+                //   getFluxData('data/BSFluxData.json'),
+                // getSampledScatterData(randomSampleFile)
+            ]).then(function (values) {
+
+                var mapData = values[0];
+                var scatterData = values[1];
+                ////////////console.log('scatterData: ', scatterData);
+                var sampledScatterData = values[2];
+                ////////////console.log('randomScatterData: ', randomScatterData);
+                ////////////console.log('sampledScatterData: ', sampledScatterData);
+                //  var fluxData = values[3];
+                //   //////////////console.log("fluxData", fluxData);
+                //    var maxFlux = d3.max(fluxData, function (d) {
+                //      return d3.max(d);
+                //   })
+                //    //////////////console.log("maxFlux", maxFlux);
+                ////console.log("fluxData", fluxData);
+                //  var randomSampledScatterData = values[3];
+                //  ////console.log(randomSampledScatterData);
+                var filterScatterData = [];
+                var filterFlag = false;
+                $('#linesNumberBeforeSample').text("Original Flow Count:" + scatterData.length);
+                $('#linesNumberAfterSample').text("Sampled Flow Count:" + sampledScatterData.length);
+                if (stationIDLocationFile == CHIFileList[0]) {
+                    //var labelColorScale = d3.scaleOrdinal(d3.schemeCategory10);
+                    var labelColorScale = d3.scaleOrdinal()
+                        .domain([-1, 0, 1, 2, 3, 4, 5])
+                        .range(['#FF8072', '#FFFFB3', '#80ABD3', '#B3DE69', '#CCCCCC', '#8DD3C7', '#FDB462']);
+                } else {
+                    var labelColorScale = d3.scaleOrdinal()
+                        .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+                        .range(['#fb8072', '#80b1d3', '#fdb462', '#b3de69',
+                            '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f', '#8dd3c7', '#ffffb3',
+                            '#CCCCCC',
+                        ]);
+                }
+                var brushTime = 0;
+                var formerSelectedCircle = [];
+                var laterSelectedCircle = [];
+                var recorder = [];
+                var polylines = [];
+                var sampled = false;
+                var word2vecFlag = false;
+                var leafletSvgOverlay;
+                var leafletPixiContaioner = new PIXI.Container();
+                var firstDraw = true;
+                var prevZoom;
+                var line = new PIXI.Graphics();
+                var multiLineGraphics = new PIXI.Graphics();
+                var mapCircleGraphics = new PIXI.Graphics();
+                var dragLineGraphics = new PIXI.Graphics();
+                var selectedMapCircleGraphics = new PIXI.Graphics();
+                var selectedCircles = [];
+                var SVGzoomScale;
+                var SVGcurrentZoom;
+                var drag;
+                var selectedMapData = [];
+                var flowSliderValue = 0;
+                var maxValue;
+                var minValue;
+
+                leafletPixiContaioner.addChild(line);
+                leafletPixiContaioner.addChild(dragLineGraphics);
+                leafletPixiContaioner.addChild(multiLineGraphics);
+                leafletPixiContaioner.addChild(mapCircleGraphics);
+                leafletPixiContaioner.addChild(selectedMapCircleGraphics);
+
+
+                var brush = d3.brush();
+                if (d3.selectAll("#scatterSvg").empty()) {
+                    var scatterSvg = d3.select("#scatterPlot")
+                        .append("svg")
+                        .attr("id", "scatterSvg")
+                        .attr("width", scatterPlotWidth)
+                        .attr("height", scatterPlotHeight)
+                        .attr("class", "sSvg")
+                        .style("position", "absolute")
+                        .style("top", 0)
+                        .style("left", 0);
+                }
+                drawScatterPlot(scatterData, labelColorScale, scatterPlotWidth, scatterPlotHeight, stage,
+                    scatterCircleGraphics, comDetecFlag);
+
+
+
+
+
+
+                var arcColor = d3.scaleThreshold();
+                arcColor
+                    .domain([0, 2, 4, 8, 16, 32, 64, 128, 256, 512])
+                    .range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]);
+                var arc = d3
+                    .arc()
+                    .startAngle(function (d) {
+                        return d.startAngle;
+                    })
+                    .endAngle(function (d) {
+                        return d.endAngle;
+                    })
+                    .innerRadius(function (d) {
+                        return d.innerRadius;
+                    })
+                    .outerRadius(function (d) {
+                        return d.outerRadius;
+                    });
+
+                function calDis(stationPoint, clickSourceLatLng) {
+                    return Math.sqrt(
+                        Math.pow(stationPoint.x - clickSourceLatLng.x, 2) + Math.pow(stationPoint.y -
+                            clickSourceLatLng.y, 2)
+                    );
+                }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                leafletPixiOverlay = L.pixiOverlay(function (utils) {
+                        var zoom = utils.getMap().getZoom();
+                        var container = utils.getContainer();
+                        var leafletRenderer = utils.getRenderer();
+                        var project = utils.latLngToLayerPoint;
+                        var scale = utils.getScale();
+                        var arcColor = d3.scaleThreshold();
+
+
+                        arcColor
+                            .domain([0, 2, 4, 8, 16, 32, 64, 128, 256, 512])
+                            .range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]);
+                        //   container.interactive = true;
+                        //  container.cursor = 'crosshair';
+                        //  container.on("click", function () {
+                        //       ////console.log("container");
+                        //   })
+
+
+
+                        $('.leaflet-pm-icon-circle').unbind();
+                        var d3Overlay = L.d3SvgOverlay(function (selection, projection) {
+
+
+                            map.off('pm:create');
+                            map.on('pm:create', function (e) {
+                                ////console.log("pmCreateE", e)
+                                ////console.log("create", e);
+                                var circle = e.layer;
+                                lastLayer = e.layer;
+                                lastLayers.push(e.layer);
+
+                                // e.layer.pm.toggleEdit(options);
+                                map.removeLayer(circle);
+                                var containerPoint1 = e.layer._point;
+                                var clickSourceLatLng = e.layer._latlng;
+                                minRadius = e.layer._radius;
+
+                                ////console.log("containerPoint1", containerPoint1);
+                                ////console.log("clickSourceLatLng", clickSourceLatLng);
+                                /////console.log("clickSourceLatLng");
+                                transformArray.push(containerPoint1);
+                                selectedMapData = [];
+                                var selectedMapLines = [];
+
+                                ////console.log(mapData);
+                                for (var i = 0; i < mapData.length; i++) {
+                                    let stationPoint = (mapData[i].stationLocation);
+                                    if (calDis(map.latLngToLayerPoint(stationPoint), map.latLngToLayerPoint(
+                                            clickSourceLatLng)) <= minRadius) {
+                                        selectedMapData.push(mapData[i]);
+                                    }
+                                }
+                                ////console.log("selectedMapData", selectedMapData);
+                                if (sampled === true) {
+                                    var data = sampledScatterData;
+                                } else if (sampled === false) {
+                                    var data = scatterData;
+                                }
+
+                                for (var i = 0; i < data.length; i++) {
+                                    for (var j = 0; j < selectedMapData.length; j++) {
+                                        if (data[i].source != selectedMapData[j].stationID) {
+                                            continue;
+                                        }
+                                        for (var s = 0; s < selectedMapData.length; s++) {
+                                            if (data[i].target == selectedMapData[s].stationID) {
+                                                selectedMapLines.push(data[i]);
+                                            }
+                                        }
+                                    }
+                                }
+                                var originalLLines = [];
+                                for (var i = 0; i < scatterData.length; i++) {
+                                    for (var j = 0; j < selectedMapData.length; j++) {
+                                        if (scatterData[i].source != selectedMapData[j].stationID) {
+                                            continue;
+                                        }
+                                        for (var s = 0; s < selectedMapData.length; s++) {
+                                            if (scatterData[i].target == selectedMapData[s]
+                                                .stationID) {
+                                                originalLLines.push(data[i]);
+                                            }
+                                        }
+                                    }
+                                }
+                                ////////console.log('originalLLines: ', originalLLines);
+                                //drawMDS_PCP(selectedMapLines);
+                                allSelectedMapLines.push(selectedMapLines);
+                                ////console.log('After Push allSelectedMapLines: ',
+                                //    allSelectedMapLines);
+
+                                multidrawCircles(allSelectedMapLines, comDetecFlag);
+                                //  multidrawLines(allSelectedMapLines);
+                                function drawArtLine(timeString) {
+                                    get3hourData('data/18Data_track.json').then(function (
+                                        data) {
+                                        var thisTimeAllTrack = [];
+                                        for (var i = 0; i < data.length; i++) {
+                                            for (var key in data[i]) {
+                                                if (key == timeString) {
+                                                    originalTrack = data[i][key];
+                                                    var inCircleTrack =
+                                                        getInCircleTrack(
+                                                            originalTrack);
+                                                    //  //console.log('inCircleTrack: ', inCircleTrack);
+                                                    if (inCircleTrack.length > 0) {
+                                                        thisTimeAllTrack.push(
+                                                            inCircleTrack);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        //console.log('thisTimeAllTrack: ',
+                                        //   thisTimeAllTrack);
+                                        //console.log("thisTimeAllTrack[0][0]",
+                                        // thisTimeAllTrack[0][0]);
+                                        var thisTimeTrackSet = {};
+
+                                        var sampledSourceTragetArray = [];
+                                        for (var i = 0; i < sampledScatterData.length; i++) {
+                                            sampledSourceTragetArray.push(
+                                                sampledScatterData[i].source +
+                                                '-' +
+                                                sampledScatterData[i].target
+                                            );
+                                            sampledSourceTragetArray.push(
+                                                sampledScatterData[i].target +
+                                                '-' +
+                                                sampledScatterData[i].source);
+                                        }
+                                        var flag = 1;
+                                        //console.log(sampledSourceTragetArray);
+                                        for (var i = 0; i < thisTimeAllTrack.length; i++) {
+                                            for (var j = 0; j < thisTimeAllTrack[i]
+                                                .length; j++) {
+                                                flag = 1;
+                                                var track = [];
+                                                for (var s = 0; s <
+                                                    thisTimeAllTrack[i]
+                                                    [j].length; s++) {
+                                                    track.push(thisTimeAllTrack[i][
+                                                            j
+                                                        ][s]
+                                                        .stationID);
+                                                    if (s != 0 && $.inArray(
+                                                            thisTimeAllTrack[i][j][
+                                                                s -
+                                                                1
+                                                            ].stationID + '-' +
+                                                            thisTimeAllTrack[i][j][
+                                                                s
+                                                            ].stationID,
+                                                            sampledSourceTragetArray
+                                                        ) ==
+                                                        -1) {
+                                                        flag = 0
+                                                        break;
+                                                    }
+                                                }
+                                                if (flag == 1) thisTimeTrackSet[
+                                                        track] =
+                                                    0;
+                                            }
+                                        }
+                                        for (var i = 0; i < thisTimeAllTrack.length; i++) {
+                                            for (var j = 0; j < thisTimeAllTrack[i]
+                                                .length; j++) {
+                                                var track = [];
+                                                var flag = false;
+                                                for (var s = 0; s <
+                                                    thisTimeAllTrack[i]
+                                                    [j].length; s++) {
+                                                    track.push(thisTimeAllTrack[i][
+                                                            j
+                                                        ][s]
+                                                        .stationID)
+                                                }
+
+                                                for (var key in thisTimeTrackSet) {
+                                                    // //console.log("key", key);
+                                                    if (key == track) {
+                                                        thisTimeTrackSet[key]++;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        var originalTrackSet = cloneObj(
+                                            thisTimeTrackSet);
+                                        //console.log('originalTrackSet: ',
+                                        //   originalTrackSet);
+                                        sortedKeys = Object.keys(thisTimeTrackSet).sort(
+                                            function (a, b) {
+                                                return a.split(',').length - b.split(
+                                                    ',').length;
+                                            });
+                                        //console.log('sortedKeys: ', sortedKeys);
+
+                                        for (var i = 0; i < sortedKeys.length; i++) {
+                                            for (var j = 0; j < sortedKeys.length; j++) {
+                                                if (i == j) {
+                                                    continue;
+                                                }
+                                                var key1 = sortedKeys[i];
+                                                var key2 = sortedKeys[j];
+                                                if (key1.indexOf(key2) != -1) {
+                                                    thisTimeTrackSet[key2] +=
+                                                        thisTimeTrackSet[key1];
+                                                }
+                                            }
+                                        }
+                                        //console.log('thisTimeTrackSet: ',
+                                        //  thisTimeTrackSet);
+                                        var allTrack = [];
+                                        for (var key in thisTimeTrackSet) {
+                                            keyArray = key.split(',');
+                                            var track = {};
+                                            var track2 = [];
+                                            for (var i = 0; i < keyArray.length; i++) {
+                                                for (var j = 0; j <
+                                                    selectedMapData
+                                                    .length; j++) {
+                                                    if (keyArray[i] ==
+                                                        selectedMapData[j].stationID
+                                                    ) {
+                                                        track2.push([
+                                                            selectedMapData[
+                                                                j].stationLat,
+                                                            selectedMapData[
+                                                                j].stationLng
+                                                        ]);
+                                                    }
+                                                }
+                                            }
+                                            track.lineCoors = track2;
+                                            track.value = thisTimeTrackSet[key];
+                                            allTrack.push(track);
+                                        }
+                                        //console.log('allTrack: ', allTrack);
+
+                                        maxValue = d3.max(allTrack,
+                                            function (d) {
+                                                return d.value;
+                                            })
+                                        minValue = d3.min(allTrack,
+                                            function (d) {
+
+                                                return d.value;
+                                            })
+
+                                        //console.log('minValue: ', minValue);
+                                        //console.log('maxValue: ', maxValue);
+
+                                        $("#flowSlider").slider({
+                                            //range:true,
+                                            min: minValue,
+                                            max: maxValue,
+                                            step: 1,
+                                            value: minValue,
+                                            // value:[0,100],
+                                            slide: function (event, ui) {
+                                                $("#flowSliderAmount").val(
+                                                    ui.value);
+                                                flowSliderValue =
+                                                    ui.value;
+                                                drawStraightLine(
+                                                    allTrack);
+                                            },
+                                            stop: function (event, ui) {
+                                                flowSliderValue =
+                                                    ui.value;
+                                                drawStraightLine(
+                                                    allTrack);
+                                            }
+                                        });
+
+                                        function drawStraightLine(allTrack) {
+                                            console.log('allTrack: ', allTrack);
+                                            allTrack.sort(function (a, b) {
+                                                return b.lineCoors.length -
+                                                    a.lineCoors.length;
+                                            })
+                                            console.log('allTrack: ', allTrack);
+                                            selection.selectAll(".artLine").remove();
+                                            var colorDefs = selection.append("defs");
+                                            var linearGradient = colorDefs.append(
+                                                    "linearGradient")
+                                                .attr("id", "linearColor")
+                                                .attr("x1", "0%")
+                                                .attr("y1", "0%")
+                                                .attr("x2", "100%")
+                                                .attr("y2", "100%");
+                                            var stop1 = linearGradient.append(
+                                                    "stop")
+                                                .attr("offset", "0%")
+                                                .style("stop-color", d3.interpolateYlGnBu(
+                                                    0).toString());
+
+                                            var stop2 = linearGradient.append(
+                                                    "stop")
+                                                .attr("offset", "100%")
+                                                .style("stop-color", d3.interpolateYlGnBu(
+                                                    1).toString());
+
+
+                                            var lineGenarator = d3.line()
+                                                .x(function (d) {
+                                                    return projection.latLngToLayerPoint(
+                                                        d).x;
+                                                })
+                                                .y(function (d) {
+                                                    return projection.latLngToLayerPoint(
+                                                        d).y;
+                                                })
+                                                .curve(d3.curveCardinal.tension(0.3));
+
+
+                                            var defs = selection.append(
+                                                "defs");
+                                            var arrowMarker = defs.append(
+                                                    "marker")
+                                                .attr("id", "arrow")
+                                                .attr("markerUnits",
+                                                    "strokeWidth")
+                                                .attr("markerWidth", "2")
+                                                .attr("markerHeight", "2")
+                                                .attr("fill", "none")
+                                                .attr("stroke", "url(#" +
+                                                    linearGradient.attr(
+                                                        "id") + ")")
+                                                .attr("viewBox",
+                                                    "0 0 12 12")
+                                                .attr("refX", "6")
+                                                .attr("refY", "6")
+                                                .attr("orient", "auto");
+                                            var arrow_path =
+                                                "M2,2 L10,6 L2,10 L6,6 L2,2";
+                                            arrowMarker.append("path")
+                                                .attr("d", arrow_path)
+                                                .attr("fill", "url(#" +
+                                                    linearGradient.attr(
+                                                        "id") + ")");
+
+                                            var widthScale = d3.scaleLinear()
+                                                .domain([minValue, maxValue])
+                                                .range([2, 15]);
+
+                                            for (var i = startIndex; i < endIndex; i++) {
+                                                if (i >= allTrack.length - 1) {
+                                                    break;
+                                                }
+                                                if ((allTrack[i]
+                                                        .lineCoors.length - 1 >=
+                                                        toValue) &&
+                                                    (
+                                                        allTrack[i]
+                                                        .lineCoors.length - 1 <=
+                                                        fromValue) && (
+                                                        allTrack[i]
+                                                        .value >= flowSliderValue)) {
+
+                                                    //   .attr("marker-mid", "url(#arrow)")
+
+                                                    selection.append("path")
+                                                        .attr("class", "artLine")
+                                                        .style("stroke", "url(#" +
+                                                            linearGradient.attr(
+                                                                "id") + ")")
+                                                        .attr('stroke-width',
+                                                            widthScale(allTrack[i].value)
+                                                        )
+                                                        .attr('fill', 'none')
+                                                        .attr("d", lineGenarator(
+                                                            allTrack[i]
+                                                            .lineCoors))
+                                                    //  .attr("marker-start",
+                                                    //      "url(#arrow)")
+                                                    // .attr("marker-mid",
+                                                    //      "url(#arrow)")
+                                                    //  .attr("marker-end",
+                                                    //      "url(#arrow)")
+
+                                                }
+                                            }
+                                        }
+                                        var recordArray = underMap(
+                                            thisTimeTrackSet);
+                                        console.log('recordArray: ', recordArray);
+                                        var rectWidth = d3.select(".underMapRectG")
+                                            .select("rect").attr("width");
+                                        //console.log('rectWidth: ', rectWidth);
+                                        var rectHeight = d3.select(".underMapRectG")
+                                            .select("rect").attr("height");
+
+                                        var rectBrush = d3
+                                            .brushX()
+                                            .extent([
+                                                [10, 20],
+                                                [690, 150]
+                                            ])
+                                            .on("start brush", rectBrushed)
+                                            .on("end", rectBrushEnd);
+
+                                        d3.select("#underMapView").selectAll(
+                                            ".underMapBrush").remove();
+                                        d3.select("#underMapView")
+                                            .append("g")
+                                            .attr("class", "underMapBrush")
+                                            .call(
+                                                rectBrush
+                                            )
+                                        /*  .call(rectBrush.move, 
+                                              [10, 690],
+                                          )
+                                          */
+                                        function rectBrushed() {
+                                            x1 = d3.event.selection[0];
+                                            x2 = d3.event.selection[1];
+                                            startIndex = parseInt((x1 - 10) /
+
+                                                rectWidth);
+                                            endIndex = parseInt((x2 - 10) /
+
+                                                rectWidth);
+                                            console.log('startIndex: ', startIndex);
+                                            console.log('endIndex: ', endIndex);
+                                            fromValue = recordArray[startIndex];
+                                            toValue = recordArray[endIndex];
+                                            drawStraightLine(allTrack);
+                                        }
+
+                                        function rectBrushEnd() {
+                                            x1 = d3.event.selection[0];
+                                            x2 = d3.event.selection[1];
+                                            var startIndex = parseInt((x1 - 10) /
+                                                rectWidth);
+                                            var endIndex = parseInt((x2 - 10) /
+                                                rectWidth);
+                                            fromValue = recordArray[startIndex];
+                                            toValue = recordArray[endIndex];
+                                            drawStraightLine(allTrack);
+                                        }
+                                        drawStraightLine(allTrack);
+
+
+                                        function getInCircleTrack(originalTrack) {
+                                            // //console.log('originalTrack: ', originalTrack);
+                                            var allInCircleTrack = [];
+                                            var inCircleTrack = [];
+                                            var queue = new Queue();
+                                            for (var i = 0; i < originalTrack.length; i++) {
+                                                for (var j = 0; j <
+                                                    selectedMapData
+                                                    .length; j++) {
+                                                    if (originalTrack[i] ==
+                                                        selectedMapData[j].stationID
+                                                    ) {
+                                                        queue.enqueue(
+                                                            selectedMapData[
+                                                                j]);
+                                                        break;
+                                                    }
+                                                }
+                                                if (j == selectedMapData.length) {
+                                                    if (queue.count() < 2) {
+                                                        queue.dequeue();
+                                                    } else if (queue.count() >=
+                                                        2) {
+                                                        while (!queue.empty()) {
+                                                            inCircleTrack.push(
+                                                                queue.dequeue()
+                                                            );
+                                                        }
+                                                        allInCircleTrack.push(
+                                                            inCircleTrack);
+                                                        inCircleTrack = [];
+                                                    }
+                                                }
+                                            }
+                                            return allInCircleTrack;
+                                        }
+                                    })
+                                }
+                                drawArtLine(timeString);
+                                //change flow count text
+                                var AllLength = 0;
+                                for (var i = 0; i < allSelectedMapLines.length; i++) {
+                                    AllLength += allSelectedMapLines[i].length;
+                                }
+                                $('#selectedNumber').text("Selected Flows:" +
+                                    AllLength);
+                                ////console.log("selectedMapLines", selectedMapLines);
+                                // //////////////console.log("getSitesName(selectedMapLines)",getSitesName(selectedMapLines));
+                                console.time("dataProcess");
+                                baseshowflux2(
+                                    getSitesName(selectedMapLines)).then(
+                                    function (
+                                        volumeData) {
+                                        if (volumeData.length === 0) {
+                                            return;
+                                        }
+                                        //console.log("InitialvolumeData", volumeData);
+                                        changeVolumeArray(volumeData);
+                                        var hourLineNumber =
+                                            getHourLineNumber(
+                                                volumeData);
+                                        avgVolumeData = getAvgVolumeData(
+                                            volumeData);
+                                        var scales = getArcScale(
+                                            avgVolumeData,
+                                            minRadius);
+                                        getArcArray(volumeData,
+                                            avgVolumeData,
+                                            minRadius,
+                                            allArcArray, scales);
+                                        //console.log('allArcArray: ', allArcArray);
+
+                                        getRadarData(selectedMapData,
+                                            scatterData,
+                                            sampledScatterData,
+                                            volumeData, maxValue);
+                                        var tip = d3.tip()
+                                            .attr('class', 'd3-tip')
+                                            .offset([-10, 0])
+                                            .html(function (d, i) {
+                                                //////////////console.log(i);
+                                                return "<strong>Flow:</strong> <span style='color:red'>" +
+                                                    d3.format(".4")(
+                                                        avgVolumeData[i]
+                                                    ) +
+                                                    "</span><br></br><strong>Line Number:</strong> <span style='color:red'>" +
+                                                    d3.format(".4")(
+                                                        hourLineNumber[
+                                                            i]) +
+                                                    "</span>";
+                                            })
+                                        selection.call(tip);
+                                        circleBars = selection.append("g")
+                                            .attr("name", (lastLayers.length -
+                                                1).toString())
+                                            .selectAll("path")
+                                            .data(allArcArray[allArcArray.length -
+                                                1])
+                                            .enter()
+                                            .append("path")
+                                            .attr("d", function (d) {
+                                                return arc(d);
+                                            })
+                                            .attr("class", "arcs")
+                                            .style("stroke", "none")
+                                            .style("stroke-width", "0.2px")
+                                            .style("fill", function (d, i) {
+                                                return circleBarsInterpolate(
+                                                    (
+                                                        scales[1](
+                                                            avgVolumeData[
+                                                                i]
+                                                        )));
+                                            })
+                                            .style("pointer-events", "auto")
+                                            .style("cursor", "crosshair")
+                                            .on("click", function () {
+                                                d3.selectAll(".arcs")
+                                                    .style("stroke",
+                                                        "steelblue")
+                                                    .style(
+                                                        "stroke-width",
+                                                        "0.2px");
+                                                d3.select(this)
+                                                    .style("stroke",
+                                                        "#B25C00")
+                                                    .style(
+                                                        "stroke-width",
+                                                        "3px");
+                                                // ////console.log("click arc");
+                                            })
+                                            .on("mouseover", tip.show)
+                                            .on("mouseout", tip.hide)
+                                            .attr("transform", "translate(" +
+                                                transformArray[
+                                                    transformArray.length -
+                                                    1].x + "," +
+                                                transformArray[
+                                                    transformArray.length -
+                                                    1].y +
+                                                ")");
+                                        bars.push(circleBars);
+                                    })
+
+                                var timeArcArray = [];
+                                for (var i = 0; i < 8; i++) {
+                                    var thisArc = {};
+                                    thisArc.startAngle = (2 * Math.PI / 8) * i;
+                                    thisArc.endAngle = (2 * Math.PI / 8) * (i + 1);
+                                    thisArc.innerRadius = minRadius + 4;
+                                    thisArc.outerRadius = minRadius + 13;
+                                    timeArcArray.push(thisArc);
+                                }
+                                var timeArc = selection.append("g")
+                                    .attr("class", "timeArc")
+                                    .selectAll("path")
+                                    .data(timeArcArray)
+                                    .enter()
+                                    .append("path")
+                                    .attr("class", "timeArcPath")
+                                    .attr("d", function (d) {
+                                        return arc(d);
+                                    })
+                                    .style("stroke", "#fff")
+                                    .style("fill", function (d, i) {
+                                        if (i == 2) {
+                                            return "#858585"
+                                        }
+                                        return '#CCCCCC'
+                                    })
+                                    .style("pointer-events", "auto")
+                                    .style("cursor", "crosshair")
+                                    .attr("transform", "translate(" +
+                                        transformArray[
+                                            transformArray.length -
+                                            1].x + "," +
+                                        transformArray[
+                                            transformArray.length -
+                                            1].y +
+                                        ")")
+                                    .on("click", function (d, i) {
+                                        var stratTime = i * 3;
+                                        var endTime = i * 3 + 2;
+                                        timeString = stratTime.toString() + '-' +
+                                            endTime.toString();
+                                        console.log('timeString: ', timeString);
+                                        drawArtLine(timeString);
+                                        selection.selectAll(".timeArcPath")
+                                            .style("fill", '#CCCCCC');
+                                        d3.select(this)
+                                            .style("fill", "#858585");
+                                    });
+
+
+
+
+
+                                console.timeEnd("dataProcess");
+
+
+
+
+                                var circle = selection.append("circle")
+                                    .attr("cx", containerPoint1.x)
+                                    .attr("cy", containerPoint1.y)
+                                    .attr("r", minRadius)
+                                    .attr("id", (lastLayers.length - 1).toString())
+                                    .attr("class", "svgCircle")
+                                    .style("color", "none")
+                                    .style("fill", "none")
+                                    .style("weight", 3)
+                                    .style("fill-opacity", "0.05")
+                                    .style("stroke-width", "2px")
+                                    .style("stroke-opacity", "0.7")
+                                    .style("cursor", "move");
+
+                                drag = d3.drag()
+                                    .on("start", dragStarted)
+                                    .on("drag", draged)
+                                    .on("end", dragEnd)
+
+                                circle.attr("zoomScale", map.getZoom());
+
+                                function dragStarted() {
+                                    ////////////console.log('dragStart');
+                                    selection.selectAll(".artLine").remove();
+                                    selection.selectAll(".timeArc").remove();
+                                    bars[parseFloat(circle.attr("id"))].remove();
+                                    SVGzoomScale = map.getZoomScale(map.getZoom(),
+                                        SVGcurrentZoom);
+                                    SVGcurrentZoom = map.getZoom();
+                                    ////console.log("dragStart");
+                                    ////console.log("dragStart d3.mouse", d3.mouse(this));
+
+                                    /*  let circleCenter = [parseFloat(circle.attr("cx")), parseFloat(circle.attr("cy"))];
+                                      //////////////console.log("circleCenter", circleCenter);
+                                      //////////////console.log("dis", Math.sqrt(Math.pow(circleCenter[0] - d3.mouse(this)[0], 2)
+                                          + Math.pow(circleCenter[1] - d3.mouse(this)[1], 2)
+                                      ));
+                                      */
+                                    circle.attr("cx", d3.mouse(this)[0])
+                                        .attr("cy", d3.mouse(this)[1]);
+                                    bars[parseFloat(circle.attr("id"))].attr(
+                                        "transform",
+                                        "translate(" + d3.mouse(this)[0] +
+                                        "," +
+                                        d3.mouse(
+                                            this)[1] + ")");
+                                    map.dragging.disable();
+                                    ////console.log(d3.event.sourceEvent);
+                                    //   map.containerPointToLayerPoint()
+                                    ////console.log("map.mouseEventToLayerPoint(d3.event.sourceEvent)", map.mouseEventToLayerPoint(d3.event.sourceEvent));
+                                    ////console.log("map.containerPointToLayerPoint(d3.mouse(this))", map.containerPointToLayerPoint(d3.mouse(this)));
+                                    dragDrawLines(allSelectedMapLines[
+                                        parseFloat(
+                                            circle.attr(
+                                                "id"))]);
+                                    dragDrawCircles(allSelectedMapLines[
+                                        parseFloat(
+                                            circle.attr(
+                                                "id"))])
+                                    allSelectedMapLines[parseFloat(circle.attr(
+                                        "id"))] = [];
+                                    multidrawCircles(allSelectedMapLines,
+                                        comDetecFlag);
+                                    //multidrawLines(allSelectedMapLines);
+                                }
+
+                                function draged() {
+                                    ////////////console.log('draged');
+
+                                    ////console.log("Zoom", map.getZoomScale(map.getZoom(), SVGcurrentZoom));
+                                    ////console.log("d3.mouse", d3.mouse(this));
+                                    //  circle.attr("cx", map.mouseEventToLayerPoint(d3.event.sourceEvent).x)
+                                    //      .attr("cy", map.mouseEventToLayerPoint(d3.event.sourceEvent).y);
+                                    circle.attr("cx", d3.mouse(this)[0])
+                                        .attr("cy", d3.mouse(this)[1]);
+                                    bars[parseFloat(circle.attr("id"))].attr(
+                                        "transform",
+                                        "translate(" + d3.mouse(this)[0] +
+                                        "," +
+                                        d3.mouse(
+                                            this)[1] + ")");
+                                    //   ////console.log("draged");
+                                    selectedMapData = [] = [];
+                                    selectedMapLines = [];
+                                    let clickPoint = {
+                                        x: map.mouseEventToLayerPoint(d3.event
+                                                .sourceEvent)
+                                            .x,
+                                        y: map.mouseEventToLayerPoint(d3.event
+                                                .sourceEvent)
+                                            .y
+                                    };
+                                    let thisCircleZoomScale = map.getZoomScale(
+                                        SVGcurrentZoom, parseFloat(circle.attr(
+                                            "zoomScale")));
+                                    ////console.log(thisCircleZoomScale);
+                                    for (var i = 0; i < mapData.length; i++) {
+                                        let stationPoint = (mapData[i].stationLocation);
+                                        if (calDis(map.latLngToLayerPoint(
+                                                    stationPoint),
+                                                clickPoint) <= (parseFloat(
+                                                    circle.attr(
+                                                        "r")) *
+                                                thisCircleZoomScale)) {
+                                            selectedMapData.push(mapData[i]);
+                                        }
+                                    }
+                                    ////console.log("selectedMapData", selectedMapData);
+                                    if (sampled === true) {
+                                        var data = sampledScatterData;
+                                    } else if (sampled === false) {
+                                        var data = scatterData;
+                                    }
+                                    for (var i = 0; i < data.length; i++) {
+                                        for (var j = 0; j < selectedMapData.length; j++) {
+                                            if (data[i].source !=
+                                                selectedMapData[j]
+                                                .stationID) {
+                                                continue;
+                                            }
+                                            for (var s = 0; s < selectedMapData
+                                                .length; s++) {
+                                                if (data[i].target ==
+                                                    selectedMapData[s].stationID
+                                                ) {
+                                                    selectedMapLines.push(data[
+                                                        i]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    var AllLength = 0;
+                                    for (var i = 0; i < allSelectedMapLines.length; i++) {
+                                        if (i === parseFloat(circle.attr("id"))) {
+                                            continue;
+                                        }
+                                        AllLength += allSelectedMapLines[i].length;
+                                    }
+                                    AllLength += selectedMapLines.length;
+                                    $('#selectedNumber').text("Selected Flows:" +
+                                        AllLength);
+
+
+                                    dragDrawLines(selectedMapLines);
+                                    ////console.log("selectedMapLines", selectedMapLines);
+                                    dragDrawCircles(selectedMapLines);
+                                }
+
+                                function dragEnd() {
+                                    ////////////console.log('dragEnd');
+                                    var originalLLines = [];
+                                    for (var i = 0; i < scatterData.length; i++) {
+                                        for (var j = 0; j < selectedMapData.length; j++) {
+                                            if (scatterData[i].source !=
+                                                selectedMapData[j]
+                                                .stationID) {
+                                                continue;
+                                            }
+                                            for (var s = 0; s < selectedMapData
+                                                .length; s++) {
+                                                if (scatterData[i].target ==
+                                                    selectedMapData[s].stationID
+                                                ) {
+                                                    originalLLines.push(data[i]);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    ////////console.log('originalLLines: ', originalLLines);
+
+                                    bars[parseFloat(circle.attr("id"))].remove();
+
+                                    transformArray[parseFloat(circle.attr("id"))] = {
+                                        x: d3.mouse(this)[0],
+                                        y: d3.mouse(this)[1]
+                                    };
+                                    dragLineGraphics.clear();
+                                    leafletRenderer.render(container);
+                                    map.dragging.enable();
+                                    allSelectedMapLines[parseFloat(circle.attr(
+                                            "id"))] =
+                                        selectedMapLines;
+
+                                    var AllLength = 0;
+                                    for (var i = 0; i < allSelectedMapLines.length; i++) {
+                                        AllLength += allSelectedMapLines[i].length;
+                                    }
+                                    $('#selectedNumber').text("Selected Flows:" +
+                                        AllLength);
+                                    //  multidrawLines(allSelectedMapLines);
+                                    drawArtLine(timeString);
+                                    dragDrawCricleGraphics.clear();
+                                    multidrawCircles(allSelectedMapLines,
+                                        comDetecFlag);
+                                    ////console.log("dragEnd");
+                                    baseshowflux2(getSitesName(selectedMapLines))
+                                        .then(
+                                            function (volumeData) {
+                                                //////////////console.log("volumeData", volumeData);
+                                                changeVolumeArray(volumeData);
+
+                                                var hourLineNumber =
+                                                    getHourLineNumber(
+                                                        volumeData);
+                                                avgVolumeData =
+                                                    getAvgVolumeData(
+                                                        volumeData);
+                                                var scales = getArcScale(
+                                                    avgVolumeData,
+                                                    parseFloat(
+                                                        circle.attr(
+                                                            "r")));
+                                                //////////////console.log('avgVolumeData: ', avgVolumeData);
+
+                                                dragEndChangeArcArray(
+                                                    volumeData,
+                                                    avgVolumeData,
+                                                    parseFloat(
+                                                        circle.attr(
+                                                            "r")),
+                                                    allArcArray, scales,
+                                                    parseFloat(
+                                                        circle.attr(
+                                                            "id")));
+                                                getRadarData(selectedMapData,
+                                                    scatterData,
+                                                    sampledScatterData,
+                                                    volumeData, maxValue);
+
+                                                //////////////console.log('allArcArray: ', allArcArray);
+
+                                                var tip = d3.tip()
+                                                    .attr('class', 'd3-tip')
+                                                    .offset([-10, 0])
+                                                    .html(function (d, i) {
+                                                        //////////////console.log(i);
+                                                        return "<strong>Flow:</strong> <span style='color:red'>" +
+                                                            d3.format(".4")(
+                                                                avgVolumeData[i]
+                                                            ) +
+                                                            "</span><br></br><strong>Line Number:</strong> <span style='color:red'>" +
+                                                            d3.format(".4")(
+                                                                hourLineNumber[
+                                                                    i]) +
+                                                            "</span>";
+                                                    })
+                                                selection.call(tip);
+                                                var thisBars = selection.append(
+                                                        "g")
+                                                    .selectAll("path")
+                                                    .attr("name", circle.attr(
+                                                        "id"))
+                                                    .data(allArcArray[
+                                                        parseFloat(
+                                                            circle.attr(
+                                                                "id"))])
+                                                    .enter()
+                                                    .append("path")
+                                                    .attr("d", function (d) {
+                                                        return arc(d);
+                                                    })
+                                                    .attr("class", "arcs")
+                                                    .style("stroke",
+                                                        "steelblue")
+                                                    .style("stroke-width",
+                                                        "0.2px")
+                                                    .style("fill", function (d,
+                                                        i) {
+                                                        let scales =
+                                                            getArcScale(
+                                                                avgVolumeData,
+                                                                minRadius);
+                                                        return circleBarsInterpolate(
+                                                            1 -
+                                                            (scales[1](
+                                                                avgVolumeData[
+                                                                    i
+                                                                ]
+                                                            )));
+                                                    })
+                                                    .style("pointer-events",
+                                                        "auto")
+                                                    .style("cursor",
+                                                        "crosshair")
+                                                    .on("click", function () {
+                                                        d3.selectAll(
+                                                                ".arcs")
+                                                            .style("stroke",
+                                                                "steelblue"
+                                                            )
+                                                            .style(
+                                                                "stroke-width",
+                                                                "0.2px");
+                                                        d3.select(this)
+                                                            .style("stroke",
+                                                                "#B25C00")
+                                                            .style(
+                                                                "stroke-width",
+                                                                "3px");
+                                                        // ////console.log("click arc");
+                                                    })
+                                                    .on("mouseover", tip.show)
+                                                    .on("mouseout", tip.hide)
+                                                    .attr("transform",
+                                                        "translate(" +
+                                                        transformArray[
+                                                            parseFloat(
+                                                                circle.attr(
+                                                                    "id"))].x +
+                                                        "," +
+                                                        transformArray[
+                                                            parseFloat(circle.attr(
+                                                                "id"))
+                                                        ].y +
+                                                        ")");
+                                                bars[parseFloat(circle.attr(
+                                                        "id"))] =
+                                                    thisBars;
+                                            })
+
+                                    var timeArcArray = [];
+                                    for (var i = 0; i < 8; i++) {
+                                        var thisArc = {};
+                                        thisArc.startAngle = (2 * Math.PI / 8) * i;
+                                        thisArc.endAngle = (2 * Math.PI / 8) * (i + 1);
+                                        thisArc.innerRadius = minRadius + 4;
+                                        thisArc.outerRadius = minRadius + 13;
+                                        timeArcArray.push(thisArc);
+                                    }
+                                    var timeArc = selection.append("g")
+                                        .attr("class", "timeArc")
+                                        .selectAll("path")
+                                        .data(timeArcArray)
+                                        .enter()
+                                        .append("path")
+                                        .attr("class", "timeArcPath")
+                                        .attr("d", function (d) {
+                                            return arc(d);
+                                        })
+                                        .style("stroke", "#fff")
+                                        .style("fill", function (d, i) {
+                                            if (i == 2) {
+                                                return "#858585"
+                                            }
+                                            return '#CCCCCC'
+                                        })
+                                        .style("pointer-events", "auto")
+                                        .style("cursor", "crosshair")
+                                        .attr("transform",
+                                            "translate(" +
+                                            transformArray[
+                                                parseFloat(
+                                                    circle.attr(
+                                                        "id"))].x +
+                                            "," +
+                                            transformArray[
+                                                parseFloat(circle.attr(
+                                                    "id"))
+                                            ].y +
+                                            ")")
+                                        .on("click", function (d, i) {
+                                            var stratTime = i * 3;
+                                            var endTime = i * 3 + 2;
+                                            timeString = stratTime.toString() + '-' +
+                                                endTime.toString();
+                                            console.log('timeString: ', timeString);
+                                            drawArtLine(timeString);
+                                            selection.selectAll(".timeArcPath")
+                                                .style("fill", '##CCCCCC');
+                                            selection.select(this)
+                                                .style("fill", "#858585");
+                                        });
+
+
+
+
+
+
+
+
+
+                                }
+                                circle.call(drag);
+                                circle.on('pm:centerplaced',
+                                    function (e) {
+                                        ////console.log("centerplaced", e);
+                                    });
+                                $('.leaflet-pm-icon-delete').attr("name",
+                                    "false");
+                            }); //create 的括号
+
+                            d3.select('.leaflet-pm-icon-delete').on("click", function () {
+                                if ($('.leaflet-pm-icon-delete').attr("name") ===
+                                    'false') {
+                                    //selection.selectAll(".svgCircle").on(".drag", null);
+                                    $('.leaflet-pm-icon-delete').attr("name",
+                                        "true");
+                                    selection.selectAll(".svgCircle").style(
+                                        "cursor",
+                                        "default");
+                                    selection.selectAll(".svgCircle").on(
+                                        "click",
+                                        function () {
+
+                                            d3.select(this).remove();
+                                            let index = parseFloat(d3.select(
+                                                this).attr(
+                                                "id"))
+                                            bars[index].remove();
+                                            bars[index] = [];
+                                            allSelectedMapLines[index] = [];
+                                            lastLayers[index] = [];
+                                            //  lastLayers.splice(parseFloat(d3.select(this).attr("id")), 1);
+                                            ////console.log("allSelectedMapLines2", allSelectedMapLines);
+                                            multidrawLines(
+                                                allSelectedMapLines);
+                                        });
+                                } else {
+                                    //删除click的时候也触发drag
+                                    selection.selectAll(".svgCircle").style(
+                                        "cursor",
+                                        "move");
+                                    // selection.selectAll(".svgCircle").call(drag);
+                                    $('.leaflet-pm-icon-delete').attr("name",
+                                        "false");
+                                    selection.selectAll(".svgCircle").on(
+                                        "click", null);
+                                }
+                            });
+                        });
+
+                        d3Overlay.addTo(map);
+
+                        function drawLines(scatterData, comDetecFlag) {
+                            line.clear();
+                            for (var i = 0; i < scatterData.length; i++) {
+                                if (comDetecFlag == false) {
+                                    line.lineStyle(0.1, originalColor, 0.5);
+                                } else {
+                                    line.lineStyle(0.1, labelColorScale(scatterData[i].label).replace(
+                                            '#', '0x'),
+                                        0.5);
+                                }
+                                //  line.beginFill(labelColorScale(scatterData[i].label).replace('#', '0x'), 0.2);
+                                let layerSourcePoint = project(scatterData[i].scor);
+                                let layerTargetPoint = project(scatterData[i].tcor);
+                                //  ////console.log(layerSourcePoint, layerTargetPoint);
+                                line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+                                line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+                                //  line.endFill();
+                            }
+                            leafletRenderer.render(container);
+                        }
+
+                        function dragDrawLines(selectedMapLines) {
+                            dragLineGraphics.clear();
+                            for (var i = 0; i < selectedMapLines.length; i++) {
+                                if (comDetecFlag == true) {
+                                    dragLineGraphics.lineStyle(0.05, labelColorScale(
+                                        selectedMapLines[i]
+                                        .label).replace(
+                                        '#', '0x'), 0.5);
+                                } else {
+                                    dragLineGraphics.lineStyle(0.05, originalColor, 0.5);
+                                }
+
+                                let layerSourcePoint = project(selectedMapLines[i].scor);
+                                let layerTargetPoint = project(selectedMapLines[i].tcor);
+                                dragLineGraphics.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+                                dragLineGraphics.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+                            }
+                            leafletRenderer.render(container);
+                        }
+
+
+
+                        function multidrawLines(allSelectedMapLines) {
+                            //////console.log("multidrawLines");
+                            multiLineGraphics.clear();
+                            artLine = constructCurve(allSelectedMapLines);
+                            for (var index = 0; index < artLine.length; index++) {
+                                tempNoob = artLine[index];
+                                for (var i = 0; i < tempNoob.length; i++) {
+                                    tempL = tempNoob[i];
+                                    var tcSource = tempL[0];
+                                    multiLineGraphics.lineStyle(tcSource.width, labelColorScale(
+                                            tcSource.label)
+                                        .replace('#', '0x'), 0.2);
+                                    let layerSourcePoint = project(tcSource.scor);
+                                    multiLineGraphics.moveTo(layerSourcePoint.x,
+                                        layerSourcePoint.y);
+                                    for (var j = 0; j < tempL.length - 2; j++) {
+                                        var tcmidP1 = tempL[j + 1];
+                                        var tcmidP2 = tempL[j + 2];
+                                        //var tcTarget = tempL[j + 3];
+
+                                        let midPoint1 = project(tcmidP1.scor)
+                                        let midPoint2 = project(tcmidP1.scor)
+                                        let layerTargetPoint = project(tcmidP2.tcor)
+                                        multiLineGraphics.lineStyle(tcmidP2.width,
+                                            labelColorScale(
+                                                tcSource.label)
+                                            .replace('#', '0x'), j / tempL.length);
+                                        multiLineGraphics.bezierCurveTo(midPoint1.x, midPoint1.y,
+                                            midPoint2
+                                            .x, midPoint2.y, layerTargetPoint.x,
+                                            layerTargetPoint.y);
+                                    }
+                                    var tcTarget = tempL[tempL.length - 1];
+                                    let ePt1 = project(tcTarget.scor);
+                                    let ePt2 = project(tcTarget.tcor);
+                                    let tcx1 = {};
+                                    let tcx2 = {};
+                                    var sizeT = 0.2;
+                                    multiLineGraphics.lineTo(ePt1.x, ePt1.y);
+                                    if (ePt1.x - ePt2.x == 0) {
+                                        tcx1.x = ePt2.x - sizeT;
+                                        tcx2.x = ePt2.x + sizeT;
+                                        if (ePt1.y > ePt2.y) {
+                                            tcx1.y = ePt2.y + sizeT;
+                                            tcx2.y = ePt2.y + sizeT;
+                                        } else {
+                                            tcx1.y = ePt2.y - sizeT;
+                                            tcx2.y = ePt2.y - sizeT;
+                                        }
+                                    } else {
+                                        var k = (ePt1.y - ePt2.y) / (ePt2.x - ePt1.x);
+                                        var sx, sy;
+                                        sx = ePt2.x + Math.sin(Math.atan(k)) * sizeT;
+                                        sy = ePt2.y - Math.cos(Math.atan(k)) * sizeT;
+
+                                        tcx1.x = sx + Math.cos(Math.atan(-1 / k)) * sizeT;
+                                        tcx2.x = sx - Math.cos(Math.atan(-1 / k)) * sizeT;
+                                        tcx1.y = sy + Math.sin(Math.atan(-1 / k)) * sizeT;
+                                        tcx2.y = sy - Math.sin(Math.atan(-1 / k)) * sizeT;
+                                    }
+                                    // multiLineGraphics.moveTo(ePt2.x, ePt2.y);
+                                    // multiLineGraphics.lineTo(tcx1.x, tcx1.y);
+                                    // multiLineGraphics.lineTo(tcx2.x, tcx2.y);
+                                    // multiLineGraphics.lineTo(ePt2.x, ePt2.y);
+                                    multiLineGraphics.drawCircle(ePt2.x, ePt2.y, 0.1);
+                                }
+                            }
+                            leafletRenderer.render(container);
+                        }
+                        var xyScale = getScatterXYScale(scatterData, scatterPlotWidth,
+                                scatterPlotHeight),
+                            xScale = xyScale[0],
+                            yScale = xyScale[1];
+
+                        if (firstDraw) {
+                            brush.on("start brush", brushed)
+                                .on("end", brushEnded);
+                        }
+
+                        function drawBundlingLines() {
+                            if (stationIDLocationFile === CHIFileList[0]) {
+                                var bundleFile = 'data/CHIBundle.csv';
+                            } else {
+                                var bundleFile = 'data/BSBundle.csv';
+                            }
+                            getEdgeBundlingData(bundleFile).then(function (bundleData) {
+                                line.clear();
+                                line.lineStyle(0.1, 0x3446B0, 0.5);
+                                for (var i = 0; i < bundleData.length; i++) {
+                                    //line.lineStyle(0.1,bundleData[i].label,0.5);
+                                    let layerSourcePoint = project(bundleData[i].scor)
+                                    let layerTargetPoint = project(bundleData[i].tcor)
+                                    let midPoint = project(bundleData[i].midcor)
+                                    line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+                                    //  line.lineTo(midPoint.x, midPoint.y);
+                                    //  line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+                                    line.bezierCurveTo(midPoint.x, midPoint.y, midPoint
+                                        .x,
+                                        midPoint
+                                        .y, layerTargetPoint.x, layerTargetPoint.y);
+                                }
+                                leafletRenderer.render(container);
+                            })
+                        }
+
+
+
+                        function drawMapCircle(mapData) {
+                            mapCircleGraphics.clear();
+                            for (var i = 0; i < mapData.length; i++) {
+                                mapCircleGraphics.beginFill(0x000, 1);
+                                // mapCircleGraphics.beginFill(labelColorScale(mapData[i].label).replace(
+                                //      '#',
+                                //     '0x'), 1);
+                                mapCircleGraphics.drawCircle(project(mapData[i].stationLocation)
+                                    .x,
+                                    project(
+                                        mapData[i].stationLocation).y, mapCircleRadius);
+
+                                //   if (mapData[i].label ==11 || mapData[i].label == 12) {
+                                //      mapCircleGraphics.drawCircle(project(mapData[i].stationLocation).x, project(mapData[i].stationLocation).y, 1);
+                                //   } else {
+                                //      mapCircleGraphics.drawCircle(project(mapData[i].stationLocation).x, project(mapData[i].stationLocation).y, mapCircleRadius);
+                                //   }
+                                mapCircleGraphics.endFill();
+                            }
+                            leafletRenderer.render(container);
+                        }
+                        drawMapCircle(mapData);
+
+                        function brushEnded() {
+                            if (sampled === true && selectedCircles.length < 500) {
+                                //  drawFluxMatrix(selectedCircles);
+                            } else if (sampled === true && selectedCircles.length > 500) {
+                                var array = [];
+                                for (var i = 0; i < 500; i++) {
+                                    array.push(selectedCircles[i]);
+                                }
+                                //   drawFluxMatrix(array);
+                            }
+                        }
+
+                        function brushed() {
+                            var s = d3.event.selection,
+                                x1 = s[0][0],
+                                y1 = s[0][1],
+                                x2 = s[1][0],
+                                y2 = s[1][1];
+                            selectedCircles = [];
+                            if (sampled === true) {
+                                var data = sampledScatterData;
+                            } else if (sampled === false) {
+                                var data = scatterData;
+                            }
+                            if (filterFlag === true) {
+                                var data = filterScatterData;
+                            }
+                            for (var i = 0; i < data.length; i++) {
+                                var thisPoint = data[i];
+                                var cx = xScale(thisPoint.x);
+                                var cy = yScale(thisPoint.y);
+                                if (cx > x1 && cx < x2 && cy > y1 && cy < y2) {
+                                    selectedCircles.push(thisPoint);
+                                }
+                            }
+                            drawLines(selectedCircles, comDetecFlag)
+                            //////console.log('selectedCircles: ', selectedCircles);
+
+                            $('#selectedNumber').text("Selected Flows:" + selectedCircles.length);
+                            selectedMapCircleGraphics.clear();
+                        }
+
+                        var selectedSourceTarget = [];
+
+
+                        var selectedLineGraphics = new PIXI.Graphics();
+                        leafletPixiContaioner.addChild(
+                            selectedLineGraphics);
+
+                        function multidrawCircles(allSelectedMapLines, comDetecFlag) {
+                            ////console.log("multidrawCircles");
+                            ////console.log("DRAW allSelectedMapLines", allSelectedMapLines);
+                            //////console.log("multidrawCircles");
+                            //////console.log('allSelectedMapLines: ', allSelectedMapLines);
+                            //////////console.log('allSelectedMapLines: ', allSelectedMapLines);
+                            var xyScale = getScatterXYScale(scatterData, scatterPlotWidth,
+                                    scatterPlotHeight),
+                                xScale = xyScale[0],
+                                yScale = xyScale[1];
+                            allSelectedCirclesGraphics.clear();
+                            // allSelectedCirclesGraphics.lineStyle(1, 0x373B3A, 1);
+                            ////console.log("multidrawCircles", allSelectedMapLines);
+
+                            for (var j = 0; j < allSelectedMapLines.length; j++) {
+                                for (var i = 0; i < allSelectedMapLines[j].length; i++) {
+                                    if (comDetecFlag == false) {
+                                        allSelectedCirclesGraphics.beginFill(selectedColor,
+                                            1);
+                                    } else {
+                                        allSelectedCirclesGraphics.beginFill(labelColorScale(
+                                                allSelectedMapLines[j][i].label).replace(
+                                                "#", "0x"),
+                                            1);
+                                    }
+
+                                    allSelectedCirclesGraphics.drawCircle(xScale(
+                                            allSelectedMapLines[j][i].x),
+                                        yScale(allSelectedMapLines[j][i].y), 1.5);
+                                    allSelectedCirclesGraphics.endFill();
+                                }
+                            }
+                            renderer.render(stage);
+                        }
+
+                        function dragDrawCircles(selectedMapLines) {
+                            var xyScale = getScatterXYScale(scatterData, scatterPlotWidth,
+                                    scatterPlotHeight),
+                                xScale = xyScale[0],
+                                yScale = xyScale[1];
+                            dragDrawCricleGraphics.clear();
+                            //   dragDrawCricleGraphics.lineStyle(1, 0x373B3A, 1);
+                            for (var i = 0; i < selectedMapLines.length; i++) {
+                                if (comDetecFlag == false) {
+                                    dragDrawCricleGraphics.beginFill(selectedColor);
+                                } else {
+                                    dragDrawCricleGraphics.beginFill(labelColorScale(
+                                            selectedMapLines[i]
+                                            .label)
+                                        .replace("#", "0x"), 1);
+                                }
+
+                                dragDrawCricleGraphics.drawCircle(xScale(selectedMapLines[i].x),
+                                    yScale(
+                                        selectedMapLines[i].y), 1.5);
+                                dragDrawCricleGraphics.endFill();
+                            }
+                            renderer.render(stage);
+                        }
+
+
+
+                        function drawSelectedCircle(thisPointData) {
+                            ////////////console.log(thisPointData.label);
+                            if (sampled === false) {
+                                var xyScale = getScatterXYScale(scatterData, scatterPlotWidth,
+                                        scatterPlotHeight),
+                                    xScale = xyScale[0],
+                                    yScale = xyScale[1];
+                            } else if (sampled === true) {
+                                var xyScale = getScatterXYScale(sampledScatterData,
+                                        scatterPlotWidth,
+                                        scatterPlotHeight),
+                                    xScale = xyScale[0],
+                                    yScale = xyScale[1];
+                            }
+                            selectedCircleGraphics.clear();
+                            selectedCircleGraphics.lineStyle(1, 0x373B3A, 1);
+                            selectedCircleGraphics.beginFill(labelColorScale(thisPointData.label)
+                                .replace(
+                                    "#", "0x"));
+                            selectedCircleGraphics.drawCircle(xScale(thisPointData.x), yScale(
+                                thisPointData
+                                .y), 1.5);
+                            selectedCircleGraphics.endFill();
+                            selectedCircleGraphics.x = 0;
+                            selectedCircleGraphics.y = 0;
+                            renderer.render(stage);
+                        }
+
+                        function drawSelectedLine(thisPointData) {
+                            selectedLineGraphics.clear();
+                            selectedLineGraphics.lineStyle(0.5, 0x373B3A, 0.5);
+                            selectedLineGraphics.beginFill(0x373B3A, 0.8);
+                            let layerSourcePoint = project(thisPointData.scor)
+                            let layerTargetPoint = project(thisPointData.tcor)
+                            selectedLineGraphics.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+                            selectedLineGraphics.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+                            selectedLineGraphics.endFill();
+                            leafletRenderer.render(container);
+                        }
+
+                        function bindPointSelectEvents() {
+                            d3.select("#scatterSvg").on("click", function (d) {
+                                var selectedCoords = d3.mouse(document.getElementById(
+                                    'scatterSvg'));
+                                var selectedX = selectedCoords[0];
+                                var selectedY = selectedCoords[1];
+                                if (sampled === false) {
+                                    var xyScale = getScatterXYScale(scatterData,
+                                            scatterPlotWidth,
+                                            scatterPlotHeight),
+                                        xScale = xyScale[0],
+                                        yScale = xyScale[1];
+                                } else if (sampled === true) {
+                                    var xyScale = getScatterXYScale(sampledScatterData,
+                                            scatterPlotWidth, scatterPlotHeight),
+                                        xScale = xyScale[0],
+                                        yScale = xyScale[1];
+                                }
+                                if (filterFlag === true) {
+                                    var data = filterScatterData;
+                                } else if (sampled === false) {
+                                    var data = scatterData;
+                                } else if (sampled === true) {
+                                    var data = sampledScatterData;
+                                }
+                                for (var i = 0; i < data.length; i++) {
+                                    var thisPoint = data[i];
+                                    var cx = xScale(thisPoint.x);
+                                    var cy = yScale(thisPoint.y);
+                                    if (selectedX > cx - 1.5 && selectedX < cx + 1.5 &&
+                                        selectedY >
+                                        cy - 1.5 && selectedY < cy + 1.5) {
+                                        selectedSourceTarget = [thisPoint.source,
+                                            thisPoint
+                                            .target
+                                        ];
+                                        drawSelectedCircle(thisPoint);
+                                        drawSelectedLine(thisPoint);
+                                        break;
+                                    }
+                                }
+                                if (stationIDLocationFile === CHIFileList[0]) {
+                                    showflux(selectedSourceTarget[0],
+                                        selectedSourceTarget[
+                                            1]).then(
+                                        function (volumeData) {
+                                            flowvolumeView(volumeData[0]);
+                                        });
+                                } else {
+                                    baseshowflux(selectedSourceTarget[0],
+                                        selectedSourceTarget[1]).then(
+                                        function (volumeData) {
+                                            flowvolumeView(volumeData[0]);
+                                        });
+                                }
+                            })
+                        }
+
+                        if (firstDraw) {
+                            unbindEvents();
+                            $('#comDetec').on("click", function () {
+                                comDetecFlag = !comDetecFlag;
+                                if (comDetecFlag == true) {
+                                    addCommunityRect(
+                                        scatterData,
+                                        scatterSvg,
+                                        scatterPlotWidth,
+                                        scatterPlotHeight,
+                                        labelColorScale
+                                    );
+                                    $(".labelRect").unbind();
+                                    scatterSvg.selectAll(".labelRect").on("click",
+                                        function (d) {
+                                            var labelData = [];
+                                            for (var i = 0; i < scatterData.length; i++) {
+                                                if (scatterData[i].label == d) {
+                                                    labelData.push(scatterData[i]);
+                                                }
+                                            }
+                                            ////////////console.log('labelData: ', labelData);
+                                            //////////////console.log(labelData);
+                                            drawLines(labelData, comDetecFlag);
+                                        })
+                                } else {
+                                    scatterSvg.selectAll(".labelRect").remove();
+                                    scatterSvg.selectAll("text").remove();
+                                }
+
+                                if (sampled == true) {
+                                    drawScatterPlot(sampledScatterData, labelColorScale,
+                                        scatterPlotWidth,
+                                        scatterPlotHeight, stage,
+                                        scatterCircleGraphics,
+                                        comDetecFlag);
+                                } else if (sampled == false) {
+                                    drawScatterPlot(scatterData, labelColorScale,
+                                        scatterPlotWidth,
+                                        scatterPlotHeight, stage,
+                                        scatterCircleGraphics,
+                                        comDetecFlag);
+                                }
+                                drawLines(selectedCircles, comDetecFlag);
+                            })
+                            $('#BrushButton').on("click", function () {
+                                if ($('#BrushButton').attr('name') === 'false') {
+                                    selectedCircles = [];
+                                    drawLines(selectedCircles, comDetecFlag);
+                                    d3.select("#scatterSvg").on("click", null);
+                                    document.getElementById('selectPointButton').setAttribute(
+                                        'name', 'false');
+                                    document.getElementById('selectPointImg').setAttribute(
+                                        'src',
+                                        'images/selectPointClose.png');
+
+                                    scatterSvg.selectAll("#markRect").remove();
+                                    scatterSvg.append("g")
+                                        .attr("class", "brush")
+                                        .call(brush);
+
+                                    document.getElementById('BrushButton').setAttribute(
+                                        'name',
+                                        'true');
+                                    document.getElementById('brushImg').setAttribute(
+                                        'src',
+                                        'images/brushOpen.png');
+                                } else {
+                                    d3.selectAll(".brush").remove();
+                                    document.getElementById('BrushButton').setAttribute(
+                                        'name',
+                                        'false');
+                                    selectedCircles = [];
+                                    drawLines(selectedCircles, comDetecFlag);
+                                    document.getElementById('brushImg').setAttribute(
+                                        'src',
+                                        'images/brushClose.png');
+                                }
+
+                            })
+                            $('#selectPointButton').on("click", function () {
+                                if ($('#selectPointButton').attr('name') === 'false') {
+                                    if ($('#BrushButton').attr('name') === 'true') {
+                                        let sRect = $(".selection");
+                                        let brushX = parseFloat(sRect.attr("x"));
+                                        let brushY = parseFloat(sRect.attr("y"));
+                                        let brushWidth = parseFloat(sRect.attr("width"));
+                                        let brushHeight = parseFloat(sRect.attr(
+                                            "height"));
+                                        if (!isNaN(brushX)) {
+                                            d3.selectAll("#scatterSvg")
+                                                .append("rect").attr("x", brushX)
+                                                .attr("id", "markRect")
+                                                .attr("y", brushY)
+                                                .attr("height", brushHeight)
+                                                .attr("width", brushWidth)
+                                                .attr("stroke", "#fff")
+                                                .attr("fill-opacity", 0.3)
+                                                .attr("shape-rendering", "crispEdges")
+                                                .attr("fill", "rgb(119,119,119)");
+                                        }
+                                        d3.selectAll(".brush").remove();
+                                        document.getElementById('BrushButton').setAttribute(
+                                            'name',
+                                            'false');
+                                        document.getElementById('brushImg').setAttribute(
+                                            'src',
+                                            'images/brushClose.png');
+                                    }
+                                    bindPointSelectEvents();
+                                    document.getElementById('selectPointButton').setAttribute(
+                                        'name', 'true');
+                                    document.getElementById('selectPointImg').setAttribute(
+                                        'src',
+                                        'images/selectPointOpen.png');
+                                } else {
+                                    selectedLineGraphics.clear();
+                                    selectedCircleGraphics.clear();
+                                    leafletRenderer.render(container);
+                                    renderer.render(stage);
+                                    if ($('#BrushButton').attr('name') === 'false') {
+                                        d3.selectAll(".brush").remove();
+                                        selectedCircles = sampledScatterData;
+                                        drawLines(selectedCircles, comDetecFlag);
+                                        scatterSvg.selectAll("#markRect").remove();
+                                    }
+                                    d3.select("#scatterSvg").on("click", null);
+                                    document.getElementById('selectPointButton').setAttribute(
+                                        'name', 'false');
+                                    document.getElementById('selectPointImg').setAttribute(
+                                        'src',
+                                        'images/selectPointClose.png');
+                                }
+                            })
+
+                            //sample button
+                            $("#sample").click(function () {
+
+                                var sampleRateScale = d3.scaleOrdinal()
+                                    .domain([40, 20, 10, 5])
+                                    .range([1, 2, 3, 4]);
+                                var methodScale = d3.scaleOrdinal()
+                                    .domain(['0', '1', '2', '012'])
+                                    .range([3, 2, 1, 0])
+                                var method = '';
+
+                                var folderName = 'data/res/BSlinedetail_label' + sampleRate.toString() +
+                                    '_seq';
+                                if ($('#checkBtw').is(':checked')) {
+                                    folderName += '0';
+                                    method += '0';
+                                }
+                                if ($('#checkOverlap').is(':checked')) {
+                                    folderName += '1';
+                                    method += '1';
+                                }
+                                if ($('#checkComm').is(':checked')) {
+                                    folderName += '2';
+                                    method += '2';
+                                }
+                                var sampledScatterDataFileName = folderName + '/0.csv';
+
+                                var edgeBtwFileName = folderName + '/1.csv';
+
+                                var pixelFileName = folderName + '/2.json';
+
+                                console.log('sampledScatterDataFileName: ',
+                                    sampledScatterDataFileName);
+                                console.log('edgeBtwFileName: ', edgeBtwFileName);
+                                console.log('pixelFileName: ', pixelFileName);
+
+                                addHistogram2(edgeBtwFileName);
+                                getPixelData('data/BSpixel.json').then(function (pData) {
+                                    pixelView(pData,
+                                        pixelFileName,
+                                        "Wenzhou", pStage, pixelGraphics, pRenderer)
+                                })
+                                getScatterData(sampledScatterDataFileName).then(function (value) {
+                                    sampledScatterData = value;
+                                    console.log("sampledScatterData", sampledScatterData);
+                                    drawScatterPlot(sampledScatterData, labelColorScale,
+                                        scatterPlotWidth,
+                                        scatterPlotHeight, stage, scatterCircleGraphics,
+                                        comDetecFlag);
+                                    //  drawScatterPlot()
+                                })
+                                var index = sampleRateScale(sampleRate) * 4 - methodScale(method);
+
+                                var scaleArray = [];
+                                var maxArray1 = [12, 2779, 2, 2, 2, 65952, 600, 7039];
+                                var minArray1 = [2, 500, 0, 0, 0, 2000, 250, 2500];
+                                for (var i = 0; i < 8; i++) {
+                                    var linear = d3.scaleLinear()
+                                        .domain([minArray1[i], maxArray1[i]])
+                                        .range([40, 120]);
+                                    scaleArray.push(linear);
+                                }
+                                var allRadiusArray = [];
+
+                                var radius = [];
+                                for (var j = 0; j < 8; j++)
+                                    radius.push(scaleArray[j](radarData[0][j]));
+                                allRadiusArray.push(radius);
+
+                                var radius = [];
+                                for (var j = 0; j < 8; j++)
+                                    radius.push(scaleArray[j](radarData[index][j]));
+                                allRadiusArray.push(radius);
+
+
+                                console.log('index: ', index);
+                                addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
+                                console.log('radarData[index]: ', radarData[index]);
+
+                                //console.log('sampledScatterDataFileName: ',
+                                //    sampledScatterDataFileName);
+                                //console.log('edgeBtwFileName: ', edgeBtwFileName);
+                                //console.log('pixelFileName: ', pixelFileName);
+
+
+
+
+
+                                scatterCircleGraphics.clear();
+                                drawScatterPlot(sampledScatterData, labelColorScale,
+                                    scatterPlotWidth,
+                                    scatterPlotHeight, stage, scatterCircleGraphics,
+                                    comDetecFlag);
+
+                                multidrawCircles(allSelectedMapLines, comDetecFlag);
+                                sampled = true;
+                                brush.on("start brush", brushed)
+                                    .on("end", brushEnded);
+                                brushTime = 0;
+                                let sRect = $(".selection");
+                                let brushX = parseFloat(sRect.attr("x"));
+                                let brushY = parseFloat(sRect.attr("y"));
+                                let brushWidth = parseFloat(sRect.attr("width"));
+                                let brushHeight = parseFloat(sRect.attr("height"));
+
+                                if (selectedCircles.length === scatterData.length) {
+                                    drawLines(sampledScatterData, comDetecFlag);
+                                    selectedCircles = sampledScatterData;
+                                } else {
+                                    if (!isNaN(brushX)) {
+                                        d3.selectAll(".brush")
+                                            .call(brush)
+                                            .call(brush.move, [
+                                                [brushX, brushY],
+                                                [brushX + brushWidth, brushY +
+                                                    brushHeight
+                                                ]
+                                            ]);
+                                    }
+                                }
+                                selectedLineGraphics.clear();
+                                selectedCircleGraphics.clear();
+                                renderer.render(stage);
+
+                                $('#selectedNumber').text("Selected Flows:" +
+                                    selectedCircles.length);
+                                ////console.log(sampledScatterData);
+                                ////console.log(allSelectedMapLines[0][0]);
+                                var sampledAllSelectedMapLines = [];
+                                for (var i = 0; i < allSelectedMapLines.length; i++) {
+                                    sampledAllSelectedMapLines[i] = [];
+                                    for (var j = 0; j < allSelectedMapLines[i].length; j++) {
+                                        for (var s = 0; s < sampledScatterData.length; s++) {
+                                            if (allSelectedMapLines[i][j].source ==
+                                                sampledScatterData[s].source &&
+                                                allSelectedMapLines[i][j].target ==
+                                                sampledScatterData[s].target) {
+                                                sampledAllSelectedMapLines[i].push(
+                                                    allSelectedMapLines[i][j]);
+                                            }
+                                        }
+                                    }
+                                }
+                                //////////////console.log(sampledAllSelectedMapLines);
+                                allSelectedMapLines = sampledAllSelectedMapLines;
+                                ////////////console.log('allSelectedMapLines: ', allSelectedMapLines);
+                                //multidrawLines(sampledAllSelectedMapLines);
+
+                            });
+
+                            $("#reset").click(function () {
+                                selectAllFlag = false;
+                                selectedLineGraphics.clear();
+                                selectedCircleGraphics.clear();
+                                if ($('#BrushButton').attr('name') === 'false') {
+                                    selectedCircles = [];
+                                    drawLines(selectedCircles, comDetecFlag);
+                                } else if ($('#BrushButton').attr('name') === 'true') {
+                                    d3.select(".selection")
+                                        .transition()
+                                        .duration(750)
+                                        .attr("x", 0)
+                                        .attr("y", 0)
+                                        .attr("height", 50)
+                                        .attr("width", 50);
+                                    setTimeout(function () {
+                                        d3.selectAll(".brush")
+                                            .call(brush)
+                                            .call(brush.move, [
+                                                [0, 20],
+                                                [50, 50]
+                                            ]);
+                                    }, 100);
+                                }
+                                drawScatterPlot(scatterData, labelColorScale,
+                                    scatterPlotWidth,
+                                    scatterPlotHeight, stage, scatterCircleGraphics,
+                                    comDetecFlag);
+
+                                d3.select("#markRect").remove();
+                                selectedLineGraphics.clear();
+                                selectedCircleGraphics.clear();
+                                renderer.render(stage);
+                                leafletRenderer.render(container);
+                                $('#selectedNumber').text("Selected Flows:" +
+                                    selectedCircles.length);
+                                // renderer.render(stage);
+                            });
+                            $("#initialize").on('click', function () {
+                                console.time("initialize");
+                                //  map.removeLayer(lastLayer);
+
+                                for (var i = lastLayers.length - 1; i >= 0; i--) {
+                                    map.removeLayer(lastLayers[i]);
+                                }
+                                allSelectedMapLines = [];
+                                lastLayers = [];
+                                svgLayerArray = [];
+                                transformArray = [];
+
+                                drawScatterPlot(scatterData, labelColorScale,
+                                    scatterPlotWidth,
+                                    scatterPlotHeight, stage, scatterCircleGraphics,
+                                    comDetecFlag);
+
+                                sampled = false;
+                                brush.on("start brush", brushed)
+                                    .on("end", brushEnded);
+                                brushTime = 0;
+
+                                d3.selectAll(".brush").remove();
+                                document.getElementById("BrushButton").setAttribute(
+                                    'name',
+                                    'false');
+                                document.getElementById('brushImg').setAttribute('src',
+                                    'images/brushClose.png');
+                                selectedCircles = [];
+                                drawLines(selectedCircles, comDetecFlag);
+                                d3.select("#scatterSvg").on("click", null);
+                                document.getElementById('selectPointButton').setAttribute(
+                                    'name',
+                                    'false');
+                                document.getElementById('selectPointImg').setAttribute(
+                                    'src',
+                                    'images/selectPointClose.png');
+                                d3.select("#markRect").remove();
+                                selectedLineGraphics.clear();
+                                selectedCircleGraphics.clear();
+                                selectedMapCircleGraphics.clear();
+                                renderer.render(stage);
+                                leafletRenderer.render(container);
+                                preFlowvolumeView();
+                                $('#selectedNumber').text("Selected Flows:" +
+                                    selectedCircles.length);
+
+                                if (stationIDLocationFile === CHIFileList[0]) {
+
+                                    map.setView([0, 0]);
+                                    map.setView([41.89001, -87.700386]);
+                                    map.setZoom(12);
+                                } else {
+                                    map.setView([0, 0]);
+                                    map.setView([28.0092688, 120.658735]);
+                                    map.setZoom(12);
+                                }
+
+                                $("#slider1").slider("value", 0);
+                                $("#slider2").slider("value", 40);
+                                $("#slider3").slider("value", 0);
+                                $("#flowSlider").slider("value", 1);
+                                $("#amount1").val(0);
+                                $("#amount2").val(40);
+                                $("#amount3").val(0);
+                                $("#flowSliderAmount").val(1);
+
+                            });
+                            $("#edgeBundle").on('click', function () {
+                                drawBundlingLines();
+                            });
+                            $("#slider1").slider({
+                                //range:true,
+                                min: 0,
+                                max: 1000,
+                                step: 1,
+                                value: 0,
+                                // value:[0,100],
+                                slide: function (event, ui) {
+                                    $("#amount1").val(ui.value);
+                                },
+                                stop: function (event, ui) {
+                                    if (ui.value != 0) {
+                                        filterFlag = true;
+                                    } else {
+                                        filterFlag = false;
+                                    }
+                                    filterScatterData = [];
+
+                                    if (sampled !== true) {
+                                        var data = scatterData;
+                                    } else if (sampled === true) {
+                                        var data = sampledScatterData;
+                                    }
+
+                                    for (var i = 0; i < data.length; i++) {
+                                        if (data[i].fre > ui.value) {
+                                            filterScatterData.push(data[i]);
+                                        }
+                                    }
+                                    drawScatterPlot(filterScatterData, labelColorScale,
+                                        scatterPlotWidth,
+                                        scatterPlotHeight, stage,
+                                        scatterCircleGraphics,
+                                        comDetecFlag);
+                                    if (selectAllFlag == true) {
+                                        drawLines(filterScatterData, comDetecFlag);
+                                    }
+                                    let sRect = $(".selection");
+                                    let brushX = parseFloat(sRect.attr("x"));
+                                    let brushY = parseFloat(sRect.attr("y"));
+                                    let brushWidth = parseFloat(sRect.attr("width"));
+                                    let brushHeight = parseFloat(sRect.attr("height"));
+
+                                    if (!isNaN(brushX)) {
+                                        d3.selectAll(".brush")
+                                            .call(brush)
+                                            .call(brush.move, [
+                                                [brushX, brushY],
+                                                [brushX + brushWidth, brushY +
+                                                    brushHeight
+                                                ]
+                                            ]);
+
+                                    }
+                                }
+                            });
+
+                            $("#amount1").val($("#slider1").slider("value"));
+
+                            $("#selectAll").click(function () {
+                                selectAllFlag = true;
+                                if (sampled === true) {
+                                    d3.select(".selection")
+                                        .transition()
+                                        .duration(750)
+                                        .attr("x", 0)
+                                        .attr("y", 0)
+                                        .attr("height", 50)
+                                        .attr("width", 50);
+                                    d3.selectAll(".brush")
+                                        .call(brush.move, [
+                                            [0, 0],
+                                            [50, 50]
+                                        ]);
+                                    drawLines(sampledScatterData, comDetecFlag);
+                                    selectedCircles = sampledScatterData;
+                                } else {
+                                    d3.select(".selection")
+                                        .transition()
+                                        .duration(750)
+                                        .attr("x", 0)
+                                        .attr("y", 0)
+                                        .attr("height", 50)
+                                        .attr("width", 50);
+                                    d3.selectAll(".brush")
+                                        .call(brush.move, [
+                                            [0, 0],
+                                            [50, 50]
+                                        ]);
+                                    drawLines(scatterData, comDetecFlag);
+                                    selectedCircles = scatterData;
+                                }
+                                $('#selectedNumber').text("Selected Flows:" +
+                                    selectedCircles.length);
+                            });
+                        }
+                        if (firstDraw) {
+                            showflux(98, 169).then(function (volumeData) {
+                                flowvolumeView(volumeData[0]);
+                            })
+                        }
+                        prevZoom = zoom;
+                        firstDraw = false;
+                    },
+                    leafletPixiContaioner);
+                leafletPixiOverlay.addTo(map);
+
+
+
+                //       addTimingView();
+
+                //addRadarView();
+
+                //addRadarView();
+                var radarData = [
+                    [2.94, 2779, 0, 0.056, 1, 65952, 577.64, 7039],
+
+                    [3.05, 2779, 0.432, 0.112, 1, 26261, 522.64, 3874],
+                    [6.11, 2779, 0.626, 0.015, 1, 26261, 599.08, 7039],
+                    [3.33, 2779, 0.496, 0.021, 1, 26410, 599.99, 6926],
+                    [5.06, 2779, 0.588, 0.119, 1, 26390, 557.01, 6723],
+
+                    [3.05, 2779, 0.733, 0.155, 1, 15128, 461.93, 3926],
+                    [9.79, 2779, 0.740, 0.122, 1, 14872, 597.42, 6926],
+                    [3.57, 2779, 0.504, 0.101, 1, 14939, 613.67, 4009],
+                    [6.31, 2755, 0.686, 0.050, 1, 15112, 543.04, 4233],
+
+                    [2.78, 2779, 1.05, 0.317, 1, 5733, 346.74, 4009],
+                    [23.54, 2779, 0.474, 0.542, 1, 5722, 603.25, 5519],
+                    [2.83, 1211.97, 0.838, 0.347, 1, 5578, 631.39, 3844],
+                    [9.11, 1169.28, 0.552, 0.512, 1, 5710, 563.86, 5519],
+
+                    [3.74, 2779, 1.294, 1.668, 1, 2893, 275.26, 2788],
+                    [41.28, 2779, 0.993, 0.286, 1, 2959, 613.76, 3588],
+                    [3.42, 527.98, 1.217, 1.014, 1, 3012, 640.86, 6926],
+                    [9.48, 1169.28, 1.196, 1.209, 1, 2971, 587.35, 2910]
+                ];
+                var scaleArray = [];
+                var maxArray1 = [12, 2779, 2, 2, 2, 65952, 600, 7039];
+                var minArray1 = [2, 500, 0, 0, 0, 2000, 250, 2500];
+                for (var i = 0; i < 8; i++) {
+                    var linear = d3.scaleLinear()
+                        .domain([minArray1[i], maxArray1[i]])
+                        .range([40, 120]);
+                    scaleArray.push(linear);
+                }
+                var allRadiusArray = [];
+
+                var radius = [];
+                for (var j = 0; j < 8; j++)
+                    radius.push(scaleArray[j](radarData[0][j]));
+                allRadiusArray.push(radius);
+
+                var radius = [];
+                for (var j = 0; j < 8; j++)
+                    radius.push(scaleArray[j](radarData[radarData.length - 1][j]));
+                allRadiusArray.push(radius);
+
+                //original 0  40% 1-4
+                addRadarView(allRadiusArray, [radarData[0], radarData[radarData.length - 1]]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                getPixelData('data/BSpixel.json').then(function (pData) {
+                    pixelView(pData, 'data/res/BSlinedetail_label40_seq012/2.json', "Wenzhou", pStage,
+                        pixelGraphics, pRenderer)
+                })
+
+
+
+                function changePixelView(fileName, systemName) {
+                    getPixelData(fileName).then(function (pData) {
+                        pixelView(pData, "Chicago", pStage, pixelGraphics, pRenderer);
+                    })
+                }
+
+                /*   if (stationIDLocationFile === CHIFileList[0]) {
+                       getPixelData('data/CHIpixel.json').then(function (pData) {
+                           pixelView(pData, "Chicago", pStage, pixelGraphics, pRenderer)
+                       })
+
+                       $("#pixelWindow1").on("click", function () {
+                           changePixelView('data/CHIpixel.json', 'Chicago');
+                       });
+                       $("#pixelWindow2").on("click", function () {
+                           changePixelView('data/CHIpixelRandomSample.json', 'Chicago');
+                       });
+                       $("#pixelWindow3").on("click", function () {
+                           changePixelView('data/CHIpixelSample.json', 'Chicago');
+                       });
+                   } else {
+                       getPixelData('data/BSpixel.json').then(function (pData) {
+                           pixelView(pData, "Wenzhou", pStage, pixelGraphics, pRenderer)
+                       })
+                   }
+                   */
+                addHistogram2('data/res/BSlinedetail_label5_seq012/1.csv');
+                /* addHistogram('data/CHIedgeBetweenness.csv');
+                 $("#hisWindow1").on("click", function () {
+                     addHistogram('data/CHIedgeBetweenness.csv')
+                 });
+                 $("#hisWindow2").on("click", function () {
+                     addHistogram('data/CHIedgeBetweennessRandomSample.csv')
+                 });
+                 $("#hisWindow3").on("click", function () {
+                     addHistogram('data/CHIedgeBetweennessSample.csv')
+                 });*/
+                function addCommunityMatrix(file) {
+                    getCommunityMatrixData(file).then(function (matrixData) {
+                        var labels = ['0', '1', '2', '3', '4', '5'];
+                        Matrix({
+                            container: '#communityMatrixDraw',
+                            data: matrixData,
+                            labels: labels,
+                            start_color: '#ffffff',
+                            end_color: '#3498db'
+                        });
+                    })
+                }
+                //  addCommunityMatrix('data/CHIcommunityMatrix.json');
+                //  $("#cmWindow1").on("click", function () {
+                //      addCommunityMatrix('data/CHIcommunityMatrix.json')
+                //  });
+                //  $("#cmWindow2").on("click", function () {
+                //      addCommunityMatrix('data/CHIcommunityMatrixRandomSample.json')
+                //  });
+                //  $("#cmWindow3").on("click", function () {
+                //      addCommunityMatrix('data/CHIcommunityMatrixSample.json')
+                //  });
+                function preFlowvolumeView() {
+                    var preShowFluxMatrixData = [];
+                    for (var i = 0; i < Math.random() * 40; i++) {
+                        preShowFluxMatrixData.push(scatterData[i]);
+                    }
+                    //     drawFluxMatrix(preShowFluxMatrixData);
+                }
+                //  preFlowvolumeView();
+                function drawFluxMatrix(selectedCircles) {
+                    mStage.removeChildren();
+                    var margin = {
+                        left: 25,
+                        top: 30,
+                        bottom: 20,
+                        right: 25
+                    }
+                    var matrixWidth = 430 - margin.left - margin.right;
+                    var matrixHeight = 360 - margin.top - margin.bottom;
+                    var rectNumber = selectedCircles.length;
+                    var rectWidth = matrixWidth / rectNumber;
+                    var rectHeight = matrixHeight / rectNumber;
+                    var matrixGraphics = new PIXI.Graphics();
+                    var a = d3.rgb(255, 255, 255);
+                    var b = d3.rgb(25, 152, 219);
+                    var color = d3.interpolate(a, b); //颜色插值函数  
+                    for (var i = 0; i < rectNumber; i++) {
+                        for (var j = 0; j < rectNumber; j++) {
+                            //  matrixGraphics.beginFill(getColor().replace('#', '0x'), 1);
+                            matrixGraphics.beginFill(colorRGB2Hex(color(Math.random())).replace('#',
+                                '0x'), 1);
+                            matrixGraphics.drawRect(margin.left + rectWidth * i, margin.top +
+                                rectHeight * j,
+                                rectWidth, rectHeight);
+                            matrixGraphics.endFill;
+                        }
+                    }
+                    matrixGraphics.x = 0;
+                    matrixGraphics.y = 0;
+                    mStage.addChild(matrixGraphics);
+                    mRenderer.render(mStage);
+                }
+                //drawFluxMatrix();
+
+
+
+
+                $(function () {
+
+
+                    $("#flowSlider").slider({
+                        //range:true,
+                        min: 1,
+                        max: 10,
+                        step: 1,
+                        value: 1,
+                        // value:[0,100],
+                        slide: function (event, ui) {},
+                        stop: function (event, ui) {}
+                    });
+                    $("#flowSliderAmount").val($("#flowSlider").slider("value"));
+
+
+                    $("#sortable").sortable({
+                        revert: true
+                    });
+                    $("#sortable").disableSelection();
+
+
+                    $("#slider2").slider({
+                        //range:true,
+                        min: 5,
+                        max: 60,
+                        step: 5,
+                        value: 40,
+                        // value:[0,100],
+                        slide: function (event, ui) {
+                            $("#amount2").val(ui.value);
+                            sampleRate = ui.value;
+                        },
+                        stop: function (event, ui) {}
+                    });
+                    $("#amount2").val($("#slider2").slider("value"));
+                    $("#slider3").slider({
+                        //range:true,
+                        min: 0,
+                        max: 100,
+                        step: 10,
+                        value: 0,
+                        // value:[0,100],
+                        slide: function (event, ui) {
+                            $("#amount3").val(ui.value);
+                        },
+                        stop: function (event, ui) {}
+                    });
+                    $("#amount3").val($("#slider3").slider("value"));
+
+                    $("#tabs").tabs();
+                    $('[data-toggle="tooltip"]').tooltip()
+
+                    $("#Chicago").unbind();
+                    $("#Wenzhou").unbind();
+
+                    $("#Chicago").on("click", function () {
+                        removeBeforeChangeDataSet();
+                        map.setView([41.89001, -87.700386]);
+                        map.setZoom(12);
+                        load(CHIFileList[0], CHIFileList[1], CHIFileList[2]);
+                        $('#stationNumber').text("Location count:582");
+                        $('#linesNumberBeforeSample').text(
+                            "Original Flow Count:38050");
+                        $('#linesNumberAfterSample').text("Sampled Flow Count:2096");
+                    });
+                    $("#Wenzhou").on("click", function () {
+                        removeBeforeChangeDataSet();
+                        map.setView([28.0092688, 120.658735]);
+                        map.setZoom(12);
+                        load(BSFileList[0], BSFileList[1], BSFileList[2]);
+                        $('#stationNumber').text("Location count:2970");
+                        $('#linesNumberBeforeSample').text(
+                            "Original Flow Count:65952");
+                        $('#linesNumberAfterSample').text(
+                            "Sampled Flow Count:10342");
+                    });
+                    $('[data-toggle="popover"]').popover()
+                    $("[name='my-checkbox']").bootstrapSwitch();
+                });
+
+
+            }); //promise.then
+        } //load()
+    </script>
+</body>
+
+</html>

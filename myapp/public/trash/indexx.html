@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+        crossorigin="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="leaflet/debug/css/screen.css" />
+    <link href="bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap-3.3.7-dist/css/bootstrap-combobox.css" type="text/css" rel="stylesheet">
+
+    <title>Document</title>
+
+
+    <style type="text/css">
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #EEE;
+            height: 1000px;
+        }
+
+        .side {
+            height: 800px;
+            position: absolute;
+            width: 220px;
+            padding: 8px;
+            padding-right: 5px;
+        }
+
+        .be-content {
+            position: absolute;
+            margin-left: 220px;
+            height: 100%;
+            margin-top: 8px;
+        }
+
+        .panel {
+            height: 100%;
+        }
+
+        #map {
+            height: 500px;
+            width: 600px;
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        #scatterPlot {
+            background-color: #fff;
+            border-radius: 4px;
+            margin: 0px 0px 0px 4px;
+            padding: 0;
+            height: 500px;
+            width: 500px;
+        }
+
+
+
+        #network {
+            margin: 4px 0px 0px 0px;
+            padding: 0;
+            height: 279px;
+            width: 600px;
+        }
+
+        #evaluate {
+            margin: 4px 0px 0px 4px;
+            padding: 0;
+            height: 279px;
+            width: 500px;
+        }
+
+        .panel-heading {
+            padding-top: 5px;
+            padding-bottom: 5px;
+            text-align: center;
+        }
+
+        .panel-heading {
+            font-weight: 600;
+        }
+
+        .row {
+            display: flex;
+        }
+    </style>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js" integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+        crossorigin=""></script>
+    <script src="js/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script src="js/pixi.min.js"></script>
+</head>
+
+<body>
+    <div>
+        <div class="side">
+            <div class="panel panel-default">
+                <div class="panel-heading">control panel</div>
+                <div class="panel-body">
+                <button id="query">select</button>
+                </div>
+            </div>
+        </div>
+        <div class="be-content">
+            <div class="main-content container-fluid">
+                <div class="row">
+                    <div class="col-md-8 panel panel-default" id="map">
+                    </div>
+                    <div class="col-md-4 panel panel-default" id="scatterPlot">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-8 panel panel-default" id="network">
+                    </div>
+                    <div class="col-md-4 panel panel-default" id="evaluate">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script type="text/javascript">
+        $("button").button();
+
+        var map = L.map('map', {
+            renderer: L.canvas()
+        }).setView([28.0152688, 120.7558735], 10)
+
+
+
+        var osmUrl = 'http://localhost/bsTiles/{z}/{x}/{y}.png',
+            layer = 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
+        L.tileLayer(osmUrl, {
+            minZoom: 1,
+            maxZoom: 17,
+            //用了mapbox的图层
+            attribution: layer,
+            //访问令牌
+            accessToken: 'your.mapbox.access.token'
+        }).addTo(map);
+        map.setMaxBounds([
+            [28.799, 119.4955],
+            [27.0273, 121.5558735]
+        ]);
+
+function showflux(id){
+    $.ajax({
+        type:'get',
+        url: '/getTraffic',
+        data:{
+            id: id
+        },
+        success: function(data){
+            console.log(data)
+        },
+        error: function(){
+            console.log('error')
+        }
+    })
+}
+
+$('#query').click(function(){
+    showflux(2)
+})
+
+
+    </script>
+
+</body>
+
+</html>

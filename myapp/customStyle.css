@@ -1,0 +1,461 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #fbfbfb;
+  height: 100%;
+  box-shadow: none;
+}
+
+#toposlider{
+  position: absolute;
+  top:-2px;
+  margin-left: 430px;
+  height:20px;
+  width: 285px;
+  padding: 1px 5px; 
+}
+/*Custom checkbox*/
+.check-box {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  display: inline-block;
+  margin: 2px 7px 0 0;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 1px #ccc;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background: rgb(255, 255, 255);
+  background: -moz-linear-gradient(
+    top,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(246, 246, 246, 1) 47%,
+    rgba(237, 237, 237, 1) 100%
+  );
+  background: -webkit-gradient(
+    linear,
+    left top,
+    left bottom,
+    color-stop(0%, rgba(255, 255, 255, 1)),
+    color-stop(47%, rgba(246, 246, 246, 1)),
+    color-stop(100%, rgba(237, 237, 237, 1))
+  );
+  background: -webkit-linear-gradient(
+    top,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(246, 246, 246, 1) 47%,
+    rgba(237, 237, 237, 1) 100%
+  );
+  background: -o-linear-gradient(
+    top,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(246, 246, 246, 1) 47%,
+    rgba(237, 237, 237, 1) 100%
+  );
+  background: -ms-linear-gradient(
+    top,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(246, 246, 246, 1) 47%,
+    rgba(237, 237, 237, 1) 100%
+  );
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(246, 246, 246, 1) 47%,
+    rgba(237, 237, 237, 1) 100%
+  );
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffff', endColorstr='#ededed', GradientType=0);
+  border: 1px solid #ccc;
+}
+.check-box i {
+  background: url("css/check_mark.png") no-repeat center center;
+  position: absolute;
+  datainfoleft: 3px;
+  bottom: -15px;
+  width: 16px;
+  height: 16px;
+  opacity: 0.5;
+  -webkit-transition: all 400ms ease-in-out;
+  -moz-transition: all 400ms ease-in-out;
+  -o-transition: all 400ms ease-in-out;
+  transition: all 400ms ease-in-out;
+  -webkit-transform: rotateZ(-180deg);
+  -moz-transform: rotateZ(-180deg);
+  -o-transform: rotateZ(-180deg);
+  transform: rotateZ(-180deg);
+}
+.checkedBox {
+  -moz-box-shadow: inset 0 0 5px 1px #ccc;
+  -webkit-box-shadow: inset 0 0 5px 1px #ccc;
+  box-shadow: inset 0 0 5px 1px #ccc;
+  border-bottom-color: #fff;
+}
+.checkedBox i {
+  bottom: 2px;
+  -webkit-transform: rotateZ(0deg);
+  -moz-transform: rotateZ(0deg);
+  -o-transform: rotateZ(0deg);
+  transform: rotateZ(0deg);
+}
+
+.panel {
+  /*border-radius: 0;*/
+}
+.panel-heading {
+  padding: 2.5px 5px;
+  font-weight: 600;
+  font-size: 12px;
+  color: #0c0c0c;
+  background-image: linear-gradient(to bottom, #fbfbfb 0, #e0e0e0 100%);
+  background-color: #000;
+  border: none;
+}
+.panel-body {
+  padding: 5px 5px;
+}
+
+#lSide {
+  position: absolute;
+  height: 700px;
+  width: 230px;
+  left: 10px;
+  top: 10px;
+  bottom: 5px;
+}
+#traditional{
+  position: absolute;
+  top: 136px;
+  left:0px;
+  width:230px;
+  height:110px;
+}
+
+#controlPanel {
+  position: absolute;
+  top: 247px;
+  left: 0px;
+  width: 230px;
+  height: 155px;
+  border-width: 0.5px;
+}
+#dataInfomation {
+  position: absolute;
+  top: 0px;
+  width: 230px;
+  height: 135px;
+  border-width: 0.5px;
+}
+#pixelView {
+  position: absolute;
+  top: 403px;
+  left: 0px;
+  height: 138px;
+  width: 230px;
+}
+#pixelView2 {
+  position: absolute;
+  top: 360px;
+  left: 0px;
+  height: 210px;
+  width: 140px;
+  z-index: 50000;
+}
+
+#histogramView {
+  position: absolute;
+  top: 542px;
+  left: 0px;
+  height: 160px;
+  width: 230px;
+  border-width: 0.5px;
+}
+#matrixView1 {
+  position: absolute;
+  top: 600px;
+  left: 0px;
+  height: 180px;
+  width: 260px;
+}
+
+#middle {
+  position: absolute;
+  height: 700px;
+  width: 850px;
+  left: 241px;
+  top: 10px;
+}
+
+#underMap {
+  position: absolute;
+  top: 501px;
+  height: 160px;
+  width: 700px;
+}
+#timingView {
+  position: absolute;
+  top: 542px;
+  height: 160px;
+  width: 700px;
+  border-width: 0.5px;
+}
+#matrixView {
+  position: absolute;
+  top: 0;
+  left: 360px;
+  padding: 5px;
+  height: 360px;
+  width: 430px;
+  background-color: #fff;
+}
+#evaluate {
+  position: absolute;
+  top: 477px;
+  height: 360px;
+  width: 920;
+}
+#rSide {
+  position: absolute;
+  left: 942px;
+  top: 10px;
+  height: 581;
+  width: 420px;
+}
+#scatterPlot {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: #fff;
+  height: 380px;
+  width: 360px;
+  border-width: 0.5px;
+}
+
+#scatterPlotWidgets {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  background-color: none;
+  margin: 0px 0px 0px 4px;
+  padding: 0px;
+  height: 20px;
+  width: 110px;
+}
+
+#raderpic {
+  position: absolute;
+  top: 381px;
+  left: 0px;
+  background-color: #fff;
+  padding-top: 0px;
+  padding-bottom: 0px;
+  padding-left: 0px;
+  padding-right: 0px;
+  height: 321px;
+  width: 360px;
+  border-width: 0.5px;
+}
+.viewTitle {
+  display: block;
+  margin-top: -8px;
+  text-align: center;
+}
+
+.slider {
+  margin-top: 5px;
+  margin-left: 120px;
+  width: 85px;
+}
+#status {
+  cursor: pointer;
+  text-anchor: middle;
+}
+.tabTitle {
+  height: 20px;
+  line-height: 15px;
+  font-size: 13px;
+  padding-top: 0px;
+  margin-top: 0px;
+  padding-left: 4px;
+  padding-right: 5px;
+}
+.tabWindow {
+  position: absolute;
+  top: 20px;
+  height: 160px;
+  width: 240px;
+  padding-left: 0px;
+  padding-top: 0px;
+  padding-right: 0px;
+  padding-bottom: 0px;
+}
+#status g.first text.time {
+  font-size: 14px;
+}
+
+#status g.first text.value {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+#status g.first text.units {
+  font-size: 12px;
+}
+
+#status g.second text.time,
+#status g.third text.time {
+  font-size: 12px;
+}
+
+#status g.second text.value,
+#status g.third text.value {
+  font-size: 20px;
+  fill: #555;
+}
+
+#status g.second text.units,
+#status g.third text.units {
+  font-size: 10px;
+}
+
+.controlButton {
+  margin-top: 0px;
+  margin-left: 18px;
+}
+
+.sliderStyle {
+  position: absolute;
+  top: -23px;
+  left: -37px;
+}
+.axis path,
+.axis line {
+  fill: none;
+  stroke: rgb(146, 120, 120);
+  shape-rendering: crispEdges;
+  stroke-width: 1px;
+}
+
+.bar {
+  fill: rgb(46, 162, 222);
+}
+
+.bar:hover {
+  fill: orangered;
+}
+
+.d3-tip {
+  line-height: 1;
+  font-weight: bold;
+  padding: 12px;
+  background: rgba(238, 238, 238, 0.8);
+  color: rgb(7, 6, 6);
+  border-radius: 2px;
+  z-index: 10000;
+}
+
+/* Creates a small triangle extender for the tooltip */
+.d3-tip:after {
+  box-sizing: border-box;
+  display: inline;
+  font-size: 10px;
+  width: 100%;
+  line-height: 1;
+  color: rgba(0, 0, 0, 0.8);
+  content: "\25BC";
+  position: absolute;
+  text-align: center;
+  z-index: 10000;
+}
+
+/* Style northward tooltips differently */
+.d3-tip.n:after {
+  margin: -1px 0 0 0;
+  top: 100%;
+  left: 0;
+  z-index: 10000;
+}
+
+.dataInfo {
+  display: block;
+  font-size: 10px;
+  white-space: nowrap;
+  line-height: 16px;
+  text-align: left;
+}
+
+.background path {
+  fill: none;
+  opacity: 0.5;
+  stroke: rgb(207, 206, 206);
+  shape-rendering: crispEdges;
+}
+
+.foreground path {
+  fill: none;
+  stroke-width: 3;
+  stroke: rgb(116, 138, 233);
+}
+
+.brush .extent {
+  fill-opacity: 0.3;
+  stroke: #fff;
+  shape-rendering: crispEdges;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke-width: 1;
+  stroke: rgb(144, 144, 144);
+}
+
+.axis text {
+  text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+  cursor: move;
+  font-size: 8px;
+}
+
+#rectSlider {
+  position: absolute;
+  left: 0px;
+  margin-left: 10px;
+  width: 100px;
+  bottom: 5px;
+}
+
+.radarText{
+  font-size:11px;
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-weight: normal;
+}
+#pixelOriginal{
+  margin-left: 38px;
+}
+#pixelSampling{
+  margin-left: 54px;
+}
+#selectdata{
+  font-size:12px;
+  margin-left: 0px;
+  width: 155px;
+}
+#mapview {
+  position: absolute;
+  top: 0px;
+  height: 541px;
+  width: 700px;
+  border-width: 0.5px;
+  z-index: 1;
+}
+#map {
+    position: absolute;
+    top:22px;
+    left:0px;
+    width: 698px;
+    height:516px;
+    z-index: 2;
+    background-color: white;
+}
