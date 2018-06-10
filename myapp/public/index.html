@@ -295,7 +295,7 @@
             renderer: L.canvas()
         }).setView([28.0092688, 120.658735], 14)
         var osmUrl =
-            'https://api.mapbox.com/styles/v1/mrfree/cjey70d4p3zik2so7zlwfws32/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibXJmcmVlIiwiYSI6ImNqZWR4MDM4ZzB6eHMzM28ycWtxcjRuOXEifQ._9nOwiQoVwA974vWGY2vRg',
+            'https://api.mapbox.com/styles/v1/locknono/cjh7jj0mo0yu32rlnk52glz3f/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja25vbm8iLCJhIjoiY2poN2ppZHptMDM2bDMzbnhiYW9icjN4MiJ9.GalwMO67A3HawYH_Tg0-Qg',
             layer =
             'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>'
         L.tileLayer(osmUrl, {
@@ -508,7 +508,7 @@
         function load(stationIDLocationFile, linedetail_labelFile, linedetail_label_sampleFile) {
 
             Promise.all([getMapData(stationIDLocationFile),
-                getScatterData(linedetail_labelFile), 
+                getScatterData(linedetail_labelFile),
                 getScatterData(linedetail_label_sampleFile),
                 //   getFluxData('data/BSFluxData.json'),
                 // getSampledScatterData(randomSampleFile)
@@ -881,7 +881,6 @@
                                             track.value = thisTimeTrackSet[key];
                                             allTrack.push(track);
                                         }
-                                        //console.log('allTrack: ', allTrack);
 
                                         maxValue = d3.max(allTrack,
                                             function (d) {
@@ -920,12 +919,10 @@
                                         });
 
                                         function drawStraightLine(allTrack) {
-                                            console.log('allTrack: ', allTrack);
                                             allTrack.sort(function (a, b) {
                                                 return b.lineCoors.length -
                                                     a.lineCoors.length;
                                             })
-                                            console.log('allTrack: ', allTrack);
                                             selection.selectAll(".artLine").remove();
                                             var colorDefs = selection.append("defs");
                                             var linearGradient = colorDefs.append(
@@ -958,7 +955,6 @@
                                                         d).y;
                                                 })
                                                 .curve(d3.curveCardinal.tension(0.3));
-
 
                                             var defs = selection.append(
                                                 "defs");
@@ -1138,7 +1134,7 @@
                                 // //////////////console.log("getSitesName(selectedMapLines)",getSitesName(selectedMapLines));
                                 console.time("dataProcess");
                                 baseshowflux(
-                                    getSitesName(selectedMapLines)).then(        
+                                    getSitesName(selectedMapLines)).then(
                                     function (
                                         volumeData) {
                                         if (volumeData.length === 0) {
