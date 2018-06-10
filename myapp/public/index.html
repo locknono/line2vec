@@ -508,7 +508,7 @@
         function load(stationIDLocationFile, linedetail_labelFile, linedetail_label_sampleFile) {
 
             Promise.all([getMapData(stationIDLocationFile),
-                getScatterData(linedetail_labelFile),
+                getScatterData(linedetail_labelFile), 
                 getScatterData(linedetail_label_sampleFile),
                 //   getFluxData('data/BSFluxData.json'),
                 // getSampledScatterData(randomSampleFile)
@@ -1137,8 +1137,8 @@
                                 ////console.log("selectedMapLines", selectedMapLines);
                                 // //////////////console.log("getSitesName(selectedMapLines)",getSitesName(selectedMapLines));
                                 console.time("dataProcess");
-                                baseshowflux2(
-                                    getSitesName(selectedMapLines)).then(
+                                baseshowflux(
+                                    getSitesName(selectedMapLines)).then(        
                                     function (
                                         volumeData) {
                                         if (volumeData.length === 0) {
@@ -1485,10 +1485,10 @@
                                     multidrawCircles(allSelectedMapLines,
                                         comDetecFlag);
                                     ////console.log("dragEnd");
-                                    baseshowflux2(getSitesName(selectedMapLines))
+                                    baseshowflux(getSitesName(selectedMapLines))
                                         .then(
                                             function (volumeData) {
-                                                //////////////console.log("volumeData", volumeData);
+                                                console.log('volumeData: ', volumeData);
                                                 changeVolumeArray(volumeData);
 
                                                 var hourLineNumber =
@@ -1655,21 +1655,12 @@
                                             var endTime = i * 3 + 2;
                                             timeString = stratTime.toString() + '-' +
                                                 endTime.toString();
-                                            console.log('timeString: ', timeString);
                                             drawArtLine(timeString);
                                             selection.selectAll(".timeArcPath")
                                                 .style("fill", '##CCCCCC');
                                             selection.select(this)
                                                 .style("fill", "#858585");
                                         });
-
-
-
-
-
-
-
-
 
                                 }
                                 circle.call(drag);

@@ -30,7 +30,7 @@ function getSelectedData(selectedMapData, data) {
 }
 function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
   return new Promise(function(resolve, reject) {
-    baseshowflux2(getSitesName(selectedMapLines)).then(function(volumeData) {
+    baseshowflux(getSitesName(selectedMapLines)).then(function(volumeData) {
       if (volumeData.length === 0) {
         return;
       }

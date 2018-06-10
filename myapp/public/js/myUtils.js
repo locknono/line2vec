@@ -135,33 +135,14 @@ function colorRGB2Hex(color) {
   return hex;
 }
 
-function baseshowflux(source, target) {
-  return new Promise(function(resolve, reject) {
-    $.ajax({
-      type: "get",
-      url: "/getBaseFlux",
-      data: {
-        source: source,
-        target: target
-      },
-      success: function(data) {
-        ////////////////console.log("结" + data);
-        resolve(data);
-      },
-      error: function() {
-        ////////////////console.log("error");
-      }
-    });
-  });
-}
 
-function baseshowflux2(sitesname) {
+function baseshowflux(sitesname) {
   return new Promise(function(resolve, reject) {
     $.ajax({
-      type: "get",
+      type: "post",
       url: "/getBaseFlux",
       data: {
-        sites: sitesname
+        sites:sitesname
       },
       success: function(data) {
         resolve(data);

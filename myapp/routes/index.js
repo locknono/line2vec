@@ -12,7 +12,7 @@ router.get("/", function (req, res, next) {
 });
 
 router.get("/getTraffic", function (req, res) {
-  var id = req.param("id");
+  var id = req.query.id;
   console.log(id);
   var query = linecon.find({
       id: id
@@ -33,8 +33,8 @@ router.get("/getTraffic", function (req, res) {
 });
 
 router.get("/getFlux", function (req, res) {
-  var source = parseInt(req.param("source"));
-  var target = parseInt(req.param("target"));
+  var source = parseInt(req.query.source);
+  var target = parseInt(req.query.target);
   console.log(typeof source);
   var query = fluxModel.find({
     track: [source, target]
@@ -48,16 +48,8 @@ router.get("/getFlux", function (req, res) {
   });
 });
 
-router.get('/getBaseFlux', function (req, res) {
-  var sites = req.param('sites');
-  /*var reverseSites=[];
-  for(var i = 0;i<sites.length;i++){
-    name=sites[i].split("-")[1]+"-"+sites[i].split("-")[0]
-    reverseSites.push(name);
-  }
-  sites.push.apply(sites,reverseSites);
-  */
-  console.log(typeof (sites))
+router.post('/getBaseFlux', function (req, res) {
+  var sites = req.body['sites[]'];
   var query = basefluxModel.find({
     "track": {
       "$in": sites
