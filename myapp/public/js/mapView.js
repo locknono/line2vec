@@ -288,7 +288,7 @@ function load(
         .style("top", 0)
         .style("left", 0);
     }
-    console.time("draw");
+
     drawScatterPlot(
       scatterData,
       labelColorScale,
@@ -298,7 +298,7 @@ function load(
       scatterCircleGraphics,
       comDetecFlag
     );
-    console.timeEnd("draw");
+
     var arcColor = d3.scaleThreshold();
     arcColor
       .domain([0, 2, 4, 8, 16, 32, 64, 128, 256, 512])
@@ -339,7 +339,7 @@ function load(
       //   container.interactive = true;
       //  container.cursor = 'crosshair';
       //  container.on("click", function () {
-      //       ////console.log("container");
+      //       ////
       //   })
 
       $(".leaflet-pm-icon-circle").unbind();
@@ -347,8 +347,8 @@ function load(
         function(selection, projection) {
           map.off("pm:create");
           map.on("pm:create", function(e) {
-            ////console.log("pmCreateE", e)
-            ////console.log("create", e);
+            ////
+            ////
             var circle = e.layer;
             lastLayer = e.layer;
             lastLayers.push(e.layer);
@@ -359,14 +359,14 @@ function load(
             var clickSourceLatLng = e.layer._latlng;
             minRadius = e.layer._radius;
 
-            ////console.log("containerPoint1", containerPoint1);
-            ////console.log("clickSourceLatLng", clickSourceLatLng);
-            /////console.log("clickSourceLatLng");
+            ////
+            ////
+            /////
             transformArray.push(containerPoint1);
             selectedMapData = [];
             var selectedMapLines = [];
 
-            ////console.log(mapData);
+            ////
             for (var i = 0; i < mapData.length; i++) {
               let stationPoint = mapData[i].stationLocation;
               if (
@@ -378,7 +378,7 @@ function load(
                 selectedMapData.push(mapData[i]);
               }
             }
-            ////console.log("selectedMapData", selectedMapData);
+            ////
             if (sampled === true) {
               var data = sampledScatterData;
             } else if (sampled === false) {
@@ -410,17 +410,29 @@ function load(
                 }
               }
             }
-            ////////console.log('originalLLines: ', originalLLines);
+            ////////
             //drawMDS_PCP(selectedMapLines);
             allSelectedMapLines.push(selectedMapLines);
             ////console.log('After Push allSelectedMapLines: ',
             //    allSelectedMapLines);
-
             multidrawCircles(allSelectedMapLines, comDetecFlag);
             //  multidrawLines(allSelectedMapLines);
             function drawArtLine(timeString) {
-              get3hourData(options.track_file).then(function(data) {
-                console.log("data: ", data);
+              new Promise(function(resolve, reject) {
+                $.ajax({
+                  type: "post",
+                  url: "/drawArtLine",
+                  data: {
+                    selectedMapData: selectedMapData
+                  },
+                  success: function(data) {
+                    resolve(data);
+                  },
+                  error: function() {}
+                });
+              }).then(function(AllTrack) {});
+
+              get3hourData(op.track_file).then(function(data) {
                 var thisTimeAllTrack = [];
                 for (var i = 0; i < data.length; i++) {
                   for (var key in data[i]) {
@@ -433,15 +445,8 @@ function load(
                     }
                   }
                 }
-                console.log("thisTimeAllTrack: ", thisTimeAllTrack);
-
-                var thisTimeTrackMap = new Map();
-
-                console.time("calAlltrack");
                 var thisTimeTrackSet = {};
                 var sampledSourceTragetArray = [];
-
-
                 //得到采样后的轨迹集合:
                 //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
                 for (var i = 0; i < sampledScatterData.length; i++) {
@@ -461,13 +466,13 @@ function load(
                 //这一段中包含了站点的信息，顺序存储
                 for (var i = 0; i < thisTimeAllTrack.length; i++) {
                   for (var j = 0; j < thisTimeAllTrack[i].length; j++) {
-                      //thisTimeAllTrack[i][j]代表某个人的某段轨迹
+                    //thisTimeAllTrack[i][j]代表某个人的某段轨迹
                     flag = 1;
                     var track = [];
                     for (var s = 0; s < thisTimeAllTrack[i][j].length; s++) {
                       track.push(thisTimeAllTrack[i][j][s].stationID);
                       if (
-                          //如果这段轨迹中有一个点不在采样后的数据中，就剔除这一段轨迹，否则加入trackSet中
+                        //如果这段轨迹中有一个点不在采样后的数据中，就剔除这一段轨迹，否则加入trackSet中
                         s != 0 &&
                         $.inArray(
                           thisTimeAllTrack[i][j][s - 1].stationID +
@@ -481,28 +486,20 @@ function load(
                       }
                     }
                     if (flag == 1) {
-                        if(thisTimeTrackSet[track] ===undefined){
-                            thisTimeTrackSet[track] = 0;
-                        }else{
-                            thisTimeTrackSet[track] +=1
-                        }
+                      if (thisTimeTrackSet[track] === undefined) {
+                        thisTimeTrackSet[track] = 0;
+                      } else {
+                        thisTimeTrackSet[track] += 1;
+                      }
                     }
                   }
                 }
-                console.timeEnd("calAlltrack");
-
-                console.log("thisTimeTrackSet: ", thisTimeTrackSet);
-
-
                 var sortedKeys = Object.keys(thisTimeTrackSet).sort(function(
                   a,
                   b
                 ) {
                   return a.split(",").length - b.split(",").length;
                 });
-
-                console.log("sortedKeys: ", sortedKeys);
-
                 for (var i = 0; i < sortedKeys.length; i++) {
                   for (var j = 0; j < sortedKeys.length; j++) {
                     if (i == j) {
@@ -515,7 +512,7 @@ function load(
                     }
                   }
                 }
-                console.log('thisTimeTrackSet: ', thisTimeTrackSet);
+
                 var allTrack = [];
 
                 for (var key in thisTimeTrackSet) {
@@ -615,12 +612,12 @@ function load(
                     .append("path")
                     .attr("d", arrow_path)
                     .attr("fill", "url(#" + linearGradient.attr("id") + ")");
-                     
+
                   var widthScale = d3
                     .scaleLinear()
                     .domain([minValue, maxValue])
                     .range([2, 15]);
-                  console.time("drawStraightLine");
+
                   for (var i = startIndex; i < endIndex; i++) {
                     if (i >= allTrack.length - 1) {
                       break;
@@ -650,7 +647,6 @@ function load(
                       //      "url(#arrow)")
                     }
                   }
-                  console.timeEnd("drawStraightLine");
                 }
 
                 var recordArray = underMap(thisTimeTrackSet);
@@ -658,7 +654,7 @@ function load(
                   .select(".underMapRectG")
                   .select("rect")
                   .attr("width");
-                  
+
                 var rectHeight = d3
                   .select(".underMapRectG")
                   .select("rect")
@@ -688,11 +684,11 @@ function load(
                   x2 = d3.event.selection[1];
                   let startIndex = parseInt((x1 - 10) / rectWidth);
                   let endIndex = parseInt((x2 - 10) / rectWidth);
-                  if(startIndex===endIndex){
-                      endIndex=startIndex+1;
+                  if (startIndex === endIndex) {
+                    endIndex = startIndex + 1;
                   }
                   fromValue = recordArray[startIndex];
-                  toValue = recordArray[endIndex];             
+                  toValue = recordArray[endIndex];
                   drawStraightLine(allTrack);
                 }
 
@@ -701,8 +697,8 @@ function load(
                   x2 = d3.event.selection[1];
                   let startIndex = parseInt((x1 - 10) / rectWidth);
                   let endIndex = parseInt((x2 - 10) / rectWidth);
-                  if(startIndex===endIndex){
-                      endIndex=startIndex+1;
+                  if (startIndex === endIndex) {
+                    endIndex = startIndex + 1;
                   }
                   fromValue = recordArray[startIndex];
                   toValue = recordArray[endIndex];
@@ -715,7 +711,6 @@ function load(
                   var queue = new Queue();
                   for (var i = 0; i < originalTrack.length; i++) {
                     for (var j = 0; j < selectedMapData.length; j++) {
-                        
                       if (originalTrack[i] == selectedMapData[j].stationID) {
                         queue.enqueue(selectedMapData[j]);
                         break;
@@ -744,16 +739,16 @@ function load(
               AllLength += allSelectedMapLines[i].length;
             }
             $("#selectedNumber").text("Selected Flows:" + AllLength);
-            ////console.log("selectedMapLines", selectedMapLines);
-            // //////////////console.log("getSitesName(selectedMapLines)",getSitesName(selectedMapLines));
-            console.time("dataProcess");
+            ////
+            // //////////////
+
             baseshowflux(getSitesName(selectedMapLines)).then(function(
               volumeData
             ) {
               if (volumeData.length === 0) {
                 return;
               }
-              //console.log("InitialvolumeData", volumeData);
+              //
               changeVolumeArray(volumeData);
               var hourLineNumber = getHourLineNumber(volumeData);
               avgVolumeData = getAvgVolumeData(volumeData);
@@ -765,7 +760,7 @@ function load(
                 allArcArray,
                 scales
               );
-              //console.log('allArcArray: ', allArcArray);
+              //
 
               getRadarData(
                 selectedMapData,
@@ -779,7 +774,7 @@ function load(
                 .attr("class", "d3-tip")
                 .offset([-10, 0])
                 .html(function(d, i) {
-                  //////////////console.log(i);
+                  //////////////
                   return (
                     "<strong>Flow:</strong> <span style='color:red'>" +
                     d3.format(".4")(avgVolumeData[i]) +
@@ -816,7 +811,7 @@ function load(
                     .select(this)
                     .style("stroke", "#B25C00")
                     .style("stroke-width", "3px");
-                  // ////console.log("click arc");
+                  // ////
                 })
                 .on("mouseover", tip.show)
                 .on("mouseout", tip.hide)
@@ -872,13 +867,11 @@ function load(
                 var stratTime = i * 3;
                 var endTime = i * 3 + 2;
                 timeString = stratTime.toString() + "-" + endTime.toString();
-                console.log("timeString: ", timeString);
+
                 drawArtLine(timeString);
                 selection.selectAll(".timeArcPath").style("fill", "#CCCCCC");
                 d3.select(this).style("fill", "#858585");
               });
-
-            console.timeEnd("dataProcess");
 
             var circle = selection
               .append("circle")
@@ -904,18 +897,18 @@ function load(
             circle.attr("zoomScale", map.getZoom());
 
             function dragStarted() {
-              ////////////console.log('dragStart');
+              ////////////
               selection.selectAll(".artLine").remove();
               selection.selectAll(".timeArc").remove();
               bars[parseFloat(circle.attr("id"))].remove();
               SVGzoomScale = map.getZoomScale(map.getZoom(), SVGcurrentZoom);
               SVGcurrentZoom = map.getZoom();
-              ////console.log("dragStart");
-              ////console.log("dragStart d3.mouse", d3.mouse(this));
+              ////
+              ////
 
               /*  let circleCenter = [parseFloat(circle.attr("cx")), parseFloat(circle.attr("cy"))];
-                              //////////////console.log("circleCenter", circleCenter);
-                              //////////////console.log("dis", Math.sqrt(Math.pow(circleCenter[0] - d3.mouse(this)[0], 2)
+                              //////////////
+                              //////////////
                                   + Math.pow(circleCenter[1] - d3.mouse(this)[1], 2)
                               ));
                               */
@@ -927,10 +920,10 @@ function load(
                 "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
               );
               map.dragging.disable();
-              ////console.log(d3.event.sourceEvent);
+              ////
               //   map.containerPointToLayerPoint()
-              ////console.log("map.mouseEventToLayerPoint(d3.event.sourceEvent)", map.mouseEventToLayerPoint(d3.event.sourceEvent));
-              ////console.log("map.containerPointToLayerPoint(d3.mouse(this))", map.containerPointToLayerPoint(d3.mouse(this)));
+              ////
+              ////
               dragDrawLines(allSelectedMapLines[parseFloat(circle.attr("id"))]);
               dragDrawCircles(
                 allSelectedMapLines[parseFloat(circle.attr("id"))]
@@ -941,10 +934,10 @@ function load(
             }
 
             function draged() {
-              ////////////console.log('draged');
+              ////////////
 
-              ////console.log("Zoom", map.getZoomScale(map.getZoom(), SVGcurrentZoom));
-              ////console.log("d3.mouse", d3.mouse(this));
+              ////
+              ////
               //  circle.attr("cx", map.mouseEventToLayerPoint(d3.event.sourceEvent).x)
               //      .attr("cy", map.mouseEventToLayerPoint(d3.event.sourceEvent).y);
               circle
@@ -954,7 +947,7 @@ function load(
                 "transform",
                 "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
               );
-              //   ////console.log("draged");
+              //   ////
               selectedMapData = [] = [];
               selectedMapLines = [];
               let clickPoint = {
@@ -965,7 +958,7 @@ function load(
                 SVGcurrentZoom,
                 parseFloat(circle.attr("zoomScale"))
               );
-              ////console.log(thisCircleZoomScale);
+              ////
               for (var i = 0; i < mapData.length; i++) {
                 let stationPoint = mapData[i].stationLocation;
                 if (
@@ -1003,12 +996,12 @@ function load(
               $("#selectedNumber").text("Selected Flows:" + AllLength);
 
               dragDrawLines(selectedMapLines);
-              ////console.log("selectedMapLines", selectedMapLines);
+              ////
               dragDrawCircles(selectedMapLines);
             }
 
             function dragEnd() {
-              ////////////console.log('dragEnd');
+              ////////////
               var originalLLines = [];
               for (var i = 0; i < scatterData.length; i++) {
                 for (var j = 0; j < selectedMapData.length; j++) {
@@ -1022,7 +1015,7 @@ function load(
                   }
                 }
               }
-              ////////console.log('originalLLines: ', originalLLines);
+              ////////
 
               bars[parseFloat(circle.attr("id"))].remove();
 
@@ -1046,11 +1039,10 @@ function load(
               drawArtLine(timeString);
               dragDrawCricleGraphics.clear();
               multidrawCircles(allSelectedMapLines, comDetecFlag);
-              ////console.log("dragEnd");
+              ////
               baseshowflux(getSitesName(selectedMapLines)).then(function(
                 volumeData
               ) {
-                console.log("volumeData: ", volumeData);
                 changeVolumeArray(volumeData);
 
                 var hourLineNumber = getHourLineNumber(volumeData);
@@ -1059,7 +1051,7 @@ function load(
                   avgVolumeData,
                   parseFloat(circle.attr("r"))
                 );
-                //////////////console.log('avgVolumeData: ', avgVolumeData);
+                //////////////
 
                 dragEndChangeArcArray(
                   volumeData,
@@ -1077,14 +1069,14 @@ function load(
                   maxValue
                 );
 
-                //////////////console.log('allArcArray: ', allArcArray);
+                //////////////
 
                 var tip = d3
                   .tip()
                   .attr("class", "d3-tip")
                   .offset([-10, 0])
                   .html(function(d, i) {
-                    //////////////console.log(i);
+                    //////////////
                     return (
                       "<strong>Flow:</strong> <span style='color:red'>" +
                       d3.format(".4")(avgVolumeData[i]) +
@@ -1124,7 +1116,7 @@ function load(
                       .select(this)
                       .style("stroke", "#B25C00")
                       .style("stroke-width", "3px");
-                    // ////console.log("click arc");
+                    // ////
                   })
                   .on("mouseover", tip.show)
                   .on("mouseout", tip.hide)
@@ -1187,7 +1179,7 @@ function load(
             }
             circle.call(drag);
             circle.on("pm:centerplaced", function(e) {
-              ////console.log("centerplaced", e);
+              ////
             });
             $(".leaflet-pm-icon-delete").attr("name", "false");
           }); //create 的括号
@@ -1205,7 +1197,7 @@ function load(
                 allSelectedMapLines[index] = [];
                 lastLayers[index] = [];
                 //  lastLayers.splice(parseFloat(d3.select(this).attr("id")), 1);
-                ////console.log("allSelectedMapLines2", allSelectedMapLines);
+                ////
                 multidrawLines(allSelectedMapLines);
               });
             } else {
@@ -1239,7 +1231,7 @@ function load(
           //  line.beginFill(labelColorScale(scatterData[i].label).replace('#', '0x'), 0.2);
           let layerSourcePoint = project(scatterData[i].scor);
           let layerTargetPoint = project(scatterData[i].tcor);
-          //  ////console.log(layerSourcePoint, layerTargetPoint);
+          //  ////
           line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
           line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
           //  line.endFill();
@@ -1269,7 +1261,7 @@ function load(
       }
 
       function multidrawLines(allSelectedMapLines) {
-        //////console.log("multidrawLines");
+        //////
         multiLineGraphics.clear();
         artLine = constructCurve(allSelectedMapLines);
         for (var index = 0; index < artLine.length; index++) {
@@ -1445,7 +1437,7 @@ function load(
           }
         }
         drawLines(selectedCircles, comDetecFlag);
-        //////console.log('selectedCircles: ', selectedCircles);
+        //////
 
         $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
         selectedMapCircleGraphics.clear();
@@ -1457,11 +1449,11 @@ function load(
       leafletPixiContaioner.addChild(selectedLineGraphics);
 
       function multidrawCircles(allSelectedMapLines, comDetecFlag) {
-        ////console.log("multidrawCircles");
-        ////console.log("DRAW allSelectedMapLines", allSelectedMapLines);
-        //////console.log("multidrawCircles");
-        //////console.log('allSelectedMapLines: ', allSelectedMapLines);
-        //////////console.log('allSelectedMapLines: ', allSelectedMapLines);
+        ////
+        ////
+        //////
+        //////
+        //////////
         var xyScale = getScatterXYScale(
             scatterData,
             scatterPlotWidth,
@@ -1471,7 +1463,7 @@ function load(
           yScale = xyScale[1];
         allSelectedCirclesGraphics.clear();
         // allSelectedCirclesGraphics.lineStyle(1, 0x373B3A, 1);
-        ////console.log("multidrawCircles", allSelectedMapLines);
+        ////
 
         for (var j = 0; j < allSelectedMapLines.length; j++) {
           for (var i = 0; i < allSelectedMapLines[j].length; i++) {
@@ -1529,7 +1521,7 @@ function load(
       }
 
       function drawSelectedCircle(thisPointData) {
-        ////////////console.log(thisPointData.label);
+        ////////////
         if (sampled === false) {
           var xyScale = getScatterXYScale(
               scatterData,
@@ -1656,8 +1648,8 @@ function load(
                   labelData.push(scatterData[i]);
                 }
               }
-              ////////////console.log('labelData: ', labelData);
-              //////////////console.log(labelData);
+              ////////////
+              //////////////
               drawLines(labelData, comDetecFlag);
             });
           } else {
@@ -1815,8 +1807,6 @@ function load(
             "sampledScatterDataFileName: ",
             sampledScatterDataFileName
           );
-          console.log("edgeBtwFileName: ", edgeBtwFileName);
-          console.log("pixelFileName: ", pixelFileName);
 
           addHistogram2(edgeBtwFileName);
           getPixelData("data/BSpixel.json").then(function(pData) {
@@ -1831,7 +1821,7 @@ function load(
           });
           getScatterData(sampledScatterDataFileName).then(function(value) {
             sampledScatterData = value;
-            console.log("sampledScatterData", sampledScatterData);
+
             drawScatterPlot(
               sampledScatterData,
               labelColorScale,
@@ -1867,14 +1857,12 @@ function load(
             radius.push(scaleArray[j](radarData[index][j]));
           allRadiusArray.push(radius);
 
-          console.log("index: ", index);
           addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
-          console.log("radarData[index]: ", radarData[index]);
 
           //console.log('sampledScatterDataFileName: ',
           //    sampledScatterDataFileName);
-          //console.log('edgeBtwFileName: ', edgeBtwFileName);
-          //console.log('pixelFileName: ', pixelFileName);
+          //
+          //
 
           scatterCircleGraphics.clear();
           drawScatterPlot(
@@ -1916,8 +1904,8 @@ function load(
           renderer.render(stage);
 
           $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
-          ////console.log(sampledScatterData);
-          ////console.log(allSelectedMapLines[0][0]);
+          ////
+          ////
           var sampledAllSelectedMapLines = [];
           for (var i = 0; i < allSelectedMapLines.length; i++) {
             sampledAllSelectedMapLines[i] = [];
@@ -1934,9 +1922,9 @@ function load(
               }
             }
           }
-          //////////////console.log(sampledAllSelectedMapLines);
+          //////////////
           allSelectedMapLines = sampledAllSelectedMapLines;
-          ////////////console.log('allSelectedMapLines: ', allSelectedMapLines);
+          ////////////
           //multidrawLines(sampledAllSelectedMapLines);
         });
 

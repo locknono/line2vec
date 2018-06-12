@@ -48,7 +48,8 @@ router.get("/getFlux", function (req, res) {
 });
 
 router.post('/getBaseFlux', function (req, res) {
-  var sites = req.body['sites[]'];
+  var sites = req.body.sites;
+  console.log('req.body: ', req.body);
   var query = basefluxModel.find({
     "track": {
       "$in": sites
@@ -57,10 +58,30 @@ router.post('/getBaseFlux', function (req, res) {
     if (err) console.log(err);
     else {
       res.setHeader('Access-Control-Allow-Origin', '*');
+      console.log('data: ', data);
       res.json(data);
     }
   });
 });
+
+router.post('/drawArtLine', function (req, res) {
+  var selectedMapData = req.body.selectedMapData;
+  console.log('req.body: ', req.body);
+  var query = basefluxModel.find({
+    "track": {
+      "$in": sites
+    }
+  }, function (err, data) {
+    if (err) console.log(err);
+    else {
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      console.log('data: ', data);
+      res.json(data);
+    }
+  });
+});
+
+
 
 router.post('/writeMetric', function (req, res) {
   let data = req.body.data;
