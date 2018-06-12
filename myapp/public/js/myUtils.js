@@ -3,6 +3,7 @@ function calDistance(point1, point2) {
     Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
   );
 }
+
 function removeBeforeChangeDataSet() {
   document.getElementById("BrushButton").setAttribute("name", "false");
   d3.selectAll(".leaflet-pixi-overlay").remove();
@@ -22,6 +23,7 @@ function removeBeforeChangeDataSet() {
     .setAttribute("src", "images/selectPointClose.png");
   d3.select("#markRect").remove();
 }
+
 function getScatterXYScale(scatterData, scatterPlotWidth, scatterPlotHeight) {
   var xMin = d3.min(scatterData, d => {
       return d.x;
@@ -64,20 +66,26 @@ function drawScatterPlot(
     ),
     xScale = xyScale[0],
     yScale = xyScale[1];
-  for (var i = scatterData.length - 1; i >= 0; i--) {
-    if (comDetecFlag == false) {
-      circle.beginFill(0xd9d9d9);
-    } else {
-      circle.beginFill(
-        labelColorScale(scatterData[i].label).replace("#", "0x")
-      );
+  let renderTime = 10;
+  let dataSec = parseInt(scatterData.length / renderTime);
+  for (var i = renderTime; i >= 1; i--) {
+    let scatterCircleGraphics = new PIXI.Graphics();
+    stage.addChild(scatterCircleGraphics);
+    for (var j = dataSec * i; j > dataSec * (i - 1); j--) {
+      if (comDetecFlag == false) {
+        scatterCircleGraphics.beginFill(0xd9d9d9);
+      } else {
+        scatterCircleGraphics.beginFill(
+          labelColorScale(scatterData[j].label).replace("#", "0x")
+        );
+      }
+      scatterCircleGraphics.drawCircle(xScale(scatterData[j].x), yScale(scatterData[j].y), 1.5);
+      scatterCircleGraphics.endFill();
     }
-    circle.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
-    circle.endFill();
   }
-  circle.x = 0;
-  circle.y = 0;
-  renderer.render(stage);
+  setTimeout(function () {
+    renderer.render(stage)
+  }, 1000)
 }
 
 function unbindEvents() {
@@ -89,10 +97,11 @@ function unbindEvents() {
   $("#selectAll").unbind();
   $("#selectPointButton").unbind();
 }
+
 function brushEnded() {}
 //select edge flux
 function showflux(source, target) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     $.ajax({
       type: "get",
       url: "/getFlux",
@@ -100,11 +109,11 @@ function showflux(source, target) {
         source: source,
         target: target
       },
-      success: function(data) {
+      success: function (data) {
         resolve(data);
       },
-      error: function() {
-        console.error("error");
+      error: function () {
+
       }
     });
   });
@@ -125,6 +134,7 @@ function getColor() {
   }
   return color;
 }
+
 function colorRGB2Hex(color) {
   var rgb = color.split(",");
   var r = parseInt(rgb[0].split("(")[1]);
@@ -135,20 +145,19 @@ function colorRGB2Hex(color) {
   return hex;
 }
 
-
 function baseshowflux(sitesname) {
-  return new Promise(function(resolve, reject) {
+  return new Promise(function (resolve, reject) {
     $.ajax({
       type: "post",
       url: "/getBaseFlux",
       data: {
-        sites:sitesname
+        sites: sitesname
       },
-      success: function(data) {
+      success: function (data) {
         resolve(data);
       },
-      error: function() {
-        ////////////////console.log("error");
+      error: function () {
+        ////////////////
       }
     });
   });
@@ -190,15 +199,15 @@ function constructCurve(allSelectedMapLines) {
     }
     tclines.push(nooblines);
   }
-  //////////////////console.log(tclines);
+  //////////////////
   return tclines;
 }
 
 function getArcScale(avgVolumeData, minRadius) {
   var max = d3.max(avgVolumeData);
-  //////////////console.log('max: ', max);
+  //////////////
   var min = d3.min(avgVolumeData);
-  //////////////console.log('min: ', min);
+  //////////////
 
   var radiusLinear = d3
     .scaleLinear()
@@ -215,11 +224,12 @@ function getArcScale(avgVolumeData, minRadius) {
   );
   return [radiusLinear, arcColorLinear, colorInterpolate];
 }
+
 function getLineNumberScale(volumeData, minRadius) {
   var lineNumberArray = getHourLineNumber(volumeData);
   var max = d3.max(lineNumberArray);
   var min = d3.min(lineNumberArray);
-  ////////console.log('max: ', max);
+  ////////
   //var min = 0;
   var lineNumberScale = d3
     .scaleLinear()
@@ -236,10 +246,10 @@ function getArcArray(
   scales
 ) {
   var lineNumberArray = getHourLineNumber(volumeData);
-  ////console.log('lineNumberArray: ', lineNumberArray);
+  ////
   //var scales = getArcScale(avgVolumeData, minRadius);
   var arcArray = [];
- /* var startAngleArray = [];
+  /* var startAngleArray = [];
   var areaPad = 2 * Math.PI / 24;
   var barPad = areaPad / 6;
   for (var i = 0; i < 24; i++) {
@@ -261,7 +271,7 @@ function getArcArray(
     );
     arcArray.push(thisArc);
   }
-  ////////////////console.log("mean", mean);
+  ////////////////
   /*for (var i = 0; i < avgVolumeData.length; i++) {
     var thisArc = new Object();
     thisArc.startAngle = startAngleArray[parseInt(i / 24) + (i % 24) * 4];
@@ -276,18 +286,20 @@ function getArcArray(
   */
   allArcArray.push(arcArray);
 }
+
 function dragEndChangeArcArray(
   volumeData,
   avgVolumeData,
   minRadius,
   allArcArray,
-  scales,index
+  scales,
+  index
 ) {
   var lineNumberArray = getHourLineNumber(volumeData);
-  ////console.log('lineNumberArray: ', lineNumberArray);
+  ////
   //var scales = getArcScale(avgVolumeData, minRadius);
   var arcArray = [];
- /* var startAngleArray = [];
+  /* var startAngleArray = [];
   var areaPad = 2 * Math.PI / 24;
   var barPad = areaPad / 6;
   for (var i = 0; i < 24; i++) {
@@ -324,14 +336,16 @@ function getSitesName(selectedMapLines) {
   }
   return sites;
 }
+
 function changeVolumeArray(volumeData) {
-  console.time("changeVolumeArray");
+
   for (var i = 0; i < volumeData.length; i++) {
     volumeData[i].value = [].concat.apply([], volumeData[i].value);
   }
-  //console.log("changeVolumeArray", volumeData);
-  console.timeEnd("changeVolumeArray");
+  //
+
 }
+
 function getAvgVolumeData(volumeData) {
   var avgVolumeData = [];
   var arrayLength = volumeData[0].value.length;
@@ -346,7 +360,7 @@ function getAvgVolumeData(volumeData) {
   for (var i = 0; i < arrayLength; i++) {
     avgVolumeData[i] = avgVolumeData[i] / volumeData.length;
   }
-  if(avgVolumeData.length>24){
+  if (avgVolumeData.length > 24) {
     for (var i = 95; i >= 48; i--) {
       avgVolumeData.splice(i, 1);
     }
@@ -354,24 +368,24 @@ function getAvgVolumeData(volumeData) {
       avgVolumeData.splice(0, 1);
     }
   }
-  //console.log("avgVolumeData: ", avgVolumeData);
+  //
   return avgVolumeData;
 }
 
 function getHourLineNumber(volumeData) {
-  ////console.log('volumeData: ', volumeData);
+  ////
   var lineNumberArray = [];
   for (var i = 0; i < 24; i++) {
     lineNumberArray[i] = 0;
   }
   for (var i = 0; i < volumeData.length; i++) {
     for (var j = 0; j < 24; j++) {
-      if (volumeData[i].value[j+24] > 0) {
+      if (volumeData[i].value[j + 24] > 0) {
         lineNumberArray[j]++;
       }
     }
   }
-  ////console.log('lineNumberArray: ', lineNumberArray);
+  ////
   return lineNumberArray;
 }
 
@@ -388,9 +402,9 @@ function writeFile(directory, data) {
     },
     success: (result, status) => {
       if (status == 200 && result.success) {
-        ////////console.log("写入成功！");
+        ////////
       } else {
-        ////////console.log("error");
+        ////////
       }
     }
   });
@@ -406,10 +420,10 @@ function addCommunityRect(
   //draw community rects   represent count of communities
   var commNumber =
     2 +
-    d3.max(scatterData, function(d) {
+    d3.max(scatterData, function (d) {
       return d.label;
     });
-  ////////console.log("commNumber", commNumber);
+  ////////
   var Com_arr = [];
   for (var i = 0; i < commNumber; i++) {
     Com_arr[i] = i - 1;
@@ -420,21 +434,21 @@ function addCommunityRect(
     .enter()
     .append("rect")
     .attr("class", "labelRect")
-    .attr("x", function(d, i) {
+    .attr("x", function (d, i) {
       if (d != -1) {
         return i * 8 - 5;
       } else if (d == -1) {
         return scatterPlotWidth - 107;
       }
     })
-    .attr("y", function(d, i) {
+    .attr("y", function (d, i) {
       return scatterPlotHeight - 14;
     })
     .attr("stroke", "white")
     .attr("stroke-width", "0.5px")
     .attr("width", "8px")
     .attr("height", "10px")
-    .style("fill", function(d, i) {
+    .style("fill", function (d, i) {
       return labelColorScale(d);
     });
 
@@ -454,14 +468,14 @@ function addCommunityRect(
     .attr("y", scatterPlotHeight - 15 + 9.5);
 }
 
-var cloneObj = function(obj) {
+var cloneObj = function (obj) {
   var str,
     newobj = obj.constructor === Array ? [] : {};
   if (typeof obj !== "object") {
     return;
   } else if (window.JSON) {
     (str = JSON.stringify(obj)), //系列化对象
-      (newobj = JSON.parse(str)); //还原
+    (newobj = JSON.parse(str)); //还原
   } else {
     for (var i in obj) {
       newobj[i] = typeof obj[i] === "object" ? cloneObj(obj[i]) : obj[i];
@@ -469,15 +483,6 @@ var cloneObj = function(obj) {
   }
   return newobj;
 };
-
-
-
-
-
-
-
-
-
 
 function Queue() {
   this.dataStore = [];
@@ -503,24 +508,22 @@ function front() {
 }
 
 function back() {
-  return this.dataStore[this.dataStore.length -
-      1];
+  return this.dataStore[this.dataStore.length - 1];
 }
 
 function toString() {
   var retStr = "";
-  for (var i = 0; i < this.dataStore.length; ++
-      i) {
-      retStr += this.dataStore[i] + "&nbsp;"
+  for (var i = 0; i < this.dataStore.length; ++i) {
+    retStr += this.dataStore[i] + "&nbsp;";
   }
   return retStr;
 }
 
 function empty() {
   if (this.dataStore.length == 0) {
-      return true;
+    return true;
   } else {
-      return false;
+    return false;
   }
 }
 

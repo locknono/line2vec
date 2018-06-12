@@ -1,8 +1,11 @@
 var options=(function(){
-    var rootPath= 'data/BS/'
+    var root_path= 'data/BS/';
+    var track_file=root_path+'18Data_track.json';
 
     return {
-        rootPath:rootPath
+        root_path:root_path,
+        track_file:track_file,
+
     }
 
 }())

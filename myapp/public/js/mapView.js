@@ -202,19 +202,7 @@ function load(
   ]).then(function(values) {
     var mapData = values[0];
     var scatterData = values[1];
-    ////////////console.log('scatterData: ', scatterData);
     var sampledScatterData = values[2];
-    ////////////console.log('randomScatterData: ', randomScatterData);
-    ////////////console.log('sampledScatterData: ', sampledScatterData);
-    //  var fluxData = values[3];
-    //   //////////////console.log("fluxData", fluxData);
-    //    var maxFlux = d3.max(fluxData, function (d) {
-    //      return d3.max(d);
-    //   })
-    //    //////////////console.log("maxFlux", maxFlux);
-    ////console.log("fluxData", fluxData);
-    //  var randomSampledScatterData = values[3];
-    //  ////console.log(randomSampledScatterData);
     var filterScatterData = [];
     var filterFlag = false;
     $("#linesNumberBeforeSample").text(
@@ -300,6 +288,7 @@ function load(
         .style("top", 0)
         .style("left", 0);
     }
+    console.time("draw");
     drawScatterPlot(
       scatterData,
       labelColorScale,
@@ -309,7 +298,7 @@ function load(
       scatterCircleGraphics,
       comDetecFlag
     );
-
+    console.timeEnd("draw");
     var arcColor = d3.scaleThreshold();
     arcColor
       .domain([0, 2, 4, 8, 16, 32, 64, 128, 256, 512])
@@ -430,7 +419,7 @@ function load(
             multidrawCircles(allSelectedMapLines, comDetecFlag);
             //  multidrawLines(allSelectedMapLines);
             function drawArtLine(timeString) {
-              get3hourData("data/18Data_track.json").then(function(data) {
+              get3hourData(options.track_file).then(function(data) {
                 console.log("data: ", data);
                 var thisTimeAllTrack = [];
                 for (var i = 0; i < data.length; i++) {
