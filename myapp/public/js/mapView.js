@@ -2101,74 +2101,7 @@ function load(stationIDLocationFile, linedetail_labelFile, linedetail_label_samp
                             selectedCircles.length);
                         // renderer.render(stage);
                     });
-                    $("#initialize").on('click', function () {
-                        console.time("initialize");
-                        //  map.removeLayer(lastLayer);
 
-                        for (var i = lastLayers.length - 1; i >= 0; i--) {
-                            map.removeLayer(lastLayers[i]);
-                        }
-                        allSelectedMapLines = [];
-                        lastLayers = [];
-                        svgLayerArray = [];
-                        transformArray = [];
-
-                        drawScatterPlot(scatterData, labelColorScale,
-                            scatterPlotWidth,
-                            scatterPlotHeight, stage, scatterCircleGraphics,
-                            comDetecFlag);
-
-                        sampled = false;
-                        brush.on("start brush", brushed)
-                            .on("end", brushEnded);
-                        brushTime = 0;
-
-                        d3.selectAll(".brush").remove();
-                        document.getElementById("BrushButton").setAttribute(
-                            'name',
-                            'false');
-                        document.getElementById('brushImg').setAttribute('src',
-                            'images/brushClose.png');
-                        selectedCircles = [];
-                        drawLines(selectedCircles, comDetecFlag);
-                        d3.select("#scatterSvg").on("click", null);
-                        document.getElementById('selectPointButton').setAttribute(
-                            'name',
-                            'false');
-                        document.getElementById('selectPointImg').setAttribute(
-                            'src',
-                            'images/selectPointClose.png');
-                        d3.select("#markRect").remove();
-                        selectedLineGraphics.clear();
-                        selectedCircleGraphics.clear();
-                        selectedMapCircleGraphics.clear();
-                        renderer.render(stage);
-                        leafletRenderer.render(container);
-                        preFlowvolumeView();
-                        $('#selectedNumber').text("Selected Flows:" +
-                            selectedCircles.length);
-
-                        if (stationIDLocationFile === CHIFileList[0]) {
-
-                            map.setView([0, 0]);
-                            map.setView([41.89001, -87.700386]);
-                            map.setZoom(12);
-                        } else {
-                            map.setView([0, 0]);
-                            map.setView([28.0092688, 120.658735]);
-                            map.setZoom(12);
-                        }
-
-                        $("#slider1").slider("value", 0);
-                        $("#slider2").slider("value", 40);
-                        $("#slider3").slider("value", 0);
-                        $("#flowSlider").slider("value", 1);
-                        $("#amount1").val(0);
-                        $("#amount2").val(40);
-                        $("#amount3").val(0);
-                        $("#flowSliderAmount").val(1);
-                    });
-                    
                     $("#edgeBundle").on('click', function () {
                         drawBundlingLines();
                     });
