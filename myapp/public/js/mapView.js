@@ -2167,8 +2167,8 @@ function load(stationIDLocationFile, linedetail_labelFile, linedetail_label_samp
                         $("#amount2").val(40);
                         $("#amount3").val(0);
                         $("#flowSliderAmount").val(1);
-
                     });
+                    
                     $("#edgeBundle").on('click', function () {
                         drawBundlingLines();
                     });
