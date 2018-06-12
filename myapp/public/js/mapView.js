@@ -440,14 +440,21 @@ function load(
                       var inCircleTrack = getInCircleTrack(originalTrack);
                       if (inCircleTrack.length > 0) {
                         thisTimeAllTrack.push(inCircleTrack);
-                        
                       }
                     }
                   }
                 }
-                console.log('thisTimeAllTrack: ', thisTimeAllTrack);
+                console.log("thisTimeAllTrack: ", thisTimeAllTrack);
+
+                var thisTimeTrackMap = new Map();
+
+                console.time("calAlltrack");
                 var thisTimeTrackSet = {};
                 var sampledSourceTragetArray = [];
+
+
+                //得到采样后的轨迹集合:
+                //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
                 for (var i = 0; i < sampledScatterData.length; i++) {
                   sampledSourceTragetArray.push(
                     sampledScatterData[i].source +
@@ -461,14 +468,17 @@ function load(
                   );
                 }
                 var flag = 1;
-                //console.log(sampledSourceTragetArray);
+                //thisTimeAllTrack是一个三维数组，每个元素代表一个人的轨迹，每个人的轨迹数组中的每一个元素这个人轨迹的一段
+                //这一段中包含了站点的信息，顺序存储
                 for (var i = 0; i < thisTimeAllTrack.length; i++) {
                   for (var j = 0; j < thisTimeAllTrack[i].length; j++) {
+                      //thisTimeAllTrack[i][j]代表某个人的某段轨迹
                     flag = 1;
                     var track = [];
                     for (var s = 0; s < thisTimeAllTrack[i][j].length; s++) {
                       track.push(thisTimeAllTrack[i][j][s].stationID);
                       if (
+                          //如果这段轨迹中有一个点不在采样后的数据中，就剔除这一段轨迹，否则加入trackSet中
                         s != 0 &&
                         $.inArray(
                           thisTimeAllTrack[i][j][s - 1].stationID +
@@ -481,32 +491,28 @@ function load(
                         break;
                       }
                     }
-                    if (flag == 1) thisTimeTrackSet[track] = 0;
+                    if (flag == 1) {
+                        if(thisTimeTrackSet[track] ===undefined){
+                            thisTimeTrackSet[track] = 0;
+                        }else{
+                            thisTimeTrackSet[track] +=1
+                        }
+                    }
                   }
                 }
-                for (var i = 0; i < thisTimeAllTrack.length; i++) {
-                  for (var j = 0; j < thisTimeAllTrack[i].length; j++) {
-                    var track = [];
-                    var flag = false;
-                    for (var s = 0; s < thisTimeAllTrack[i][j].length; s++) {
-                      track.push(thisTimeAllTrack[i][j][s].stationID);
-                    }
+                console.timeEnd("calAlltrack");
 
-                    for (var key in thisTimeTrackSet) {
-                      // //console.log("key", key);
-                      if (key == track) {
-                        thisTimeTrackSet[key]++;
-                      }
-                    }
-                  }
-                }
-                var originalTrackSet = cloneObj(thisTimeTrackSet);
-                //console.log('originalTrackSet: ',
-                //   originalTrackSet);
-                sortedKeys = Object.keys(thisTimeTrackSet).sort(function(a, b) {
+                console.log("thisTimeTrackSet: ", thisTimeTrackSet);
+
+
+                var sortedKeys = Object.keys(thisTimeTrackSet).sort(function(
+                  a,
+                  b
+                ) {
                   return a.split(",").length - b.split(",").length;
                 });
-                //console.log('sortedKeys: ', sortedKeys);
+
+                console.log("sortedKeys: ", sortedKeys);
 
                 for (var i = 0; i < sortedKeys.length; i++) {
                   for (var j = 0; j < sortedKeys.length; j++) {
@@ -520,9 +526,9 @@ function load(
                     }
                   }
                 }
-                //console.log('thisTimeTrackSet: ',
-                //  thisTimeTrackSet);
+                console.log('thisTimeTrackSet: ', thisTimeTrackSet);
                 var allTrack = [];
+
                 for (var key in thisTimeTrackSet) {
                   keyArray = key.split(",");
                   var track = {};
@@ -549,8 +555,7 @@ function load(
                   return d.value;
                 });
 
-                //console.log('minValue: ', minValue);
-                //console.log('maxValue: ', maxValue);
+                drawStraightLine(allTrack);
 
                 $("#flowSlider").slider({
                   //range:true,
@@ -621,12 +626,12 @@ function load(
                     .append("path")
                     .attr("d", arrow_path)
                     .attr("fill", "url(#" + linearGradient.attr("id") + ")");
-
+                     
                   var widthScale = d3
                     .scaleLinear()
                     .domain([minValue, maxValue])
                     .range([2, 15]);
-
+                  console.time("drawStraightLine");
                   for (var i = startIndex; i < endIndex; i++) {
                     if (i >= allTrack.length - 1) {
                       break;
@@ -656,14 +661,15 @@ function load(
                       //      "url(#arrow)")
                     }
                   }
+                  console.timeEnd("drawStraightLine");
                 }
+
                 var recordArray = underMap(thisTimeTrackSet);
-                console.log("recordArray: ", recordArray);
                 var rectWidth = d3
                   .select(".underMapRectG")
                   .select("rect")
                   .attr("width");
-                //console.log('rectWidth: ', rectWidth);
+                  
                 var rectHeight = d3
                   .select(".underMapRectG")
                   .select("rect")
@@ -691,25 +697,28 @@ function load(
                 function rectBrushed() {
                   x1 = d3.event.selection[0];
                   x2 = d3.event.selection[1];
-                  startIndex = parseInt((x1 - 10) / rectWidth);
-                  endIndex = parseInt((x2 - 10) / rectWidth);
-                  console.log("startIndex: ", startIndex);
-                  console.log("endIndex: ", endIndex);
+                  let startIndex = parseInt((x1 - 10) / rectWidth);
+                  let endIndex = parseInt((x2 - 10) / rectWidth);
+                  if(startIndex===endIndex){
+                      endIndex=startIndex+1;
+                  }
                   fromValue = recordArray[startIndex];
-                  toValue = recordArray[endIndex];
+                  toValue = recordArray[endIndex];             
                   drawStraightLine(allTrack);
                 }
 
                 function rectBrushEnd() {
                   x1 = d3.event.selection[0];
                   x2 = d3.event.selection[1];
-                  var startIndex = parseInt((x1 - 10) / rectWidth);
-                  var endIndex = parseInt((x2 - 10) / rectWidth);
+                  let startIndex = parseInt((x1 - 10) / rectWidth);
+                  let endIndex = parseInt((x2 - 10) / rectWidth);
+                  if(startIndex===endIndex){
+                      endIndex=startIndex+1;
+                  }
                   fromValue = recordArray[startIndex];
                   toValue = recordArray[endIndex];
                   drawStraightLine(allTrack);
                 }
-                drawStraightLine(allTrack);
 
                 function getInCircleTrack(originalTrack) {
                   var allInCircleTrack = [];
@@ -717,6 +726,7 @@ function load(
                   var queue = new Queue();
                   for (var i = 0; i < originalTrack.length; i++) {
                     for (var j = 0; j < selectedMapData.length; j++) {
+                        
                       if (originalTrack[i] == selectedMapData[j].stationID) {
                         queue.enqueue(selectedMapData[j]);
                         break;
@@ -976,7 +986,6 @@ function load(
                   selectedMapData.push(mapData[i]);
                 }
               }
-              ////console.log("selectedMapData", selectedMapData);
               if (sampled === true) {
                 var data = sampledScatterData;
               } else if (sampled === false) {

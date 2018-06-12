@@ -2,7 +2,6 @@ function underMap(thisTimeTrackSet) {
   //console.log("thisTimeTrackSet: ", thisTimeTrackSet);
   ////console.log("thisTimeTrackSet: ", thisTimeTrackSet);
 
-
   var a = '#fff4b3'; 
   var b ='#F22613'; 
   var circleBarsInterpolate = d3.interpolate(a, b);
@@ -25,7 +24,6 @@ function underMap(thisTimeTrackSet) {
   var margin = { top: 25, bottom: 10, left: 10, right: 10 };
 
   var sortedKeys = Object.keys(thisTimeTrackSet).sort(function(a, b) {
-    // ////console.log("(a.split(", ").length-1)", a.split(",").length - 1);
     return b.split(",").length - 1 - (a.split(",").length - 1);
   });
   ////console.log('sortedKeys: ', sortedKeys);
@@ -88,7 +86,7 @@ function underMap(thisTimeTrackSet) {
   var recordArray = [];
 
   var thisTimeTrackSetLength = Object.keys(thisTimeTrackSet).length;
-
+  console.log('sortedKeys: ', sortedKeys);
   for (var i = 0; i < sortedKeys.length; i++) {
     var thisKey = sortedKeys[i];
     var rectArray = thisKey.split(",");
@@ -101,13 +99,21 @@ function underMap(thisTimeTrackSet) {
         time = time + 1;
         //////console.log("thisTimeTrackSet[thisKey]",thisTimeTrackSet[thisKey]);
         //////console.log("thisTimeTrackSet[thisLineName]",thisTimeTrackSet[thisLineName]);
-
         ////console.log(thisLineName == key);
+        //把每条长轨迹都分割成最小的两点形成的轨迹
+
+
+
+        //thiskey指代长轨迹
+        //key指代短的被别人走过的轨迹
+        
+        //两点形成的轨迹，不在人走过的轨迹中
         if (thisTimeTrackSet.hasOwnProperty(thisLineName) == false) {
           rectArray[s] = {
             name: thisLineName,
             colorValue: thisTimeTrackSet[thisKey]
           };
+          //两点形成的轨迹，在人走过的轨迹中，并且人走过的次数多于这条长轨迹的次数
         } else if (
           thisLineName == key &&
           thisTimeTrackSet[key] > thisTimeTrackSet[thisKey]
@@ -117,6 +123,7 @@ function underMap(thisTimeTrackSet) {
             colorValue: thisTimeTrackSet[key]
           };
           break;
+          //两点形成的轨迹，在人走过的轨迹中，并且人走过的次数小于这条长轨迹的次数
         } else if (
           thisLineName == key &&
           thisTimeTrackSet[key] < thisTimeTrackSet[thisKey]
@@ -134,9 +141,7 @@ function underMap(thisTimeTrackSet) {
             colorValue: thisTimeTrackSet[thisKey]
           };
         }
-        ////console.log(rectArray[s].name,rectArray[s].colorValue);
       }
-      //console.log("rectArray: ", rectArray);
       for (var j = 0; j < rectArray.length - 1; j++) {
         rectG
           .append("rect")
