@@ -8,12 +8,26 @@ var bodyParser = require('body-parser');
 var index = require('./routes/index');
 var users = require('./routes/users');
 
+var handlebars = require('handlebars');
+var exphbs = require('express-handlebars');
+var hbs = exphbs.create({
+  defaultLayout: 'main',
+  helpers: {
+    static: function (name) {
+      return require('./lib/static.js').map(name);
+    }
+  }
+});
+
+
 require('./models/connect.js')
 var app = express(); //生成express实例app
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views')); //设置 views 文件夹为存放视图文件的目录, 即存放模板文件
-app.set('view engine', 'jade'); //设置视图模板引擎为 jade
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+
+app.set('views', path.join(__dirname, 'views'));
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));

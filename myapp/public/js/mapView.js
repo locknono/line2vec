@@ -101,9 +101,6 @@ d3.select("#underMapView")
     .attr("y", 13.5)
     .text("Flow Volume");
 
-
-
-
 //像素图的color bar
 var pixelSvg = d3.select("#pixelView")
     .append("svg")
@@ -190,30 +187,12 @@ var BSFileList = ["data/BSstationIDLocation.csv",
     "data/BSlinedetail_label_sample.csv",
 ];
 // load(BSFileList[0], BSFileList[1], BSFileList[2], BSFileList[3]);
-/*  var positionY = Math.random() * 300;
-                 var positionX = Math.random() * 700;
-                 // ////console.log(position);
-                 d3.selectAll("#asd").remove();
-                 d3.select("#map")
-                     .append("div")
-                     .attr("id", "asd")
-                     .style("height", "200px")
-                     .style("width", "200px")
-                     .style("position", "absolute")
-                     .style("top", positionY.toString() + "px")
-                     .style("left", positionX.toString() + "px")
-                     .style("opacity", 0.5)
-                     .attr("class", "panel panel-default")
-                     .style("border", "1px black solid")
-                     .style("z-index", 2000);
-                 */
 $('#stationNumber').text("Location count:2970");
 $('#linesNumberBeforeSample').text("Original Flow Count:65952");
 $('#linesNumberAfterSample').text("Sampled Flow Count:10342");
 load(BSFileList[0], BSFileList[1], BSFileList[2]);
 
 function load(stationIDLocationFile, linedetail_labelFile, linedetail_label_sampleFile) {
-
     Promise.all([getMapData(stationIDLocationFile),
         getScatterData(linedetail_labelFile),
         getScatterData(linedetail_label_sampleFile),

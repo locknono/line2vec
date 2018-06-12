@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="css/leaflet.css" rel="stylesheet" />
+    <link href="css/bootstrap-theme.css" rel="stylesheet" />
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/bootstrap-combobox.css" type="text/css" rel="stylesheet">
+    <link href='css/mapbox-gl.css' rel='stylesheet' />
+    <link href="css/jquery-ui.min.css" rel="stylesheet">
+    <link href="css/customStyle.css" rel="stylesheet">
+    <link href="css/bootstrap-switch.min.css" rel="stylesheet">
+    <link href="css/leaflet.pm.css" rel="stylesheet">
+
+    <title>Document</title>
+    <style type="text/css">
+        .overflow {
+            height: 200px;
+        }
+
+        .resize {
+            fill-opacity: .5;
+            cursor: move;
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        .extent {
+            fill-opacity: .25;
+            fill: rgb(205, 130, 42);
+            cursor: grab;
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        .e {
+            fill: rgb(111, 111, 111);
+            cursor: move;
+        }
+
+        .w {
+            fill: rgb(169, 169, 169);
+            cursor: move;
+        }
+
+        path.piehours {
+            fill: rgb(246, 139, 51);
+            stroke: black;
+            stroke-width: 1px;
+        }
+
+        .axis--grid .domain {
+            fill: #ddd;
+            stroke: none;
+        }
+
+        .axis--x .domain,
+        .axis--grid .tick line {
+            stroke: #fff;
+        }
+
+        .axis--grid .tick--minor line {
+            stroke-opacity: .5;
+        }
+
+        .background path {
+            fill: none;
+            stroke: #ddd;
+            shape-rendering: crispEdges;
+        }
+
+        .foreground path {
+            fill: none;
+            stroke: steelblue;
+        }
+
+        .brush .extent {
+            fill-opacity: .3;
+            stroke: #fff;
+            shape-rendering: crispEdges;
+        }
+
+        .axis line,
+        .axis path {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+            cursor: move;
+        }
+    </style>
+    <script src="lib/d3.v3.min.js"></script>
+    <script src="lib/mds.js"></script>
+    <script src="lib/numeric.min.js"></script>
+    <script src="lib/d3.v4.min.js"></script>
+    <script src="lib/leaflet.js"></script>
+    <script src="lib/jquery-3.3.1.min.js"></script>
+    <script src="lib/bootstrap.min.js"></script>
+    <script src="lib/pixi.min.js"></script>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v0.44.1/mapbox-gl.js'></script>
+    <script src="lib/L.PixiOverlay.js"></script>
+    <script src="lib/jquery-ui.min.js"></script>
+    <script src="lib/d3-color.v1.min.js"></script>
+    <script src="lib/d3-interpolate.v1.min.js"></script>
+    <script src="lib/d3-scale-chromatic.v1.min.js"></script>
+    <script src="lib/d3-tip.js"></script>
+    <script src="lib/bootstrap-switch.min.js"></script>
+    <script src="lib/leaflet.pm.min.js"></script>
+    <script src="lib/L.D3SvgOverlay.min.js"></script>
+
+</head>
+
+<body>
+    {{{body}}}
+    <script src=js/options.js></script>
+    <script src="js/loadData.js"></script>
+    <script src='js/myUtils.js'></script>
+    <script src='js/addTimingView.js'></script>
+    <script src="js/pcp.js"></script>
+    <script src="js/hcluster.js"></script>
+    <script src="js/radarView.js"></script>
+    <script src="js/histogramView.js"></script>
+    <script src="js/pixelView.js"></script>
+    <script src="js/flowVolumeView.js"></script>
+    <script src="js/UnderMap.js"></script>
+    <script src='js/mapView.js'></script>
+    <script src='js/buttons.js'></script>
+
+</body>
+
+</html>
