@@ -177,9 +177,9 @@ var CHIFileList = [
   "data/CHIlinedetail_label_randomSample.csv"
 ];
 var BSFileList = [
-  "data/BSstationIDLocation.csv",
-  "data/BSlinedetail_label.csv",
-  "data/BSlinedetail_label_sample.csv"
+  op.fileList.id_location_file,
+  op.fileList.original_file,
+  op.fileList.sample_file
 ];
 // load(BSFileList[0], BSFileList[1], BSFileList[2], BSFileList[3]);
 $("#stationNumber").text("Location count:2970");
@@ -827,7 +827,7 @@ function load(
                 "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
               );
               //   ////
-              selectedMapData = [] = [];
+              selectedMapData = [] ;
               selectedMapLines = [];
               let clickPoint = {
                 x: map.mouseEventToLayerPoint(d3.event.sourceEvent).x,
