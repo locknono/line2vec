@@ -2,24 +2,34 @@ var express = require("express");
 var router = express.Router();
 var fluxModel = require("../models/flux");
 var basefluxModel = require("../models/baseflux");
-var fs = require('fs');
-var d3 = require('d3');
+var fs = require("fs");
+var d3 = require("d3");
+require("jsdom/lib/old-api").env("", function(err, window) {
+  if (err) {
+    console.error(err);
+    return;
+  }
+
+  var $ = require("jquery")(window);
+});
 
 /* GET home page. */
-router.get("/", function (req, res, next) {
+router.get("/", function(req, res, next) {
   res.render("index", {});
 });
 
-router.get("/getTraffic", function (req, res) {
+router.get("/getTraffic", function(req, res) {
   var id = req.query.id;
-  var query = linecon.find({
+  var query = linecon.find(
+    {
       id: id
-    }, {
+    },
+    {
       traffic: {
         $slice: [0, 1]
       }
     },
-    function (err, data) {
+    function(err, data) {
       if (err) console.error(error);
       else {
         res.setHeader("Access-Control-Allow-Origin", "*");
@@ -29,46 +39,53 @@ router.get("/getTraffic", function (req, res) {
   );
 });
 
-router.get("/getFlux", function (req, res) {
+router.get("/getFlux", function(req, res) {
   var source = parseInt(req.query.source);
   var target = parseInt(req.query.target);
 
-  var query = fluxModel.find({
-    track: [source, target]
-  }, function (err, data) {
-    if (err) {
-      console.error(error);
-    } else {
-      res.setHeader("Access-Control-Allow-Origin", "*");
-      res.json(data);
+  var query = fluxModel.find(
+    {
+      track: [source, target]
+    },
+    function(err, data) {
+      if (err) {
+        console.error(error);
+      } else {
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.json(data);
+      }
     }
-  });
+  );
 });
 
-router.post('/getBaseFlux', function (req, res) {
+router.post("/getBaseFlux", function(req, res) {
   var sites = req.body.sites;
 
-  var query = basefluxModel.find({
-    "track": {
-      "$in": sites
+  var query = basefluxModel.find(
+    {
+      track: {
+        $in: sites
+      }
+    },
+    function(err, data) {
+      if (err) {
+        console.error(error);
+      } else {
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.json(data);
+      }
     }
-  }, function (err, data) {
-    if (err) {
-      console.error(error);
-    } else {
-      res.setHeader('Access-Control-Allow-Origin', '*');
-      res.json(data);
-    }
-  });
+  );
 });
 
-router.post('/drawArtLine', function (req, res) {
+router.post("/drawArtLine", function(req, res) {
   var selectedMapData = req.body.selectedMapData;
 
-  var data = JSON.parse(fs.readFileSync('D:/line2vec/myapp/public/data/BS/18Data_track.json'));
+  var data = JSON.parse(
+    fs.readFileSync("D:/line2vec/myapp/public/data/BS/18Data_track.json")
+  );
   var timeString = req.body.timeString;
   var thisTimeAllTrack = [];
-
 
   for (var i = 0; i < data.length; i++) {
     for (var key in data[i]) {
@@ -76,27 +93,31 @@ router.post('/drawArtLine', function (req, res) {
         var originalTrack = data[i][key];
         var inCircleTrack = getInCircleTrack(originalTrack);
         if (inCircleTrack.length > 0) {
-
           thisTimeAllTrack.push(inCircleTrack);
         }
       }
     }
   }
 
-
   var thisTimeTrackSet = {};
-  
 
   var sampledSourceTragetArray = [];
   //得到采样后的轨迹集合:
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
-  var str = fs.readFileSync('D:/line2vec/myapp/public/data/BS/linedetail_label_sample.csv');
-  console.log('str: ', str);
+  var str = fs.readFileSync(
+    "D:/line2vec/myapp/public/data/BS/linedetail_label_sample.csv"
+  );
+  console.log("str: ", str);
 
-  var sampledScatterData = d3.csvParse(fs.readFileSync('D:/line2vec/myapp/public/data/BS/linedetail_label_sample.csv').toString('utf-8'));
+  var sampledScatterData = d3.csvParse(
+    fs
+      .readFileSync(
+        "D:/line2vec/myapp/public/data/BS/linedetail_label_sample.csv"
+      )
+      .toString("utf-8")
+  );
 
-
-  sampledScatterData.map(function (element) {
+  sampledScatterData.map(function(element) {
     element.x = parseFloat(element.x);
     element.y = parseFloat(element.y);
     element.scor = [parseFloat(element.slat), parseFloat(element.slng)];
@@ -108,14 +129,10 @@ router.post('/drawArtLine', function (req, res) {
 
   for (var i = 0; i < sampledScatterData.length; i++) {
     sampledSourceTragetArray.push(
-      sampledScatterData[i].source +
-      "-" +
-      sampledScatterData[i].target
+      sampledScatterData[i].source + "-" + sampledScatterData[i].target
     );
     sampledSourceTragetArray.push(
-      sampledScatterData[i].target +
-      "-" +
-      sampledScatterData[i].source
+      sampledScatterData[i].target + "-" + sampledScatterData[i].source
     );
   }
   var flag = 1;
@@ -131,10 +148,10 @@ router.post('/drawArtLine', function (req, res) {
         if (
           //如果这段轨迹中有一个点不在采样后的数据中，就剔除这一段轨迹，否则加入trackSet中
           s != 0 &&
-          $.inArray(
+          inArray(
             thisTimeAllTrack[i][j][s - 1].stationID +
-            "-" +
-            thisTimeAllTrack[i][j][s].stationID,
+              "-" +
+              thisTimeAllTrack[i][j][s].stationID,
             sampledSourceTragetArray
           ) == -1
         ) {
@@ -144,7 +161,7 @@ router.post('/drawArtLine', function (req, res) {
       }
       if (flag == 1) {
         if (thisTimeTrackSet[track] === undefined) {
-          thisTimeTrackSet[track] = 0;
+          thisTimeTrackSet[track] = 1;
         } else {
           thisTimeTrackSet[track] += 1;
         }
@@ -152,14 +169,9 @@ router.post('/drawArtLine', function (req, res) {
     }
   }
 
-  var sortedKeys = Object.keys(thisTimeTrackSet).sort(function (
-    a,
-    b
-  ) {
+  var sortedKeys = Object.keys(thisTimeTrackSet).sort(function(a, b) {
     return a.split(",").length - b.split(",").length;
   });
-
-
 
   for (var i = 0; i < sortedKeys.length; i++) {
     for (var j = 0; j < sortedKeys.length; j++) {
@@ -191,15 +203,14 @@ router.post('/drawArtLine', function (req, res) {
     track.lineCoors = track2;
     track.value = thisTimeTrackSet[key];
     allTrack.push(track);
+    
   }
-  let maxValue = d3.max(allTrack, function (d) {
+  let maxValue = d3.max(allTrack, function(d) {
     return d.value;
   });
-  let minValue = d3.min(allTrack, function (d) {
+  let minValue = d3.min(allTrack, function(d) {
     return d.value;
   });
-
-
 
   function getInCircleTrack(originalTrack) {
     var allInCircleTrack = [];
@@ -226,37 +237,32 @@ router.post('/drawArtLine', function (req, res) {
     }
     return allInCircleTrack;
   }
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  console.log('allTrack: ', allTrack);
-  res.json(allTrack);
+
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  console.log("allTrack: ", allTrack);
+  var resData={
+    allTrack:allTrack,
+    thisTimeTrackSet:thisTimeTrackSet,
+  }
+  res.json(resData);
 });
 
-router.post('/writeMetric', function (req, res) {
+router.post("/writeMetric", function(req, res) {
   let data = req.body.data;
   let directory = req.body.directory;
 
-  fs.writeFile(directory, data, (err) => {
+  fs.writeFile(directory, data, err => {
     var result = {};
     if (err) {
       result.success = false;
       result.errMsg = err;
     } else {
-
       result.success = true;
     }
-    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader("Access-Control-Allow-Origin", "*");
     res.json(result);
-  })
-})
-
-
-
-
-
-
-
-
-
+  });
+});
 
 function Queue() {
   this.dataStore = [];
@@ -305,4 +311,12 @@ function count() {
   return this.dataStore.length;
 }
 
+function inArray(value, array) {
+  for (var i = 0; i < array.length; i++) {
+    if (array[i] === value) {
+      return i;
+    }
+  }
+  return -1;
+}
 module.exports = router;

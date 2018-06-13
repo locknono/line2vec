@@ -434,7 +434,10 @@ function load(
 
                   }
                 });
-              }).then(function (AllTrack) {
+              }).then(function (resData) {
+                var allTrack=resData.allTrack;
+                var thisTimeTrackSet=resData.thisTimeTrackSet;
+                console.log('allTrack: ', allTrack);
                 maxValue = d3.max(allTrack, function (d) {
                   return d.value;
                 });
