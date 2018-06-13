@@ -1,5 +1,6 @@
 var op = (function () {
     var root_path = 'data/BS/';
+    var res_path=root_path+'res/'
     var track_file = root_path + '18Data_track.json';
 
 
@@ -16,6 +17,7 @@ var op = (function () {
         maxArtLineWidth: maxArtLineWidth,
         circleBarStartColor: circleBarStartColor,
         circleBarEndColor: circleBarEndColor,
-        scatterColor: scatterColor
+        scatterColor: scatterColor,
+        res_path:res_path
     }
 }())

@@ -59,6 +59,7 @@ function drawScatterPlot(
   comDetecFlag
 ) {
   circle.clear();
+  console.log('scatterData: ', scatterData);
   var xyScale = getScatterXYScale(
       scatterData,
       scatterPlotWidth,
@@ -66,24 +67,20 @@ function drawScatterPlot(
     ),
     xScale = xyScale[0],
     yScale = xyScale[1];
-  let renderTime = 10;
-  let dataSec = parseInt(scatterData.length / renderTime);
-  for (var i = renderTime; i >= 1; i--) {
-    let scatterCircleGraphics = new PIXI.Graphics();
-    stage.addChild(scatterCircleGraphics);
-    for (var j = dataSec * i; j > dataSec * (i - 1); j--) {
-      if (comDetecFlag == false) {
-        scatterCircleGraphics.beginFill(op.scatterColor);
-      } else {
-        scatterCircleGraphics.beginFill(
-          labelColorScale(scatterData[j].label).replace("#", "0x")
-        );
-      }
-      scatterCircleGraphics.drawCircle(xScale(scatterData[j].x), yScale(scatterData[j].y), 1.5);
-      scatterCircleGraphics.endFill();
+  for (var i = 0; i < scatterData.length; i++) {
+    if (comDetecFlag == false) {
+      circle.beginFill(op.scatterColor);
+    } else {
+      circle.beginFill(
+        labelColorScale(scatterData[i].label).replace("#", "0x")
+      );
     }
+    circle.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
+    circle.endFill();
   }
-  renderer.render(stage);
+  setTimeout(function(){
+    renderer.render(stage);
+  },100)
 }
 
 function unbindEvents() {

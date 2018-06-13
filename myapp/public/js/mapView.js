@@ -1660,8 +1660,7 @@ function load(
             .range([3, 2, 1, 0]);
           var method = "";
 
-          var folderName =
-            "data/res/BSlinedetail_label" + sampleRate.toString() + "_seq";
+          var folderName =op.res_path+'BSlinedetail_label'+ sampleRate.toString() + "_seq";
 
           if ($("#checkBtw").is(":checked")) {
             folderName += "0";
@@ -1676,20 +1675,11 @@ function load(
             method += "2";
           }
           var sampledScatterDataFileName = folderName + "/0.csv";
-
+          console.log('sampledScatterDataFileName: ', sampledScatterDataFileName);
           var edgeBtwFileName = folderName + "/1.csv";
-
           var pixelFileName = folderName + "/2.json";
-
-          console.log(
-            "sampledScatterDataFileName: ",
-            sampledScatterDataFileName
-          );
-
-
-
           addHistogram2(edgeBtwFileName);
-          getPixelData("data/BSpixel.json").then(function (pData) {
+          getPixelData("data/BS/pixel.json").then(function (pData) {
             pixelView(
               pData,
               pixelFileName,
@@ -1737,12 +1727,6 @@ function load(
 
 
           addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
-
-
-          //console.log('sampledScatterDataFileName: ',
-          //    sampledScatterDataFileName);
-          //
-          //
 
           scatterCircleGraphics.clear();
           drawScatterPlot(
