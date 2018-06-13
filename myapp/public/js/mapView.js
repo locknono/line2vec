@@ -52,8 +52,8 @@ var arcArray = [];
 var comDetecFlag = false;
 var originalColor = 0xc2c2c2;
 var selectedColor = 0x3388ff;
-var fromValue = 100;
-var toValue = 0;
+var artLineMaxValue = 100;
+var artLineMinValue = 0;
 var sampleRate = 40;
 var startIndex = 0;
 var endIndex = 200;
@@ -61,10 +61,8 @@ var timeString = "6-8";
 var selectAllFlag = false;
 var allTrack = [];
 // add leaflet.pm controls to the map
-var a = "#fff4b3";
-var b = "#F22613";
 
-var circleBarsInterpolate = d3.interpolate(a, b);
+var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
 
 var underMapColorDefs = d3.select("#underMapView").append("defs");
 var linearGradient = underMapColorDefs
@@ -425,7 +423,7 @@ function load(
                   url: "/drawArtLine",
                   data: {
                     selectedMapData: selectedMapData,
-                    timeString:timeString
+                    timeString: timeString
                   },
                   success: function (data) {
                     resolve(data);
@@ -435,9 +433,8 @@ function load(
                   }
                 });
               }).then(function (resData) {
-                var allTrack=resData.allTrack;
-                var thisTimeTrackSet=resData.thisTimeTrackSet;
-                console.log('allTrack: ', allTrack);
+                var allTrack = resData.allTrack;
+                var thisTimeTrackSet = resData.thisTimeTrackSet;
                 maxValue = d3.max(allTrack, function (d) {
                   return d.value;
                 });
@@ -520,15 +517,14 @@ function load(
                   var widthScale = d3
                     .scaleLinear()
                     .domain([minValue, maxValue])
-                    .range([2, 15]);
-
+                    .range([op.minArtLineWidth, op.maxArtLineWidth]);
                   for (var i = startIndex; i < endIndex; i++) {
                     if (i >= allTrack.length - 1) {
                       break;
                     }
                     if (
-                      allTrack[i].lineCoors.length - 1 >= toValue &&
-                      allTrack[i].lineCoors.length - 1 <= fromValue &&
+                      allTrack[i].lineCoors.length - 1 >= artLineMinValue &&
+                      allTrack[i].lineCoors.length - 1 <= artLineMaxValue &&
                       allTrack[i].value >= flowSliderValue
                     ) {
                       //   .attr("marker-mid", "url(#arrow)")
@@ -594,8 +590,8 @@ function load(
                   if (startIndex === endIndex) {
                     endIndex = startIndex + 1;
                   }
-                  fromValue = recordArray[startIndex];
-                  toValue = recordArray[endIndex];
+                  artLineMaxValue = recordArray[startIndex];
+                  artLineMinValue = recordArray[endIndex];
                   drawStraightLine(allTrack);
                 }
 
@@ -607,8 +603,8 @@ function load(
                   if (startIndex === endIndex) {
                     endIndex = startIndex + 1;
                   }
-                  fromValue = recordArray[startIndex];
-                  toValue = recordArray[endIndex];
+                  artLineMaxValue = recordArray[startIndex];
+                  artLineMinValue = recordArray[endIndex];
                   drawStraightLine(allTrack);
                 }
               })
@@ -1320,8 +1316,6 @@ function load(
           }
         }
         drawLines(selectedCircles, comDetecFlag);
-        //////
-
         $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
         selectedMapCircleGraphics.clear();
       }
@@ -1668,6 +1662,7 @@ function load(
 
           var folderName =
             "data/res/BSlinedetail_label" + sampleRate.toString() + "_seq";
+
           if ($("#checkBtw").is(":checked")) {
             folderName += "0";
             method += "0";
@@ -1706,7 +1701,6 @@ function load(
           });
           getScatterData(sampledScatterDataFileName).then(function (value) {
             sampledScatterData = value;
-
             drawScatterPlot(
               sampledScatterData,
               labelColorScale,
@@ -1716,7 +1710,6 @@ function load(
               scatterCircleGraphics,
               comDetecFlag
             );
-            //  drawScatterPlot()
           });
           var index = sampleRateScale(sampleRate) * 4 - methodScale(method);
 

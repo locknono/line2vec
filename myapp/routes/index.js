@@ -89,7 +89,6 @@ router.post("/drawArtLine", function(req, res) {
   );
   var timeString = req.body.timeString;
   var thisTimeAllTrack = [];
-
   for (var i = 0; i < data.length; i++) {
     for (var key in data[i]) {
       if (key === timeString) {
@@ -206,13 +205,6 @@ router.post("/drawArtLine", function(req, res) {
     allTrack.push(track);
     
   }
-  let maxValue = d3.max(allTrack, function(d) {
-    return d.value;
-  });
-  let minValue = d3.min(allTrack, function(d) {
-    return d.value;
-  });
-
   function getInCircleTrack(originalTrack) {
     var allInCircleTrack = [];
     var inCircleTrack = [];
@@ -251,7 +243,6 @@ router.post("/drawArtLine", function(req, res) {
 router.post("/writeMetric", function(req, res) {
   let data = req.body.data;
   let directory = req.body.directory;
-
   fs.writeFile(directory, data, err => {
     var result = {};
     if (err) {
