@@ -4,6 +4,7 @@ var fluxModel = require("../models/flux");
 var basefluxModel = require("../models/baseflux");
 var fs = require("fs");
 var d3 = require("d3");
+var path=require("path");
 require("jsdom/lib/old-api").env("", function(err, window) {
   if (err) {
     console.error(err);
@@ -81,8 +82,10 @@ router.post("/getBaseFlux", function(req, res) {
 router.post("/drawArtLine", function(req, res) {
   var selectedMapData = req.body.selectedMapData;
 
+  let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
+
   var data = JSON.parse(
-    fs.readFileSync("D:/line2vec/myapp/public/data/BS/18Data_track.json")
+    fs.readFileSync(trackFileName)
   );
   var timeString = req.body.timeString;
   var thisTimeAllTrack = [];
@@ -104,15 +107,13 @@ router.post("/drawArtLine", function(req, res) {
   var sampledSourceTragetArray = [];
   //得到采样后的轨迹集合:
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
-  var str = fs.readFileSync(
-    "D:/line2vec/myapp/public/data/BS/linedetail_label_sample.csv"
-  );
-  console.log("str: ", str);
+
+  let sampleFileName = path.resolve(__dirname, '../public/data/BS/linedetail_label_sample.csv');
 
   var sampledScatterData = d3.csvParse(
     fs
       .readFileSync(
-        "D:/line2vec/myapp/public/data/BS/linedetail_label_sample.csv"
+        sampleFileName
       )
       .toString("utf-8")
   );
