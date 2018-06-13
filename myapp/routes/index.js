@@ -68,6 +68,7 @@ router.post("/getBaseFlux", function (req, res) {
 });
 
 router.post("/drawArtLine", function (req, res) {
+  console.log("post")
   var selectedMapData = req.body.selectedMapData;
 
   let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
@@ -88,14 +89,14 @@ router.post("/drawArtLine", function (req, res) {
       }
     }
   }
-
+  console.log("InCircle")
   var thisTimeTrackSet = {};
 
   var sampledSourceTragetArray = [];
   //得到采样后的轨迹集合:
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
 
-  let sampleFileName = path.resolve(__dirname, '../public/data/BS/linedetail_label_sample.csv');
+  let sampleFileName = path.resolve(__dirname, '../public/data/BS/linedetail_label.csv');
 
   var sampledScatterData = d3.csvParse(
     fs
@@ -114,6 +115,7 @@ router.post("/drawArtLine", function (req, res) {
     element.fre = parseFloat(element.fre);
     element.ebt = parseFloat(element.ebt);
   });
+  console.log("readFinishi")
 
   for (var i = 0; i < sampledScatterData.length; i++) {
     sampledSourceTragetArray.push(
@@ -123,10 +125,14 @@ router.post("/drawArtLine", function (req, res) {
       sampledScatterData[i].target + "-" + sampledScatterData[i].source
     );
   }
+
+  console.log("stArray")
+
   var flag = 1;
   //thisTimeAllTrack是一个三维数组，每个元素代表一个人的轨迹，每个人的轨迹数组中的每一个元素这个人轨迹的一段
   //这一段中包含了站点的信息，顺序存储
   for (var i = 0; i < thisTimeAllTrack.length; i++) {
+    console.log(i);
     for (var j = 0; j < thisTimeAllTrack[i].length; j++) {
       //thisTimeAllTrack[i][j]代表某个人的某段轨迹
       flag = 1;
@@ -156,6 +162,7 @@ router.post("/drawArtLine", function (req, res) {
       }
     }
   }
+  console.log("trackSet")
   var sortedKeys = Object.keys(thisTimeTrackSet).sort(function (a, b) {
     return a.split(",").length - b.split(",").length;
   });
@@ -174,7 +181,6 @@ router.post("/drawArtLine", function (req, res) {
   }
   var allTrack = [];
   for (var key in thisTimeTrackSet) {
-    console.log('key: ', key);
     keyArray = key.split(",");
     var track = {};
     var track2 = [];
@@ -191,7 +197,6 @@ router.post("/drawArtLine", function (req, res) {
     track.lineCoors = track2;
     track.value = thisTimeTrackSet[key];
     allTrack.push(track);
-
   }
 
   function getInCircleTrack(originalTrack) {
@@ -215,11 +220,16 @@ router.post("/drawArtLine", function (req, res) {
           allInCircleTrack.push(inCircleTrack);
           inCircleTrack = [];
         }
-      }else if(j!==selectedMapData.length &&i===originalTrack.length-1){
-        while (!queue.empty()) {
-          inCircleTrack.push(queue.dequeue());
+      } else if (j !== selectedMapData.length && i === originalTrack.length - 1) {
+        if (queue.count() < 2) {
+          queue.dequeue();
+        } else if (queue.count() >= 2) {
+          while (!queue.empty()) {
+            inCircleTrack.push(queue.dequeue());
+          }
+          allInCircleTrack.push(inCircleTrack);
+          inCircleTrack = [];
         }
-        allInCircleTrack.push(inCircleTrack);
       }
     }
     return allInCircleTrack;
@@ -229,9 +239,9 @@ router.post("/drawArtLine", function (req, res) {
 
   console.log("trackSetEnd");
 
-  let writeFileName = path.resolve(__dirname, '../public/data/BS/track/ourSample.json');
+  let writeFileName = path.resolve(__dirname, '../public/data/BS/track/original.json');
 
-  fs.writeFileSync(writeFileName,JSON.stringify(thisTimeTrackSet))
+  fs.writeFileSync(writeFileName, JSON.stringify(thisTimeTrackSet))
   console.log("writeEnd")
 
   var resData = {

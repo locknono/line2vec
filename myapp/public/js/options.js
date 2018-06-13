@@ -7,7 +7,7 @@ var op = (function () {
         pixel_file: root_path + 'pixel.json',
         track_file: root_path + '18Data_track.json',
         original_file: root_path + 'linedetail_label.csv',
-        sample_file : root_path + 'linedetail_label_sample.csv'
+        sample_file : root_path + 'linedetail_label.csv'
     };
     var pixel_file = root_path + 'pixel.json';
     var track_file = root_path + '18Data_track.json';
