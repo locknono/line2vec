@@ -1660,7 +1660,7 @@ function load(
             .range([3, 2, 1, 0]);
           var method = "";
 
-          var folderName =op.res_path+'BSlinedetail_label'+ sampleRate.toString() + "_seq";
+          var folderName = op.res_path + 'BSlinedetail_label' + sampleRate.toString() + "_seq";
 
           if ($("#checkBtw").is(":checked")) {
             folderName += "0";
@@ -1679,16 +1679,13 @@ function load(
           var edgeBtwFileName = folderName + "/1.csv";
           var pixelFileName = folderName + "/2.json";
           addHistogram2(edgeBtwFileName);
-          getPixelData("data/BS/pixel.json").then(function (pData) {
-            pixelView(
-              pData,
-              pixelFileName,
-              "Wenzhou",
-              pStage,
-              pixelGraphics,
-              pRenderer
-            );
-          });
+          pixelView(
+            pixelFileName,
+            op.system_name,
+            pStage,
+            pixelGraphics,
+            pRenderer
+          );
           getScatterData(sampledScatterDataFileName).then(function (value) {
             sampledScatterData = value;
             drawScatterPlot(
@@ -2002,43 +1999,17 @@ function load(
       radarData[radarData.length - 1]
     ]);
 
-    getPixelData("data/BSpixel.json").then(function (pData) {
-      pixelView(
-        pData,
-        "data/res/BSlinedetail_label40_seq012/2.json",
-        "Wenzhou",
-        pStage,
-        pixelGraphics,
-        pRenderer
-      );
-    });
-
+    pixelView(
+      "data/res/BSlinedetail_label40_seq012/2.json",
+      op.system_name,
+      pStage,
+      pixelGraphics,
+      pRenderer
+    );
     function changePixelView(fileName, systemName) {
-      getPixelData(fileName).then(function (pData) {
-        pixelView(pData, "Chicago", pStage, pixelGraphics, pRenderer);
-      });
+      pixelView(pData, "Chicago", pStage, pixelGraphics, pRenderer);
     }
 
-    /*   if (stationIDLocationFile === CHIFileList[0]) {
-               getPixelData('data/CHIpixel.json').then(function (pData) {
-                   pixelView(pData, "Chicago", pStage, pixelGraphics, pRenderer)
-               })
-
-               $("#pixelWindow1").on("click", function () {
-                   changePixelView('data/CHIpixel.json', 'Chicago');
-               });
-               $("#pixelWindow2").on("click", function () {
-                   changePixelView('data/CHIpixelRandomSample.json', 'Chicago');
-               });
-               $("#pixelWindow3").on("click", function () {
-                   changePixelView('data/CHIpixelSample.json', 'Chicago');
-               });
-           } else {
-               getPixelData('data/BSpixel.json').then(function (pData) {
-                   pixelView(pData, "Wenzhou", pStage, pixelGraphics, pRenderer)
-               })
-           }
-           */
     addHistogram2("data/res/BSlinedetail_label5_seq012/1.csv");
     /* addHistogram('data/CHIedgeBetweenness.csv');
          $("#hisWindow1").on("click", function () {
