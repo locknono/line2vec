@@ -6,9 +6,9 @@ var map = L.map("map", {
   renderer: L.canvas()
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
-    "https://api.mapbox.com/styles/v1/locknono/cjh7jj0mo0yu32rlnk52glz3f/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja25vbm8iLCJhIjoiY2poN2ppZHptMDM2bDMzbnhiYW9icjN4MiJ9.GalwMO67A3HawYH_Tg0-Qg",
+  "https://api.mapbox.com/styles/v1/locknono/cjh7jj0mo0yu32rlnk52glz3f/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja25vbm8iLCJhIjoiY2poN2ppZHptMDM2bDMzbnhiYW9icjN4MiJ9.GalwMO67A3HawYH_Tg0-Qg",
   layer =
-    'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
+  'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
 L.tileLayer(osmUrl, {
   minZoom: 1,
   maxZoom: 17,
@@ -59,6 +59,7 @@ var startIndex = 0;
 var endIndex = 200;
 var timeString = "6-8";
 var selectAllFlag = false;
+var allTrack = [];
 // add leaflet.pm controls to the map
 var a = "#fff4b3";
 var b = "#F22613";
@@ -199,7 +200,7 @@ function load(
     getScatterData(linedetail_label_sampleFile)
     //   getFluxData('data/BSFluxData.json'),
     // getSampledScatterData(randomSampleFile)
-  ]).then(function(values) {
+  ]).then(function (values) {
     var mapData = values[0];
     var scatterData = values[1];
     var sampledScatterData = values[2];
@@ -305,27 +306,27 @@ function load(
       .range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]);
     var arc = d3
       .arc()
-      .startAngle(function(d) {
+      .startAngle(function (d) {
         return d.startAngle;
       })
-      .endAngle(function(d) {
+      .endAngle(function (d) {
         return d.endAngle;
       })
-      .innerRadius(function(d) {
+      .innerRadius(function (d) {
         return d.innerRadius;
       })
-      .outerRadius(function(d) {
+      .outerRadius(function (d) {
         return d.outerRadius;
       });
 
     function calDis(stationPoint, clickSourceLatLng) {
       return Math.sqrt(
         Math.pow(stationPoint.x - clickSourceLatLng.x, 2) +
-          Math.pow(stationPoint.y - clickSourceLatLng.y, 2)
+        Math.pow(stationPoint.y - clickSourceLatLng.y, 2)
       );
     }
 
-    leafletPixiOverlay = L.pixiOverlay(function(utils) {
+    leafletPixiOverlay = L.pixiOverlay(function (utils) {
       var zoom = utils.getMap().getZoom();
       var container = utils.getContainer();
       var leafletRenderer = utils.getRenderer();
@@ -344,9 +345,9 @@ function load(
 
       $(".leaflet-pm-icon-circle").unbind();
       var d3Overlay = L.d3SvgOverlay(
-        function(selection, projection) {
+        function (selection, projection) {
           map.off("pm:create");
-          map.on("pm:create", function(e) {
+          map.on("pm:create", function (e) {
             ////
             ////
             var circle = e.layer;
@@ -418,126 +419,26 @@ function load(
             multidrawCircles(allSelectedMapLines, comDetecFlag);
             //  multidrawLines(allSelectedMapLines);
             function drawArtLine(timeString) {
-              new Promise(function(resolve, reject) {
+              new Promise(function (resolve, reject) {
                 $.ajax({
                   type: "post",
                   url: "/drawArtLine",
                   data: {
-                    selectedMapData: selectedMapData
+                    selectedMapData: selectedMapData,
+                    timeString:timeString
                   },
-                  success: function(data) {
+                  success: function (data) {
                     resolve(data);
                   },
-                  error: function() {}
+                  error: function () {
+
+                  }
                 });
-              }).then(function(AllTrack) {});
-
-              get3hourData(op.track_file).then(function(data) {
-                var thisTimeAllTrack = [];
-                for (var i = 0; i < data.length; i++) {
-                  for (var key in data[i]) {
-                    if (key === timeString) {
-                      var originalTrack = data[i][key];
-                      var inCircleTrack = getInCircleTrack(originalTrack);
-                      if (inCircleTrack.length > 0) {
-                        thisTimeAllTrack.push(inCircleTrack);
-                      }
-                    }
-                  }
-                }
-                var thisTimeTrackSet = {};
-                var sampledSourceTragetArray = [];
-                //得到采样后的轨迹集合:
-                //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
-                for (var i = 0; i < sampledScatterData.length; i++) {
-                  sampledSourceTragetArray.push(
-                    sampledScatterData[i].source +
-                      "-" +
-                      sampledScatterData[i].target
-                  );
-                  sampledSourceTragetArray.push(
-                    sampledScatterData[i].target +
-                      "-" +
-                      sampledScatterData[i].source
-                  );
-                }
-                var flag = 1;
-                //thisTimeAllTrack是一个三维数组，每个元素代表一个人的轨迹，每个人的轨迹数组中的每一个元素这个人轨迹的一段
-                //这一段中包含了站点的信息，顺序存储
-                for (var i = 0; i < thisTimeAllTrack.length; i++) {
-                  for (var j = 0; j < thisTimeAllTrack[i].length; j++) {
-                    //thisTimeAllTrack[i][j]代表某个人的某段轨迹
-                    flag = 1;
-                    var track = [];
-                    for (var s = 0; s < thisTimeAllTrack[i][j].length; s++) {
-                      track.push(thisTimeAllTrack[i][j][s].stationID);
-                      if (
-                        //如果这段轨迹中有一个点不在采样后的数据中，就剔除这一段轨迹，否则加入trackSet中
-                        s != 0 &&
-                        $.inArray(
-                          thisTimeAllTrack[i][j][s - 1].stationID +
-                            "-" +
-                            thisTimeAllTrack[i][j][s].stationID,
-                          sampledSourceTragetArray
-                        ) == -1
-                      ) {
-                        flag = 0;
-                        break;
-                      }
-                    }
-                    if (flag == 1) {
-                      if (thisTimeTrackSet[track] === undefined) {
-                        thisTimeTrackSet[track] = 0;
-                      } else {
-                        thisTimeTrackSet[track] += 1;
-                      }
-                    }
-                  }
-                }
-                var sortedKeys = Object.keys(thisTimeTrackSet).sort(function(
-                  a,
-                  b
-                ) {
-                  return a.split(",").length - b.split(",").length;
-                });
-                for (var i = 0; i < sortedKeys.length; i++) {
-                  for (var j = 0; j < sortedKeys.length; j++) {
-                    if (i == j) {
-                      continue;
-                    }
-                    var key1 = sortedKeys[i];
-                    var key2 = sortedKeys[j];
-                    if (key1.indexOf(key2) != -1) {
-                      thisTimeTrackSet[key2] += thisTimeTrackSet[key1];
-                    }
-                  }
-                }
-
-                var allTrack = [];
-
-                for (var key in thisTimeTrackSet) {
-                  keyArray = key.split(",");
-                  var track = {};
-                  var track2 = [];
-                  for (var i = 0; i < keyArray.length; i++) {
-                    for (var j = 0; j < selectedMapData.length; j++) {
-                      if (keyArray[i] == selectedMapData[j].stationID) {
-                        track2.push([
-                          selectedMapData[j].stationLat,
-                          selectedMapData[j].stationLng
-                        ]);
-                      }
-                    }
-                  }
-                  track.lineCoors = track2;
-                  track.value = thisTimeTrackSet[key];
-                  allTrack.push(track);
-                }
-
-                maxValue = d3.max(allTrack, function(d) {
+              }).then(function (AllTrack) {
+                maxValue = d3.max(allTrack, function (d) {
                   return d.value;
                 });
-                minValue = d3.min(allTrack, function(d) {
+                minValue = d3.min(allTrack, function (d) {
                   return d.value;
                 });
 
@@ -550,19 +451,19 @@ function load(
                   step: 1,
                   value: minValue,
                   // value:[0,100],
-                  slide: function(event, ui) {
+                  slide: function (event, ui) {
                     $("#flowSliderAmount").val(ui.value);
                     flowSliderValue = ui.value;
                     drawStraightLine(allTrack);
                   },
-                  stop: function(event, ui) {
+                  stop: function (event, ui) {
                     flowSliderValue = ui.value;
                     drawStraightLine(allTrack);
                   }
                 });
 
                 function drawStraightLine(allTrack) {
-                  allTrack.sort(function(a, b) {
+                  allTrack.sort(function (a, b) {
                     return b.lineCoors.length - a.lineCoors.length;
                   });
                   selection.selectAll(".artLine").remove();
@@ -586,10 +487,10 @@ function load(
 
                   var lineGenarator = d3
                     .line()
-                    .x(function(d) {
+                    .x(function (d) {
                       return projection.latLngToLayerPoint(d).x;
                     })
-                    .y(function(d) {
+                    .y(function (d) {
                       return projection.latLngToLayerPoint(d).y;
                     })
                     .curve(d3.curveCardinal.tension(0.3));
@@ -662,7 +563,10 @@ function load(
 
                 var rectBrush = d3
                   .brushX()
-                  .extent([[10, 20], [690, 150]])
+                  .extent([
+                    [10, 20],
+                    [690, 150]
+                  ])
                   .on("start brush", rectBrushed)
                   .on("end", rectBrushEnd);
 
@@ -704,33 +608,7 @@ function load(
                   toValue = recordArray[endIndex];
                   drawStraightLine(allTrack);
                 }
-
-                function getInCircleTrack(originalTrack) {
-                  var allInCircleTrack = [];
-                  var inCircleTrack = [];
-                  var queue = new Queue();
-                  for (var i = 0; i < originalTrack.length; i++) {
-                    for (var j = 0; j < selectedMapData.length; j++) {
-                      if (originalTrack[i] == selectedMapData[j].stationID) {
-                        queue.enqueue(selectedMapData[j]);
-                        break;
-                      }
-                    }
-                    if (j == selectedMapData.length) {
-                      if (queue.count() < 2) {
-                        queue.dequeue();
-                      } else if (queue.count() >= 2) {
-                        while (!queue.empty()) {
-                          inCircleTrack.push(queue.dequeue());
-                        }
-                        allInCircleTrack.push(inCircleTrack);
-                        inCircleTrack = [];
-                      }
-                    }
-                  }
-                  return allInCircleTrack;
-                }
-              });
+              })
             }
             drawArtLine(timeString);
             //change flow count text
@@ -742,7 +620,7 @@ function load(
             ////
             // //////////////
 
-            baseshowflux(getSitesName(selectedMapLines)).then(function(
+            baseshowflux(getSitesName(selectedMapLines)).then(function (
               volumeData
             ) {
               if (volumeData.length === 0) {
@@ -773,7 +651,7 @@ function load(
                 .tip()
                 .attr("class", "d3-tip")
                 .offset([-10, 0])
-                .html(function(d, i) {
+                .html(function (d, i) {
                   //////////////
                   return (
                     "<strong>Flow:</strong> <span style='color:red'>" +
@@ -791,18 +669,18 @@ function load(
                 .data(allArcArray[allArcArray.length - 1])
                 .enter()
                 .append("path")
-                .attr("d", function(d) {
+                .attr("d", function (d) {
                   return arc(d);
                 })
                 .attr("class", "arcs")
                 .style("stroke", "none")
                 .style("stroke-width", "0.2px")
-                .style("fill", function(d, i) {
+                .style("fill", function (d, i) {
                   return circleBarsInterpolate(scales[1](avgVolumeData[i]));
                 })
                 .style("pointer-events", "auto")
                 .style("cursor", "crosshair")
-                .on("click", function() {
+                .on("click", function () {
                   d3
                     .selectAll(".arcs")
                     .style("stroke", "steelblue")
@@ -818,10 +696,10 @@ function load(
                 .attr(
                   "transform",
                   "translate(" +
-                    transformArray[transformArray.length - 1].x +
-                    "," +
-                    transformArray[transformArray.length - 1].y +
-                    ")"
+                  transformArray[transformArray.length - 1].x +
+                  "," +
+                  transformArray[transformArray.length - 1].y +
+                  ")"
                 );
               bars.push(circleBars);
             });
@@ -843,11 +721,11 @@ function load(
               .enter()
               .append("path")
               .attr("class", "timeArcPath")
-              .attr("d", function(d) {
+              .attr("d", function (d) {
                 return arc(d);
               })
               .style("stroke", "#fff")
-              .style("fill", function(d, i) {
+              .style("fill", function (d, i) {
                 if (i == 2) {
                   return "#858585";
                 }
@@ -858,12 +736,12 @@ function load(
               .attr(
                 "transform",
                 "translate(" +
-                  transformArray[transformArray.length - 1].x +
-                  "," +
-                  transformArray[transformArray.length - 1].y +
-                  ")"
+                transformArray[transformArray.length - 1].x +
+                "," +
+                transformArray[transformArray.length - 1].y +
+                ")"
               )
-              .on("click", function(d, i) {
+              .on("click", function (d, i) {
                 var stratTime = i * 3;
                 var endTime = i * 3 + 2;
                 timeString = stratTime.toString() + "-" + endTime.toString();
@@ -872,6 +750,8 @@ function load(
                 selection.selectAll(".timeArcPath").style("fill", "#CCCCCC");
                 d3.select(this).style("fill", "#858585");
               });
+
+
 
             var circle = selection
               .append("circle")
@@ -1040,9 +920,10 @@ function load(
               dragDrawCricleGraphics.clear();
               multidrawCircles(allSelectedMapLines, comDetecFlag);
               ////
-              baseshowflux(getSitesName(selectedMapLines)).then(function(
+              baseshowflux(getSitesName(selectedMapLines)).then(function (
                 volumeData
               ) {
+
                 changeVolumeArray(volumeData);
 
                 var hourLineNumber = getHourLineNumber(volumeData);
@@ -1075,7 +956,7 @@ function load(
                   .tip()
                   .attr("class", "d3-tip")
                   .offset([-10, 0])
-                  .html(function(d, i) {
+                  .html(function (d, i) {
                     //////////////
                     return (
                       "<strong>Flow:</strong> <span style='color:red'>" +
@@ -1093,13 +974,13 @@ function load(
                   .data(allArcArray[parseFloat(circle.attr("id"))])
                   .enter()
                   .append("path")
-                  .attr("d", function(d) {
+                  .attr("d", function (d) {
                     return arc(d);
                   })
                   .attr("class", "arcs")
                   .style("stroke", "steelblue")
                   .style("stroke-width", "0.2px")
-                  .style("fill", function(d, i) {
+                  .style("fill", function (d, i) {
                     let scales = getArcScale(avgVolumeData, minRadius);
                     return circleBarsInterpolate(
                       1 - scales[1](avgVolumeData[i])
@@ -1107,7 +988,7 @@ function load(
                   })
                   .style("pointer-events", "auto")
                   .style("cursor", "crosshair")
-                  .on("click", function() {
+                  .on("click", function () {
                     d3
                       .selectAll(".arcs")
                       .style("stroke", "steelblue")
@@ -1123,10 +1004,10 @@ function load(
                   .attr(
                     "transform",
                     "translate(" +
-                      transformArray[parseFloat(circle.attr("id"))].x +
-                      "," +
-                      transformArray[parseFloat(circle.attr("id"))].y +
-                      ")"
+                    transformArray[parseFloat(circle.attr("id"))].x +
+                    "," +
+                    transformArray[parseFloat(circle.attr("id"))].y +
+                    ")"
                   );
                 bars[parseFloat(circle.attr("id"))] = thisBars;
               });
@@ -1148,11 +1029,11 @@ function load(
                 .enter()
                 .append("path")
                 .attr("class", "timeArcPath")
-                .attr("d", function(d) {
+                .attr("d", function (d) {
                   return arc(d);
                 })
                 .style("stroke", "#fff")
-                .style("fill", function(d, i) {
+                .style("fill", function (d, i) {
                   if (i == 2) {
                     return "#858585";
                   }
@@ -1163,12 +1044,12 @@ function load(
                 .attr(
                   "transform",
                   "translate(" +
-                    transformArray[parseFloat(circle.attr("id"))].x +
-                    "," +
-                    transformArray[parseFloat(circle.attr("id"))].y +
-                    ")"
+                  transformArray[parseFloat(circle.attr("id"))].x +
+                  "," +
+                  transformArray[parseFloat(circle.attr("id"))].y +
+                  ")"
                 )
-                .on("click", function(d, i) {
+                .on("click", function (d, i) {
                   var stratTime = i * 3;
                   var endTime = i * 3 + 2;
                   timeString = stratTime.toString() + "-" + endTime.toString();
@@ -1178,18 +1059,18 @@ function load(
                 });
             }
             circle.call(drag);
-            circle.on("pm:centerplaced", function(e) {
+            circle.on("pm:centerplaced", function (e) {
               ////
             });
             $(".leaflet-pm-icon-delete").attr("name", "false");
           }); //create 的括号
 
-          d3.select(".leaflet-pm-icon-delete").on("click", function() {
+          d3.select(".leaflet-pm-icon-delete").on("click", function () {
             if ($(".leaflet-pm-icon-delete").attr("name") === "false") {
               //selection.selectAll(".svgCircle").on(".drag", null);
               $(".leaflet-pm-icon-delete").attr("name", "true");
               selection.selectAll(".svgCircle").style("cursor", "default");
-              selection.selectAll(".svgCircle").on("click", function() {
+              selection.selectAll(".svgCircle").on("click", function () {
                 d3.select(this).remove();
                 let index = parseFloat(d3.select(this).attr("id"));
                 bars[index].remove();
@@ -1208,8 +1089,7 @@ function load(
               selection.selectAll(".svgCircle").on("click", null);
             }
           });
-        },
-        {
+        }, {
           zoomDraw: false
         }
       );
@@ -1353,7 +1233,7 @@ function load(
         } else {
           var bundleFile = "data/BSBundle.csv";
         }
-        getEdgeBundlingData(bundleFile).then(function(bundleData) {
+        getEdgeBundlingData(bundleFile).then(function (bundleData) {
           line.clear();
           line.lineStyle(0.1, 0x3446b0, 0.5);
           for (var i = 0; i < bundleData.length; i++) {
@@ -1568,7 +1448,7 @@ function load(
       }
 
       function bindPointSelectEvents() {
-        d3.select("#scatterSvg").on("click", function(d) {
+        d3.select("#scatterSvg").on("click", function (d) {
           var selectedCoords = d3.mouse(document.getElementById("scatterSvg"));
           var selectedX = selectedCoords[0];
           var selectedY = selectedCoords[1];
@@ -1614,13 +1494,13 @@ function load(
           }
           if (stationIDLocationFile === CHIFileList[0]) {
             showflux(selectedSourceTarget[0], selectedSourceTarget[1]).then(
-              function(volumeData) {
+              function (volumeData) {
                 flowvolumeView(volumeData[0]);
               }
             );
           } else {
             baseshowflux(selectedSourceTarget[0], selectedSourceTarget[1]).then(
-              function(volumeData) {
+              function (volumeData) {
                 flowvolumeView(volumeData[0]);
               }
             );
@@ -1630,7 +1510,7 @@ function load(
 
       if (firstDraw) {
         unbindEvents();
-        $("#comDetec").on("click", function() {
+        $("#comDetec").on("click", function () {
           comDetecFlag = !comDetecFlag;
           if (comDetecFlag == true) {
             addCommunityRect(
@@ -1641,7 +1521,7 @@ function load(
               labelColorScale
             );
             $(".labelRect").unbind();
-            scatterSvg.selectAll(".labelRect").on("click", function(d) {
+            scatterSvg.selectAll(".labelRect").on("click", function (d) {
               var labelData = [];
               for (var i = 0; i < scatterData.length; i++) {
                 if (scatterData[i].label == d) {
@@ -1680,7 +1560,7 @@ function load(
           }
           drawLines(selectedCircles, comDetecFlag);
         });
-        $("#BrushButton").on("click", function() {
+        $("#BrushButton").on("click", function () {
           if ($("#BrushButton").attr("name") === "false") {
             selectedCircles = [];
             drawLines(selectedCircles, comDetecFlag);
@@ -1714,7 +1594,7 @@ function load(
               .setAttribute("src", "images/brushClose.png");
           }
         });
-        $("#selectPointButton").on("click", function() {
+        $("#selectPointButton").on("click", function () {
           if ($("#selectPointButton").attr("name") === "false") {
             if ($("#BrushButton").attr("name") === "true") {
               let sRect = $(".selection");
@@ -1772,7 +1652,7 @@ function load(
           }
         });
         //sample button
-        $("#sample").click(function() {
+        $("#sample").click(function () {
           var sampleRateScale = d3
             .scaleOrdinal()
             .domain([40, 20, 10, 5])
@@ -1808,8 +1688,10 @@ function load(
             sampledScatterDataFileName
           );
 
+
+
           addHistogram2(edgeBtwFileName);
-          getPixelData("data/BSpixel.json").then(function(pData) {
+          getPixelData("data/BSpixel.json").then(function (pData) {
             pixelView(
               pData,
               pixelFileName,
@@ -1819,7 +1701,7 @@ function load(
               pRenderer
             );
           });
-          getScatterData(sampledScatterDataFileName).then(function(value) {
+          getScatterData(sampledScatterDataFileName).then(function (value) {
             sampledScatterData = value;
 
             drawScatterPlot(
@@ -1857,7 +1739,9 @@ function load(
             radius.push(scaleArray[j](radarData[index][j]));
           allRadiusArray.push(radius);
 
+
           addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
+
 
           //console.log('sampledScatterDataFileName: ',
           //    sampledScatterDataFileName);
@@ -1913,9 +1797,9 @@ function load(
               for (var s = 0; s < sampledScatterData.length; s++) {
                 if (
                   allSelectedMapLines[i][j].source ==
-                    sampledScatterData[s].source &&
+                  sampledScatterData[s].source &&
                   allSelectedMapLines[i][j].target ==
-                    sampledScatterData[s].target
+                  sampledScatterData[s].target
                 ) {
                   sampledAllSelectedMapLines[i].push(allSelectedMapLines[i][j]);
                 }
@@ -1928,7 +1812,7 @@ function load(
           //multidrawLines(sampledAllSelectedMapLines);
         });
 
-        $("#reset").click(function() {
+        $("#reset").click(function () {
           selectAllFlag = false;
           selectedLineGraphics.clear();
           selectedCircleGraphics.clear();
@@ -1944,11 +1828,14 @@ function load(
               .attr("y", 0)
               .attr("height", 50)
               .attr("width", 50);
-            setTimeout(function() {
+            setTimeout(function () {
               d3
                 .selectAll(".brush")
                 .call(brush)
-                .call(brush.move, [[0, 20], [50, 50]]);
+                .call(brush.move, [
+                  [0, 20],
+                  [50, 50]
+                ]);
             }, 100);
           }
           drawScatterPlot(
@@ -1970,7 +1857,7 @@ function load(
           // renderer.render(stage);
         });
 
-        $("#edgeBundle").on("click", function() {
+        $("#edgeBundle").on("click", function () {
           drawBundlingLines();
         });
         $("#slider1").slider({
@@ -1980,10 +1867,10 @@ function load(
           step: 1,
           value: 0,
           // value:[0,100],
-          slide: function(event, ui) {
+          slide: function (event, ui) {
             $("#amount1").val(ui.value);
           },
-          stop: function(event, ui) {
+          stop: function (event, ui) {
             if (ui.value != 0) {
               filterFlag = true;
             } else {
@@ -2034,7 +1921,7 @@ function load(
 
         $("#amount1").val($("#slider1").slider("value"));
 
-        $("#selectAll").click(function() {
+        $("#selectAll").click(function () {
           selectAllFlag = true;
           if (sampled === true) {
             d3
@@ -2045,7 +1932,10 @@ function load(
               .attr("y", 0)
               .attr("height", 50)
               .attr("width", 50);
-            d3.selectAll(".brush").call(brush.move, [[0, 0], [50, 50]]);
+            d3.selectAll(".brush").call(brush.move, [
+              [0, 0],
+              [50, 50]
+            ]);
             drawLines(sampledScatterData, comDetecFlag);
             selectedCircles = sampledScatterData;
           } else {
@@ -2057,7 +1947,10 @@ function load(
               .attr("y", 0)
               .attr("height", 50)
               .attr("width", 50);
-            d3.selectAll(".brush").call(brush.move, [[0, 0], [50, 50]]);
+            d3.selectAll(".brush").call(brush.move, [
+              [0, 0],
+              [50, 50]
+            ]);
             drawLines(scatterData, comDetecFlag);
             selectedCircles = scatterData;
           }
@@ -2065,7 +1958,7 @@ function load(
         });
       }
       if (firstDraw) {
-        showflux(98, 169).then(function(volumeData) {
+        showflux(98, 169).then(function (volumeData) {
           flowvolumeView(volumeData[0]);
         });
       }
@@ -2129,7 +2022,7 @@ function load(
       radarData[radarData.length - 1]
     ]);
 
-    getPixelData("data/BSpixel.json").then(function(pData) {
+    getPixelData("data/BSpixel.json").then(function (pData) {
       pixelView(
         pData,
         "data/res/BSlinedetail_label40_seq012/2.json",
@@ -2141,7 +2034,7 @@ function load(
     });
 
     function changePixelView(fileName, systemName) {
-      getPixelData(fileName).then(function(pData) {
+      getPixelData(fileName).then(function (pData) {
         pixelView(pData, "Chicago", pStage, pixelGraphics, pRenderer);
       });
     }
@@ -2178,7 +2071,7 @@ function load(
              addHistogram('data/CHIedgeBetweennessSample.csv')
          });*/
     function addCommunityMatrix(file) {
-      getCommunityMatrixData(file).then(function(matrixData) {
+      getCommunityMatrixData(file).then(function (matrixData) {
         var labels = ["0", "1", "2", "3", "4", "5"];
         Matrix({
           container: "#communityMatrixDraw",
