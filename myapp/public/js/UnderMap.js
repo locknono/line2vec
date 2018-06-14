@@ -101,9 +101,6 @@ function underMap(thisTimeTrackSet) {
         //////console.log("thisTimeTrackSet[thisLineName]",thisTimeTrackSet[thisLineName]);
         ////console.log(thisLineName == key);
         //把每条长轨迹都分割成最小的两点形成的轨迹
-
-
-
         //thiskey指代长轨迹
         //key指代短的被别人走过的轨迹
         
@@ -116,7 +113,7 @@ function underMap(thisTimeTrackSet) {
           //两点形成的轨迹，在人走过的轨迹中，并且人走过的次数多于这条长轨迹的次数
         } else if (
           thisLineName == key &&
-          thisTimeTrackSet[key] > thisTimeTrackSet[thisKey]
+          thisTimeTrackSet[key] >= thisTimeTrackSet[thisKey]
         ) {
           rectArray[s] = {
             name: thisLineName,
@@ -142,6 +139,7 @@ function underMap(thisTimeTrackSet) {
           };
         }
       }
+      console.log('rectArray: ', rectArray);
       for (var j = 0; j < rectArray.length - 1; j++) {
         rectG
           .append("rect")
@@ -151,7 +149,6 @@ function underMap(thisTimeTrackSet) {
           .attr("height", rectHeight)
           .style("stroke", "none")
           .style("fill", function(d) {
-            ////console.log("colorScale(rectArray[j].colorValue)",colorScale(rectArray[j].colorValue));
             return circleBarsInterpolate(colorScale(rectArray[j].colorValue));
           });
       }
