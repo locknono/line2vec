@@ -587,9 +587,6 @@ function load(
                   x2 = d3.event.selection[1];
                   let startIndex = parseInt((x1 - 10) / rectWidth);
                   let endIndex = parseInt((x2 - 10) / rectWidth);
-                  if (startIndex === endIndex) {
-                    endIndex = startIndex + 1;
-                  }
                   artLineMaxValue = recordArray[startIndex];
                   artLineMinValue = recordArray[endIndex];
                   drawStraightLine(allTrack);
@@ -600,9 +597,6 @@ function load(
                   x2 = d3.event.selection[1];
                   let startIndex = parseInt((x1 - 10) / rectWidth);
                   let endIndex = parseInt((x2 - 10) / rectWidth);
-                  if (startIndex === endIndex) {
-                    endIndex = startIndex + 1;
-                  }
                   artLineMaxValue = recordArray[startIndex];
                   artLineMinValue = recordArray[endIndex];
                   drawStraightLine(allTrack);
