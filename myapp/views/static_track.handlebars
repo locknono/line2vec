@@ -8,17 +8,15 @@
 
     function draw(fileName) {
         d3.json(fileName, function (data) {
-
             d3.json("./data/BS/track/original.json", function (d1) {
                 d3.json("./data/BS/track/ourSample.json", function (d2) {
                     d3.json("./data/BS/track/random.json", function (d4) {
                         var maxValue = d3.max([process(d1), process(d2), process(d4)]);
+                        console.log('maxValue: ', maxValue);
                     })
                 })
             })
-            console.log('d: ', data);
             let svgName = fileName.split('/')[fileName.split('/').length - 1].split('.')[0];
-            console.log('svgName: ', svgName);
             var oSvg = d3.select("#" + svgName);
             oSvg.append("text")
                 .attr("x", 200)
@@ -47,7 +45,8 @@
                 }
                 return maxValue;
             }
-            var maxValue = process(data);
+            process(data);
+            var maxValue = 16.5;
 
             var heightScale = d3.scaleLinear()
                 .domain([0, maxValue])
@@ -56,7 +55,6 @@
             var count = 0;
             for (var key in drawData) {
                 let value = drawData[key];
-                console.log('key: ', key);
                 oSvg.append("rect")
                     .attr("x", rectWidth * count)
                     .attr("y", 330 - heightScale(drawData[key]))
