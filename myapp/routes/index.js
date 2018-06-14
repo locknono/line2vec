@@ -96,7 +96,7 @@ router.post("/drawArtLine", function (req, res) {
   //得到采样后的轨迹集合:
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
 
-  let sampleFileName = path.resolve(__dirname, '../public/data/res/BSlinedetail_label10_seq012/0.csv');
+  let sampleFileName = path.resolve(__dirname, '../public/data/BS/RandomSample_5753.csv');
 
   var sampledScatterData = d3.csvParse(
     fs
@@ -239,7 +239,7 @@ router.post("/drawArtLine", function (req, res) {
 
   console.log("trackSetEnd");
 
-  let writeFileName = path.resolve(__dirname, '../public/data/BS/track/ourSample.json');
+  let writeFileName = path.resolve(__dirname, '../public/data/BS/track/random.json');
 
   fs.writeFileSync(writeFileName, JSON.stringify(thisTimeTrackSet))
   console.log("writeEnd")
