@@ -8,62 +8,80 @@
 
     function draw(fileName) {
         d3.json(fileName, function (data) {
-            d3.json("./data/BS/track/original.json", function (d1) {
-                d3.json("./data/BS/track/ourSample.json", function (d2) {
-                    d3.json("./data/BS/track/random.json", function (d4) {
-                        var maxValue = d3.max([process(d1), process(d2), process(d4)]);
-                        console.log('maxValue: ', maxValue);
-                    })
-                })
+            d3.json("./data/BS/track/original.json", function (oData) {
+                let svgName = fileName.split('/')[fileName.split('/').length - 1].split('.')[0];
+                var oSvg = d3.select("#" + svgName);
+                oSvg.append("text")
+                    .attr("x", 200)
+                    .attr("y", 50)
+                    .text(svgName);
+                var width = 683;
+                var height = 330;
+                var drawData = {}
+                var drawData2={}
+                for(var key in data){
+                    if(drawData[data[key]]===undefined){
+                        drawData[data[key]]=1
+                    }else{
+                        drawData[data[key]]+=1
+                    }
+                }
+                for(var key in oData){
+                    if(drawData2[oData[key]]===undefined){
+                        drawData2[oData[key]]=1
+                    }else{
+                        drawData2[oData[key]]+=1
+                        
+                    }
+                }
+
+
+                var diffData={}
+                
+                for (var k in drawData) {
+                    for (var ok in drawData2) {
+                        if (k  == ok) {
+                            var value = drawData2[ok]-drawData[k] 
+                            diffData[k] = value;
+                        }
+                    }
+                }
+                console.log('diffData: ', diffData);
+                var maxValue=0;
+                var minValue=1000;
+                for(var k in diffData){
+                    if(diffData[k]>30000){
+                        continue;
+                    }
+                    if(diffData[k]>maxValue){
+                        maxValue=diffData[k];
+                    }
+                    if(diffData[k]<minValue){
+                        minValue=diffData[k];
+                    }
+                }
+                console.log('maxValue: ', maxValue);
+                var heightScale = d3.scaleLinear()
+                    .domain([minValue, maxValue])
+                    .range([0, 330])
+                var rectWidth = width / Object.keys(drawData).length;
+                var count = 0;
+                for (var key in diffData) {
+                    if(count ===0){
+                    count += 1;
+                        continue;
+                    }
+                    let value = diffData[key];
+                    oSvg.append("rect")
+                        .attr("x", rectWidth * count)
+                        .attr("y", 330 - heightScale(diffData[key]))
+                        .attr("height", heightScale(diffData[key]))
+                        .attr("width", rectWidth)
+                        .style("fill", "blue")
+                        .on("mouseover", () => console.log(value))
+                    count += 1;
+                }
             })
-            let svgName = fileName.split('/')[fileName.split('/').length - 1].split('.')[0];
-            var oSvg = d3.select("#" + svgName);
-            oSvg.append("text")
-                .attr("x", 200)
-                .attr("y", 50)
-                .text(svgName);
-            var width = 683;
-            var height = 330;
-            var drawData = {}
-            function process(data) {
-                for (var key in data) {
-                    if (drawData[data[key]] === undefined) {
-                        drawData[data[key]] = 1
-                    } else {
-                        drawData[data[key]] += 1
-                    }
-                }
-                for (var key in drawData) {
-                    drawData[key] = Math.log2(drawData[key]);
-                }
-                var maxValue = 0;
-
-                for (var key in drawData) {
-                    if (drawData[key] > maxValue) {
-                        maxValue = drawData[key];
-                    }
-                }
-                return maxValue;
-            }
-            process(data);
-            var maxValue = 16.5;
-
-            var heightScale = d3.scaleLinear()
-                .domain([0, maxValue])
-                .range([0, 330])
-            var rectWidth = width / Object.keys(drawData).length;
-            var count = 0;
-            for (var key in drawData) {
-                let value = drawData[key];
-                oSvg.append("rect")
-                    .attr("x", rectWidth * count)
-                    .attr("y", 330 - heightScale(drawData[key]))
-                    .attr("height", heightScale(drawData[key]))
-                    .attr("width", rectWidth)
-                    .style("fill", "blue")
-                    .on("mouseover", () => console.log(value))
-                count += 1;
-            }
         })
     }
     draw("./data/BS/track/original.json");
