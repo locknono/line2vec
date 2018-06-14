@@ -80,13 +80,11 @@ router.post("/drawArtLine", function (req, res) {
   var thisTimeAllTrack = [];
   for (var i = 0; i < data.length; i++) {
     for (var key in data[i]) {
-      if (key === timeString) {
         var originalTrack = data[i][key];
         var inCircleTrack = getInCircleTrack(originalTrack);
         if (inCircleTrack.length > 0) {
           thisTimeAllTrack.push(inCircleTrack);
         }
-      }
     }
   }
   console.log("InCircle")
