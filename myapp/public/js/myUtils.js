@@ -71,8 +71,8 @@ function drawScatterPlot(
   labelData=undefined
   
 ) {
-  circle.clear();
-  var xyScale = getScatterXYScale(
+   circle.clear();
+ /* var xyScale = getScatterXYScale(
       scatterData,
       scatterPlotWidth,
       scatterPlotHeight
@@ -80,7 +80,7 @@ function drawScatterPlot(
     xScale = xyScale[0],
     yScale = xyScale[1];
     
-/*   for (var i = 0; i < scatterData.length; i++) {
+   for (var i = 0; i < scatterData.length; i++) {
     if (comDetecFlag == false) {
       circle.beginFill(op.scatterColor);
     } else {
@@ -90,15 +90,14 @@ function drawScatterPlot(
     }
     circle.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
     circle.endFill();
-  } */
+  } */ 
 
   if(comDetecFlag===true){
     d3.select("#scatterImg").attr("src",op.originalScatterImg.replace('.png','_com.png'));
   }else{
     d3.select("#scatterImg").attr("src",op.originalScatterImg);
   }
-  
-  
+
    if(labelData!==undefined){
     for (var i = 0; i < labelData.length; i++) {
         circle.beginFill(
