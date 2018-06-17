@@ -1521,6 +1521,16 @@ function load(
               }
               ////////////
               //////////////
+              drawScatterPlot(
+                scatterData,
+                labelColorScale,
+                scatterPlotWidth,
+                scatterPlotHeight,
+                stage,
+                scatterCircleGraphics,
+                comDetecFlag,
+                labelData
+              );
               drawLines(labelData, comDetecFlag);
             });
           } else {
