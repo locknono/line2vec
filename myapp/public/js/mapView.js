@@ -418,10 +418,7 @@ function load(
                 }
               }
             }
-            ////////
-            //drawMDS_PCP(selectedMapLines);
             allSelectedMapLines.push(selectedMapLines);
-            ////console.log('After Push allSelectedMapLines: ',
             //    allSelectedMapLines);
             multidrawCircles(allSelectedMapLines, comDetecFlag);
             //  multidrawLines(allSelectedMapLines);
@@ -587,10 +584,6 @@ function load(
                   .append("g")
                   .attr("class", "underMapBrush")
                   .call(rectBrush);
-                /*  .call(rectBrush.move, 
-                                      [10, 690],
-                                  )
-                                  */
                 function rectBrushed() {
                   x1 = d3.event.selection[0];
                   x2 = d3.event.selection[1];
@@ -816,12 +809,6 @@ function load(
             }
 
             function draged() {
-              ////////////
-
-              ////
-              ////
-              //  circle.attr("cx", map.mouseEventToLayerPoint(d3.event.sourceEvent).x)
-              //      .attr("cy", map.mouseEventToLayerPoint(d3.event.sourceEvent).y);
               circle
                 .attr("cx", d3.mouse(this)[0])
                 .attr("cy", d3.mouse(this)[1]);
@@ -1263,20 +1250,11 @@ function load(
         mapCircleGraphics.clear();
         for (var i = 0; i < mapData.length; i++) {
           mapCircleGraphics.beginFill(0x000, 1);
-          // mapCircleGraphics.beginFill(labelColorScale(mapData[i].label).replace(
-          //      '#',
-          //     '0x'), 1);
           mapCircleGraphics.drawCircle(
             project(mapData[i].stationLocation).x,
             project(mapData[i].stationLocation).y,
             mapCircleRadius
           );
-
-          //   if (mapData[i].label ==11 || mapData[i].label == 12) {
-          //      mapCircleGraphics.drawCircle(project(mapData[i].stationLocation).x, project(mapData[i].stationLocation).y, 1);
-          //   } else {
-          //      mapCircleGraphics.drawCircle(project(mapData[i].stationLocation).x, project(mapData[i].stationLocation).y, mapCircleRadius);
-          //   }
           mapCircleGraphics.endFill();
         }
         leafletRenderer.render(container);
@@ -1329,11 +1307,6 @@ function load(
       leafletPixiContaioner.addChild(selectedLineGraphics);
 
       function multidrawCircles(allSelectedMapLines, comDetecFlag) {
-        ////
-        ////
-        //////
-        //////
-        //////////
         var xyScale = getScatterXYScale(
             scatterData,
             scatterPlotWidth,
@@ -1342,8 +1315,6 @@ function load(
           xScale = xyScale[0],
           yScale = xyScale[1];
         allSelectedCirclesGraphics.clear();
-        // allSelectedCirclesGraphics.lineStyle(1, 0x373B3A, 1);
-        ////
 
         for (var j = 0; j < allSelectedMapLines.length; j++) {
           for (var i = 0; i < allSelectedMapLines[j].length; i++) {
@@ -1688,7 +1659,7 @@ function load(
             method += "2";
           }
           var sampledScatterDataFileName = folderName + "/0.csv";
-          console.log('sampledScatterDataFileName: ', sampledScatterDataFileName);
+          
           var edgeBtwFileName = folderName + "/1.csv";
           var pixelFileName = folderName + "/2.json";
           addHistogram2(edgeBtwFileName);
@@ -1778,8 +1749,6 @@ function load(
           renderer.render(stage);
 
           $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
-          ////
-          ////
           var sampledAllSelectedMapLines = [];
           for (var i = 0; i < allSelectedMapLines.length; i++) {
             sampledAllSelectedMapLines[i] = [];
@@ -1796,10 +1765,7 @@ function load(
               }
             }
           }
-          //////////////
           allSelectedMapLines = sampledAllSelectedMapLines;
-          ////////////
-          //multidrawLines(sampledAllSelectedMapLines);
         });
 
         $("#reset").click(function () {
@@ -1957,11 +1923,6 @@ function load(
     }, leafletPixiContaioner);
     leafletPixiOverlay.addTo(map);
 
-    //       addTimingView();
-
-    //addRadarView();
-
-    //addRadarView();
     var radarData = [
       [2.94, 2779, 0, 0.056, 1, 65952, 577.64, 7039],
 
@@ -2019,89 +1980,6 @@ function load(
       pixelGraphics,
       pRenderer
     );
-    function changePixelView(fileName, systemName) {
-      pixelView(pData, "Chicago", pStage, pixelGraphics, pRenderer);
-    }
-
     addHistogram2("data/res/BSlinedetail_label5_seq012/1.csv");
-    /* addHistogram('data/CHIedgeBetweenness.csv');
-         $("#hisWindow1").on("click", function () {
-             addHistogram('data/CHIedgeBetweenness.csv')
-         });
-         $("#hisWindow2").on("click", function () {
-             addHistogram('data/CHIedgeBetweennessRandomSample.csv')
-         });
-         $("#hisWindow3").on("click", function () {
-             addHistogram('data/CHIedgeBetweennessSample.csv')
-         });*/
-    function addCommunityMatrix(file) {
-      getCommunityMatrixData(file).then(function (matrixData) {
-        var labels = ["0", "1", "2", "3", "4", "5"];
-        Matrix({
-          container: "#communityMatrixDraw",
-          data: matrixData,
-          labels: labels,
-          start_color: "#ffffff",
-          end_color: "#3498db"
-        });
-      });
-    }
-    //  addCommunityMatrix('data/CHIcommunityMatrix.json');
-    //  $("#cmWindow1").on("click", function () {
-    //      addCommunityMatrix('data/CHIcommunityMatrix.json')
-    //  });
-    //  $("#cmWindow2").on("click", function () {
-    //      addCommunityMatrix('data/CHIcommunityMatrixRandomSample.json')
-    //  });
-    //  $("#cmWindow3").on("click", function () {
-    //      addCommunityMatrix('data/CHIcommunityMatrixSample.json')
-    //  });
-    function preFlowvolumeView() {
-      var preShowFluxMatrixData = [];
-      for (var i = 0; i < Math.random() * 40; i++) {
-        preShowFluxMatrixData.push(scatterData[i]);
-      }
-      //     drawFluxMatrix(preShowFluxMatrixData);
-    }
-    //  preFlowvolumeView();
-    function drawFluxMatrix(selectedCircles) {
-      mStage.removeChildren();
-      var margin = {
-        left: 25,
-        top: 30,
-        bottom: 20,
-        right: 25
-      };
-      var matrixWidth = 430 - margin.left - margin.right;
-      var matrixHeight = 360 - margin.top - margin.bottom;
-      var rectNumber = selectedCircles.length;
-      var rectWidth = matrixWidth / rectNumber;
-      var rectHeight = matrixHeight / rectNumber;
-      var matrixGraphics = new PIXI.Graphics();
-      var a = d3.rgb(255, 255, 255);
-      var b = d3.rgb(25, 152, 219);
-      var color = d3.interpolate(a, b); //颜色插值函数
-      for (var i = 0; i < rectNumber; i++) {
-        for (var j = 0; j < rectNumber; j++) {
-          //  matrixGraphics.beginFill(getColor().replace('#', '0x'), 1);
-          matrixGraphics.beginFill(
-            colorRGB2Hex(color(Math.random())).replace("#", "0x"),
-            1
-          );
-          matrixGraphics.drawRect(
-            margin.left + rectWidth * i,
-            margin.top + rectHeight * j,
-            rectWidth,
-            rectHeight
-          );
-          matrixGraphics.endFill;
-        }
-      }
-      matrixGraphics.x = 0;
-      matrixGraphics.y = 0;
-      mStage.addChild(matrixGraphics);
-      mRenderer.render(mStage);
-    }
-    //drawFluxMatrix();
   }); //promise.then
 } //load()
