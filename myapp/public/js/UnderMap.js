@@ -1,6 +1,6 @@
 function underMap(thisTimeTrackSet) {
-  //console.log("thisTimeTrackSet: ", thisTimeTrackSet);
-  ////console.log("thisTimeTrackSet: ", thisTimeTrackSet);
+  //
+  ////
 
   var a = '#fff4b3'; 
   var b ='#F22613'; 
@@ -26,23 +26,23 @@ function underMap(thisTimeTrackSet) {
   var sortedKeys = Object.keys(thisTimeTrackSet).sort(function(a, b) {
     return b.split(",").length - 1 - (a.split(",").length - 1);
   });
-  ////console.log('sortedKeys: ', sortedKeys);
+  ////
   var maxFlow = sortedKeys[0].split(",").length;
   var minFlow = sortedKeys[sortedKeys.length - 1].split(",").length;
 
-  ////console.log("maxFlow: ", maxFlow);
+  ////
 
   var sortedColorKeys = Object.keys(thisTimeTrackSet).sort(function(a, b) {
     return thisTimeTrackSet[b] - thisTimeTrackSet[a];
   });
-  ////console.log("sortedColorKeys: ", sortedColorKeys);
+  ////
   var maxColorValue = thisTimeTrackSet[sortedColorKeys[0]];
 
   var minColorValue =
     thisTimeTrackSet[sortedColorKeys[sortedColorKeys.length - 1]];
 
-  ////console.log("maxColorValue: ", maxColorValue);
-  ////console.log("minColorValue: ", minColorValue);
+  ////
+  ////
 
   var maxFlow = sortedKeys[0].split(",").length;
   var minFlow = sortedKeys[sortedKeys.length - 1].split(",").length;
@@ -86,20 +86,20 @@ function underMap(thisTimeTrackSet) {
   var recordArray = [];
 
   var thisTimeTrackSetLength = Object.keys(thisTimeTrackSet).length;
-  console.log('sortedKeys: ', sortedKeys);
+  
   for (var i = 0; i < sortedKeys.length; i++) {
     var thisKey = sortedKeys[i];
     var rectArray = thisKey.split(",");
     recordArray.push([rectArray.length - 1]);
     for (var s = 0; s < rectArray.length - 1; s++) {
       var thisLineName = [rectArray[s], rectArray[s + 1]];
-      //////console.log('thisLineName: ', thisLineName);
+      //////
       var time = 0;
       for (var key in thisTimeTrackSet) {
         time = time + 1;
-        //////console.log("thisTimeTrackSet[thisKey]",thisTimeTrackSet[thisKey]);
-        //////console.log("thisTimeTrackSet[thisLineName]",thisTimeTrackSet[thisLineName]);
-        ////console.log(thisLineName == key);
+        //////
+        //////
+        ////
         //把每条长轨迹都分割成最小的两点形成的轨迹
         //thiskey指代长轨迹
         //key指代短的被别人走过的轨迹
@@ -132,14 +132,14 @@ function underMap(thisTimeTrackSet) {
         } else if (thisLineName != key && time != thisTimeTrackSetLength) {
           continue;
         } else if (thisLineName != key && time == thisTimeTrackSetLength) {
-          //console.log("end");
+          //
           rectArray[s] = {
             name: thisLineName,
             colorValue: thisTimeTrackSet[thisKey]
           };
         }
       }
-      console.log('rectArray: ', rectArray);
+      
       for (var j = 0; j < rectArray.length - 1; j++) {
         rectG
           .append("rect")
