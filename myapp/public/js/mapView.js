@@ -237,6 +237,7 @@ function load(
       }
       download_sprite_as_png(renderer, stage, 'a.png');
     }
+   // downloadPng();
 
     $("#linesNumberBeforeSample").text(
       "Original Flow Count:" + scatterData.length
