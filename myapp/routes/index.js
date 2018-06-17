@@ -4,33 +4,23 @@ var fluxModel = require("../models/flux");
 var basefluxModel = require("../models/baseflux");
 var fs = require("fs");
 var d3 = require("d3");
-var path=require("path");
-require("jsdom/lib/old-api").env("", function(err, window) {
-  if (err) {
-    console.error(err);
-    return;
-  }
-
-  var $ = require("jquery")(window);
-});
+var path = require("path");
 
 /* GET home page. */
-router.get("/", function(req, res, next) {
+router.get("/", function (req, res, next) {
   res.render("index", {});
 });
 
-router.get("/getTraffic", function(req, res) {
+router.get("/getTraffic", function (req, res) {
   var id = req.query.id;
-  var query = linecon.find(
-    {
+  var query = linecon.find({
       id: id
-    },
-    {
+    }, {
       traffic: {
         $slice: [0, 1]
       }
     },
-    function(err, data) {
+    function (err, data) {
       if (err) console.error(error);
       else {
         res.setHeader("Access-Control-Allow-Origin", "*");
@@ -40,15 +30,14 @@ router.get("/getTraffic", function(req, res) {
   );
 });
 
-router.get("/getFlux", function(req, res) {
+router.get("/getFlux", function (req, res) {
   var source = parseInt(req.query.source);
   var target = parseInt(req.query.target);
 
-  var query = fluxModel.find(
-    {
+  var query = fluxModel.find({
       track: [source, target]
     },
-    function(err, data) {
+    function (err, data) {
       if (err) {
         console.error(error);
       } else {
@@ -59,16 +48,15 @@ router.get("/getFlux", function(req, res) {
   );
 });
 
-router.post("/getBaseFlux", function(req, res) {
+router.post("/getBaseFlux", function (req, res) {
   var sites = req.body.sites;
 
-  var query = basefluxModel.find(
-    {
+  var query = basefluxModel.find({
       track: {
         $in: sites
       }
     },
-    function(err, data) {
+    function (err, data) {
       if (err) {
         console.error(error);
       } else {
@@ -79,7 +67,8 @@ router.post("/getBaseFlux", function(req, res) {
   );
 });
 
-router.post("/drawArtLine", function(req, res) {
+router.post("/drawArtLine", function (req, res) {
+  console.log("post")
   var selectedMapData = req.body.selectedMapData;
 
   let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
@@ -91,33 +80,31 @@ router.post("/drawArtLine", function(req, res) {
   var thisTimeAllTrack = [];
   for (var i = 0; i < data.length; i++) {
     for (var key in data[i]) {
-      if (key === timeString) {
         var originalTrack = data[i][key];
         var inCircleTrack = getInCircleTrack(originalTrack);
         if (inCircleTrack.length > 0) {
           thisTimeAllTrack.push(inCircleTrack);
         }
-      }
     }
   }
-
+  console.log("InCircle")
   var thisTimeTrackSet = {};
 
   var sampledSourceTragetArray = [];
   //得到采样后的轨迹集合:
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
 
-  let sampleFileName = path.resolve(__dirname, '../public/data/BS/linedetail_label_sample.csv');
+  let sampleFileName = path.resolve(__dirname, '../public/data/BS/RandomSample_5753.csv');
 
   var sampledScatterData = d3.csvParse(
     fs
-      .readFileSync(
-        sampleFileName
-      )
-      .toString("utf-8")
+    .readFileSync(
+      sampleFileName
+    )
+    .toString("utf-8")
   );
 
-  sampledScatterData.map(function(element) {
+  sampledScatterData.map(function (element) {
     element.x = parseFloat(element.x);
     element.y = parseFloat(element.y);
     element.scor = [parseFloat(element.slat), parseFloat(element.slng)];
@@ -126,6 +113,7 @@ router.post("/drawArtLine", function(req, res) {
     element.fre = parseFloat(element.fre);
     element.ebt = parseFloat(element.ebt);
   });
+  console.log("readFinishi")
 
   for (var i = 0; i < sampledScatterData.length; i++) {
     sampledSourceTragetArray.push(
@@ -135,10 +123,14 @@ router.post("/drawArtLine", function(req, res) {
       sampledScatterData[i].target + "-" + sampledScatterData[i].source
     );
   }
+
+  console.log("stArray")
+
   var flag = 1;
   //thisTimeAllTrack是一个三维数组，每个元素代表一个人的轨迹，每个人的轨迹数组中的每一个元素这个人轨迹的一段
   //这一段中包含了站点的信息，顺序存储
   for (var i = 0; i < thisTimeAllTrack.length; i++) {
+    console.log(i);
     for (var j = 0; j < thisTimeAllTrack[i].length; j++) {
       //thisTimeAllTrack[i][j]代表某个人的某段轨迹
       flag = 1;
@@ -150,8 +142,8 @@ router.post("/drawArtLine", function(req, res) {
           s != 0 &&
           inArray(
             thisTimeAllTrack[i][j][s - 1].stationID +
-              "-" +
-              thisTimeAllTrack[i][j][s].stationID,
+            "-" +
+            thisTimeAllTrack[i][j][s].stationID,
             sampledSourceTragetArray
           ) == -1
         ) {
@@ -168,11 +160,11 @@ router.post("/drawArtLine", function(req, res) {
       }
     }
   }
-
-  var sortedKeys = Object.keys(thisTimeTrackSet).sort(function(a, b) {
+  console.log("trackSet")
+  var sortedKeys = Object.keys(thisTimeTrackSet).sort(function (a, b) {
     return a.split(",").length - b.split(",").length;
   });
-
+  console.log('sortedKeys: ', sortedKeys);
   for (var i = 0; i < sortedKeys.length; i++) {
     for (var j = 0; j < sortedKeys.length; j++) {
       if (i == j) {
@@ -203,8 +195,8 @@ router.post("/drawArtLine", function(req, res) {
     track.lineCoors = track2;
     track.value = thisTimeTrackSet[key];
     allTrack.push(track);
-    
   }
+
   function getInCircleTrack(originalTrack) {
     var allInCircleTrack = [];
     var inCircleTrack = [];
@@ -226,21 +218,38 @@ router.post("/drawArtLine", function(req, res) {
           allInCircleTrack.push(inCircleTrack);
           inCircleTrack = [];
         }
+      } else if (j !== selectedMapData.length && i === originalTrack.length - 1) {
+        if (queue.count() < 2) {
+          queue.dequeue();
+        } else if (queue.count() >= 2) {
+          while (!queue.empty()) {
+            inCircleTrack.push(queue.dequeue());
+          }
+          allInCircleTrack.push(inCircleTrack);
+          inCircleTrack = [];
+        }
       }
     }
     return allInCircleTrack;
   }
 
   res.setHeader("Access-Control-Allow-Origin", "*");
-  console.log("allTrack: ", allTrack);
-  var resData={
-    allTrack:allTrack,
-    thisTimeTrackSet:thisTimeTrackSet,
+
+  console.log("trackSetEnd");
+
+  let writeFileName = path.resolve(__dirname, '../public/data/BS/track/random.json');
+
+  fs.writeFileSync(writeFileName, JSON.stringify(thisTimeTrackSet))
+  console.log("writeEnd")
+
+  var resData = {
+    allTrack: allTrack,
+    thisTimeTrackSet: thisTimeTrackSet,
   }
   res.json(resData);
 });
 
-router.post("/writeMetric", function(req, res) {
+router.post("/writeMetric", function (req, res) {
   let data = req.body.data;
   let directory = req.body.directory;
   fs.writeFile(directory, data, err => {
