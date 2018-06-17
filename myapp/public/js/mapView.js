@@ -19,9 +19,6 @@ L.tileLayer(osmUrl, {
 }).addTo(map);
 map.zoomControl.remove();
 
-map.on("click",e=>{
-  console.log(e);
-})
 var options = {
   position: "topleft", // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
   drawMarker: false, // adds button to draw markers
@@ -483,6 +480,7 @@ function load(
                 });
 
                 function drawStraightLine(allTrack) {
+                  console.log('allTrack: ', allTrack);
                   allTrack.sort(function (a, b) {
                     return b.lineCoors.length - a.lineCoors.length;
                   });
@@ -548,7 +546,18 @@ function load(
                       allTrack[i].value >= flowSliderValue
                     ) {
                       //   .attr("marker-mid", "url(#arrow)")
+                      var path = d3.path();
+                      for (var j = 0; j < allTrack[i].lineCoors.length; j++) {
+                        if (j === 0) {
+                          path.moveTo(projection.latLngToLayerPoint(allTrack[i].lineCoors[0]).x, projection.latLngToLayerPoint(allTrack[i].lineCoors[0]).y);
 
+                        }
+                        if (j % 3 === 0&&j!==0) {
+                          path.bezierCurveTo(projection.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, projection.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
+                          projection.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, projection.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
+                          projection.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, projection.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
+                        }
+                      }
                       selection
                         .append("path")
                         .attr("class", "artLine")
@@ -558,7 +567,7 @@ function load(
                         )
                         .attr("stroke-width", widthScale(allTrack[i].value))
                         .attr("fill", "none")
-                        .attr("d", lineGenarator(allTrack[i].lineCoors));
+                        .attr("d", path);
                       //  .attr("marker-start",
                       //      "url(#arrow)")
                       // .attr("marker-mid",
