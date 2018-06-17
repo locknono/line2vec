@@ -149,7 +149,7 @@ stage.addChild(dragDrawCricleGraphics);
 stage.addChild(allSelectedCirclesGraphics);
 stage.addChild(selectedCircleGraphics);
 var scatterCanvas = document.getElementById("scatterCanvas");
-var renderer = PIXI.autoDetectRenderer(scatterPlotWidth+0.01, scatterPlotHeight+0.02, {
+var renderer = PIXI.autoDetectRenderer(scatterPlotWidth + 0.01, scatterPlotHeight + 0.02, {
   view: scatterCanvas,
   forceFXAA: false,
   antialias: true,
@@ -157,11 +157,11 @@ var renderer = PIXI.autoDetectRenderer(scatterPlotWidth+0.01, scatterPlotHeight+
   resolution: 1
 });
 
-d3.select("#scatterImg").attr("src",op.originalScatterImg)
-.style("width",scatterPlotWidth)
-.style("height",scatterPlotHeight)
-.style("position","absolute")
-.style("top","0px")
+d3.select("#scatterImg").attr("src", op.originalScatterImg)
+  .style("width", scatterPlotWidth)
+  .style("height", scatterPlotHeight)
+  .style("position", "absolute")
+  .style("top", "0px")
 
 
 
@@ -215,7 +215,7 @@ function load(
     var filterScatterData = [];
     var filterFlag = false;
 
-    function downloadPng(comDetecFlag=true) {
+    function downloadPng(comDetecFlag = true) {
       scatterCircleGraphics.clear();
       var xyScale = getScatterXYScale(
           scatterData,
@@ -225,6 +225,24 @@ function load(
         xScale = xyScale[0],
         yScale = xyScale[1];
       for (var i = 0; i < scatterData.length; i++) {
+        if (scatterData[i].label === -1) {
+          continue;
+        }
+        if (comDetecFlag == false) {
+          scatterCircleGraphics.beginFill(op.scatterColor);
+        } else {
+          scatterCircleGraphics.beginFill(
+            op.labelColorScale(scatterData[i].label).replace("#", "0x")
+          );
+        }
+        scatterCircleGraphics.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
+        scatterCircleGraphics.endFill();
+      }
+      //draw inter last
+      for (var i = 0; i < scatterData.length; i++) {
+        if (scatterData[i].label !== -1) {
+          continue;
+        }
         if (comDetecFlag == false) {
           scatterCircleGraphics.beginFill(op.scatterColor);
         } else {
@@ -237,7 +255,7 @@ function load(
       }
       download_sprite_as_png(renderer, stage, 'a.png');
     }
-   // downloadPng();
+    // downloadPng();
 
     $("#linesNumberBeforeSample").text(
       "Original Flow Count:" + scatterData.length
@@ -577,6 +595,7 @@ function load(
                   .append("g")
                   .attr("class", "underMapBrush")
                   .call(rectBrush);
+
                 function rectBrushed() {
                   x1 = d3.event.selection[0];
                   x2 = d3.event.selection[1];
@@ -810,7 +829,7 @@ function load(
                 "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
               );
               //   ////
-              selectedMapData = [] ;
+              selectedMapData = [];
               selectedMapLines = [];
               let clickPoint = {
                 x: map.mouseEventToLayerPoint(d3.event.sourceEvent).x,
@@ -1652,7 +1671,7 @@ function load(
             method += "2";
           }
           var sampledScatterDataFileName = folderName + "/0.csv";
-          
+
           var edgeBtwFileName = folderName + "/1.csv";
           var pixelFileName = folderName + "/2.json";
           addHistogram2(edgeBtwFileName);
