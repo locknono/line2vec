@@ -17,20 +17,28 @@ var op = (function () {
 
     var labelColorScale = d3
         .scaleOrdinal()
-        .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
+        .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15,16,17,18])
         .range([
-            "#fb8072",
-            "#80b1d3",
+            "#fb8072",//-1
+            "#80b1d3",//0
             "#fdb462",
             "#b3de69",
             "#fccde5",
             "#d9d9d9",
-            "#bc80bd",
+            "#bc80bd",//5
             "#ccebc5",
             "#ffed6f",
             "#8dd3c7",
             "#ffffb3",
-            "#CCCCCC"
+            "#FFFF00",//10
+            "#CCCCCC",
+            "#ffffb3",
+            "#FC53E5",
+            "#47781C",
+            "#6F7F6B",//15
+            "#D32318",
+            "#E8CB0C",
+            "#4B3700",//18
         ]);
     //style
     var minArtLineWidth = 2,
