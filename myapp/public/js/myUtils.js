@@ -1,3 +1,14 @@
+function download_sprite_as_png(renderer, sprite, fileName) {
+	renderer.extract.canvas(sprite).toBlob(function(b){
+		var a = document.createElement('a');
+		document.body.append(a);
+		a.download = fileName;
+		a.href = URL.createObjectURL(b);
+		a.click();
+		a.remove();
+	}, 'image/png');
+}
+
 function calDistance(point1, point2) {
   return Math.sqrt(
     Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
@@ -88,9 +99,8 @@ function drawScatterPlot(
       circle.endFill();
     }
   }
-  setTimeout(function(){
-    renderer.render(stage);
-  },100)
+  //renderer.render(stage);
+  //download_sprite_as_png(renderer,stage,'a.png');
 }
 
 function unbindEvents() {

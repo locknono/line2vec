@@ -2,6 +2,7 @@ var op = (function () {
     var system_name = "Wenzhou";
     var root_path = 'data/BS/';
     var res_path = root_path + 'res/';
+    var img_root_path='./images/source/'
     var fileList = {
         id_location_file: root_path + 'stationIDLocation.csv',
         pixel_file: root_path + 'pixel.json',
@@ -11,7 +12,7 @@ var op = (function () {
     };
     var pixel_file = root_path + 'pixel.json';
     var track_file = root_path + '18Data_track.json';
-    
+    var originalScatterImg=img_root_path+'original.png';
     //style
     var minArtLineWidth = 2,
         maxArtLineWidth = 15,
@@ -29,6 +30,7 @@ var op = (function () {
         circleBarEndColor: circleBarEndColor,
         scatterColor: scatterColor,
         res_path: res_path,
-        pixel_file: pixel_file
+        pixel_file: pixel_file,
+        originalScatterImg:originalScatterImg,
     }
 }())

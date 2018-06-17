@@ -149,13 +149,25 @@ stage.addChild(dragDrawCricleGraphics);
 stage.addChild(allSelectedCirclesGraphics);
 stage.addChild(selectedCircleGraphics);
 var scatterCanvas = document.getElementById("scatterCanvas");
-var renderer = PIXI.autoDetectRenderer(scatterPlotWidth, scatterPlotHeight, {
+var renderer = PIXI.autoDetectRenderer(scatterPlotWidth+0.01, scatterPlotHeight+0.02, {
   view: scatterCanvas,
   forceFXAA: false,
   antialias: true,
   transparent: !0,
   resolution: 1
 });
+
+
+var sprite = PIXI.Sprite.fromImage('images/a.png');
+scatterCircleGraphics.addChild(sprite);
+d3.select("#scatterPlot").append("img").attr("src",op.originalScatterImg)
+.style("width",scatterPlotWidth)
+.style("height",scatterPlotHeight)
+.style("position","absolute")
+.style("top","0px")
+
+
+
 document.getElementById("scatterPlot").appendChild(renderer.view);
 var pCanvas = document.getElementById("pixelCanvas");
 var pStage = new PIXI.Container();
@@ -1521,7 +1533,7 @@ function load(
               }
               ////////////
               //////////////
-              drawScatterPlot(
+              /* drawScatterPlot(
                 scatterData,
                 labelColorScale,
                 scatterPlotWidth,
@@ -1530,7 +1542,7 @@ function load(
                 scatterCircleGraphics,
                 comDetecFlag,
                 labelData
-              );
+              ); */
               drawLines(labelData, comDetecFlag);
             });
           } else {
