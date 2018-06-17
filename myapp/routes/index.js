@@ -237,10 +237,11 @@ router.post("/drawArtLine", function (req, res) {
 
   console.log("trackSetEnd");
 
-  let writeFileName = path.resolve(__dirname, '../public/data/BS/track/random.json');
+  /*let writeFileName = path.resolve(__dirname, '../public/data/BS/track/random.json');
 
   fs.writeFileSync(writeFileName, JSON.stringify(thisTimeTrackSet))
   console.log("writeEnd")
+  */
 
   var resData = {
     allTrack: allTrack,
