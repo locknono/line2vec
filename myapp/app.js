@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var static_track = require('./routes/static_track');
 
 var handlebars = require('handlebars');
 var exphbs = require('express-handlebars');
@@ -41,6 +42,7 @@ app.use(express.static(path.join(__dirname, 'public'))); //设置public文件夹
 
 app.use('/', index);
 app.use('/users', users);
+app.use('/static_track', static_track);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

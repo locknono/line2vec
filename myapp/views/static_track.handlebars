@@ -1,0 +1,196 @@
+<div class='panel panel-default' style="width:95%;height:95%;margin:10px;">
+    <svg id='original' class='panel panel-default' style="width:47%;height:47%;"></svg>
+    <svg id='random' class='panel panel-default' style="width:47%;height:47%;"></svg>
+    <svg id='ourSample' class='panel panel-default' style="width:47%;height:47%;"></svg>
+    <svg id='filter' class='panel panel-default' style="width:47%;height:47%;"></svg>
+</div>
+<script>
+
+    function draw(fileName) {
+        d3.json(fileName, function (data) {
+            d3.json("./data/BS/track/original.json", function (oData) {
+                let svgName = fileName.split('/')[fileName.split('/').length - 1].split('.')[0];
+                var oSvg = d3.select("#" + svgName);
+                oSvg.append("text")
+                    .attr("x", 200)
+                    .attr("y", 50)
+                    .text(svgName);
+                var width = 683;
+                var height = 330;
+                var drawData = {}
+                var drawData2 = {}
+                for (var key in data) {
+                    if (drawData[data[key]] === undefined) {
+                        drawData[data[key]] = 1
+                    } else {
+                        drawData[data[key]] += 1
+                    }
+                }
+                for (var key in oData) {
+                    if (drawData2[oData[key]] === undefined) {
+                        drawData2[oData[key]] = 1
+                    } else {
+                        drawData2[oData[key]] += 1
+
+                    }
+                }
+
+
+                var diffData = {}
+
+                for (var k in drawData) {
+                    for (var ok in drawData2) {
+                        if (k == ok) {
+                            var value = drawData2[ok] - drawData[k]
+                            diffData[k] = value;
+                        }
+                    }
+                }
+                console.log('diffData: ', diffData);
+                var maxValue = 0;
+                var minValue = 1000;
+                for (var k in diffData) {
+                    if (diffData[k] > maxValue) {
+                        maxValue = diffData[k];
+                    }
+                    if (diffData[k] < minValue) {
+                        minValue = diffData[k];
+                    }
+                }
+                console.log('maxValue: ', maxValue);
+                var heightScale = d3.scaleLinear()
+                    .domain([minValue, maxValue])
+                    .range([0, 330])
+                var rectWidth = width / Object.keys(drawData).length;
+                var count = 0;
+                for (var key in diffData) {
+                    let value = diffData[key];
+                    oSvg.append("rect")
+                        .attr("x", rectWidth * count)
+                        .attr("y", 330 - heightScale(diffData[key]))
+                        .attr("height", heightScale(diffData[key]))
+                        .attr("width", rectWidth)
+                        .style("fill", "blue")
+                        .on("mouseover", () => console.log(value))
+                    count += 1;
+                }
+            })
+        })
+    }
+    draw("./data/BS/track/original.json");
+    draw("./data/BS/track/ourSample.json");
+    draw("./data/BS/track/random.json");
+
+    d3.json('./data/BS/track/ourSample.json', function (data) {
+        d3.json('./data/BS/track/random.json', function (randomData) {
+            d3.json("./data/BS/track/original.json", function (oData) {
+                var oSvg = d3.select("#filter");
+                oSvg.append("text")
+                    .attr("x", 200)
+                    .attr("y", 50)
+                    .text("diff");
+                var width = 683;
+                var height = 330;
+                var drawData = {}
+                var originalDrawData = {}
+                var randomDrawData = {}
+                function getDrawData(data) {
+                    var drawData = {}
+                    for (var key in data) {
+                        if (drawData[data[key]] === undefined) {
+                            drawData[data[key]] = 1
+                        } else {
+                            drawData[data[key]] += 1
+                        }
+                    }
+                    return drawData
+                }
+
+                var ourDrawData = getDrawData(data);
+                var originalDrawData = getDrawData(oData);
+                var randomDrawData = getDrawData(randomData);
+
+                var diffData = {}
+
+                for (var k in ourDrawData) {
+                    for (var ok in originalDrawData) {
+                        if (k == ok) {
+                            var value = originalDrawData[ok] - ourDrawData[k]
+                            diffData[k] = value;
+                        }
+                    }
+                }
+                console.log('diffData: ', diffData);
+
+                var diffData2 = {}
+
+
+                for (var k in randomDrawData) {
+                    for (var ok in originalDrawData) {
+                        if (k == ok) {
+                            var value = originalDrawData[ok] - randomDrawData[k]
+                            diffData2[k] = value;
+                        }
+                    }
+                }
+                console.log('diffData2: ', diffData2);
+
+
+                var thisDiff = {}
+
+                for (var k in diffData) {
+                    for (var ok in diffData2) {
+                        if (k == ok) {
+                            var value = diffData[ok] - diffData2[k]
+                            thisDiff[k] = value;
+                        }
+                    }
+                }
+                console.log('thisDiff: ', thisDiff);
+                var maxValue = 0;
+                var minValue = 1000;
+
+                for (var k in thisDiff) {
+                    if (thisDiff[k] > maxValue) {
+                        maxValue = thisDiff[k];
+                    }
+                    if (thisDiff[k] < minValue) {
+                        minValue = thisDiff[k];
+                    }
+                }
+                console.log('minValue: ', minValue);
+                console.log('maxValue: ', maxValue);
+
+
+                var heightScale = d3.scaleLinear()
+                    .domain([0, maxValue])
+                    .range([0, 100])
+
+                var rectWidth = width / Object.keys(thisDiff).length;
+                var count = 0;
+                for (var key in thisDiff) {
+                    let value = thisDiff[key];
+                    oSvg.append("rect")
+                        .attr("x", rectWidth * count)
+                        .attr("y", function (d) {
+                            if (thisDiff[key]>0){
+                                return (160 - heightScale(Math.abs(thisDiff[key])))
+                            }else {
+                                return (160 )
+                            }
+                        })
+                        .attr("height", function(d){
+                                return heightScale(Math.abs(thisDiff[key]));
+                        })
+                        .attr("width", rectWidth)
+                        .style("fill", "blue")
+                        .on("mouseover", () => console.log(value))
+                    count += 1;
+                }
+            })
+        })
+    })
+
+
+
+</script>
