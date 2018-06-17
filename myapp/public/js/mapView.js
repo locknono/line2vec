@@ -219,39 +219,6 @@ function load(
     $("#linesNumberAfterSample").text(
       "Sampled Flow Count:" + sampledScatterData.length
     );
-    if (stationIDLocationFile == CHIFileList[0]) {
-      //var labelColorScale = d3.scaleOrdinal(d3.schemeCategory10);
-      var labelColorScale = d3
-        .scaleOrdinal()
-        .domain([-1, 0, 1, 2, 3, 4, 5])
-        .range([
-          "#FF8072",
-          "#FFFFB3",
-          "#80ABD3",
-          "#B3DE69",
-          "#CCCCCC",
-          "#8DD3C7",
-          "#FDB462"
-        ]);
-    } else {
-      var labelColorScale = d3
-        .scaleOrdinal()
-        .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])
-        .range([
-          "#fb8072",
-          "#80b1d3",
-          "#fdb462",
-          "#b3de69",
-          "#fccde5",
-          "#d9d9d9",
-          "#bc80bd",
-          "#ccebc5",
-          "#ffed6f",
-          "#8dd3c7",
-          "#ffffb3",
-          "#CCCCCC"
-        ]);
-    }
     var brushTime = 0;
     var formerSelectedCircle = [];
     var laterSelectedCircle = [];
@@ -299,7 +266,7 @@ function load(
 
     drawScatterPlot(
       scatterData,
-      labelColorScale,
+      op.labelColorScale,
       scatterPlotWidth,
       scatterPlotHeight,
       stage,
@@ -1093,11 +1060,11 @@ function load(
           } else {
             line.lineStyle(
               0.1,
-              labelColorScale(scatterData[i].label).replace("#", "0x"),
+              op.labelColorScale(scatterData[i].label).replace("#", "0x"),
               0.5
             );
           }
-          //  line.beginFill(labelColorScale(scatterData[i].label).replace('#', '0x'), 0.2);
+          //  line.beginFill(op.labelColorScale(scatterData[i].label).replace('#', '0x'), 0.2);
           let layerSourcePoint = project(scatterData[i].scor);
           let layerTargetPoint = project(scatterData[i].tcor);
           //  ////
@@ -1114,7 +1081,7 @@ function load(
           if (comDetecFlag == true) {
             dragLineGraphics.lineStyle(
               0.05,
-              labelColorScale(selectedMapLines[i].label).replace("#", "0x"),
+              op.labelColorScale(selectedMapLines[i].label).replace("#", "0x"),
               0.5
             );
           } else {
@@ -1140,7 +1107,7 @@ function load(
             var tcSource = tempL[0];
             multiLineGraphics.lineStyle(
               tcSource.width,
-              labelColorScale(tcSource.label).replace("#", "0x"),
+              op.labelColorScale(tcSource.label).replace("#", "0x"),
               0.2
             );
             let layerSourcePoint = project(tcSource.scor);
@@ -1155,7 +1122,7 @@ function load(
               let layerTargetPoint = project(tcmidP2.tcor);
               multiLineGraphics.lineStyle(
                 tcmidP2.width,
-                labelColorScale(tcSource.label).replace("#", "0x"),
+                op.labelColorScale(tcSource.label).replace("#", "0x"),
                 j / tempL.length
               );
               multiLineGraphics.bezierCurveTo(
@@ -1322,7 +1289,7 @@ function load(
               allSelectedCirclesGraphics.beginFill(selectedColor, 1);
             } else {
               allSelectedCirclesGraphics.beginFill(
-                labelColorScale(allSelectedMapLines[j][i].label).replace(
+                op.labelColorScale(allSelectedMapLines[j][i].label).replace(
                   "#",
                   "0x"
                 ),
@@ -1356,7 +1323,7 @@ function load(
             dragDrawCricleGraphics.beginFill(selectedColor);
           } else {
             dragDrawCricleGraphics.beginFill(
-              labelColorScale(selectedMapLines[i].label).replace("#", "0x"),
+              op.labelColorScale(selectedMapLines[i].label).replace("#", "0x"),
               1
             );
           }
@@ -1393,7 +1360,7 @@ function load(
         selectedCircleGraphics.clear();
         selectedCircleGraphics.lineStyle(1, 0x373b3a, 1);
         selectedCircleGraphics.beginFill(
-          labelColorScale(thisPointData.label).replace("#", "0x")
+          op.labelColorScale(thisPointData.label).replace("#", "0x")
         );
         selectedCircleGraphics.drawCircle(
           xScale(thisPointData.x),
@@ -1489,7 +1456,7 @@ function load(
               scatterSvg,
               scatterPlotWidth,
               scatterPlotHeight,
-              labelColorScale
+              op.labelColorScale
             );
             $(".labelRect").unbind();
             scatterSvg.selectAll(".labelRect").on("click", function (d) {
@@ -1503,7 +1470,7 @@ function load(
               //////////////
               drawScatterPlot(
                 scatterData,
-                labelColorScale,
+                op.labelColorScale,
                 scatterPlotWidth,
                 scatterPlotHeight,
                 stage,
@@ -1521,7 +1488,7 @@ function load(
           if (sampled == true) {
             drawScatterPlot(
               sampledScatterData,
-              labelColorScale,
+              op.labelColorScale,
               scatterPlotWidth,
               scatterPlotHeight,
               stage,
@@ -1531,7 +1498,7 @@ function load(
           } else if (sampled == false) {
             drawScatterPlot(
               scatterData,
-              labelColorScale,
+              op.labelColorScale,
               scatterPlotWidth,
               scatterPlotHeight,
               stage,
@@ -1674,7 +1641,7 @@ function load(
             sampledScatterData = value;
             drawScatterPlot(
               sampledScatterData,
-              labelColorScale,
+              op.labelColorScale,
               scatterPlotWidth,
               scatterPlotHeight,
               stage,
@@ -1712,7 +1679,7 @@ function load(
           scatterCircleGraphics.clear();
           drawScatterPlot(
             sampledScatterData,
-            labelColorScale,
+            op.labelColorScale,
             scatterPlotWidth,
             scatterPlotHeight,
             stage,
@@ -1796,7 +1763,7 @@ function load(
           }
           drawScatterPlot(
             scatterData,
-            labelColorScale,
+            op.labelColorScale,
             scatterPlotWidth,
             scatterPlotHeight,
             stage,
@@ -1847,7 +1814,7 @@ function load(
             }
             drawScatterPlot(
               filterScatterData,
-              labelColorScale,
+              op.labelColorScale,
               scatterPlotWidth,
               scatterPlotHeight,
               stage,

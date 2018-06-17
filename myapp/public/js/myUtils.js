@@ -3,7 +3,7 @@ function download_sprite_as_png(renderer, sprite, fileName) {
 		var a = document.createElement('a');
 		document.body.append(a);
 		a.download = fileName;
-		a.href = URL.createObjectURL(b);
+    a.href = URL.createObjectURL(b);
 		a.click();
 		a.remove();
 	}, 'image/png');
@@ -72,14 +72,14 @@ function drawScatterPlot(
   
 ) {
    circle.clear();
- /* var xyScale = getScatterXYScale(
+  var xyScale = getScatterXYScale(
       scatterData,
       scatterPlotWidth,
       scatterPlotHeight
     ),
     xScale = xyScale[0],
-    yScale = xyScale[1];
-    
+    yScale = xyScale[1]; 
+    /*
    for (var i = 0; i < scatterData.length; i++) {
     if (comDetecFlag == false) {
       circle.beginFill(op.scatterColor);
