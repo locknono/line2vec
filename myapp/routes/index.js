@@ -144,13 +144,13 @@ router.post("/drawArtLine", function (req, res) {
             "-" +
             thisTimeAllTrack[i][j][s].stationID,
             sampledSourceTragetArray
-          ) == -1
+          ) === -1
         ) {
           flag = 0;
           break;
         }
       }
-      if (flag == 1) {
+      if (flag === 1) {
         if (thisTimeTrackSet[track] === undefined) {
           thisTimeTrackSet[track] = 1;
         } else {
@@ -166,7 +166,7 @@ router.post("/drawArtLine", function (req, res) {
   console.log('sortedKeys: ', sortedKeys);
   for (var i = 0; i < sortedKeys.length; i++) {
     for (var j = 0; j < sortedKeys.length; j++) {
-      if (i == j) {
+      if (i === j) {
         continue;
       }
       var key1 = sortedKeys[i];
@@ -183,7 +183,7 @@ router.post("/drawArtLine", function (req, res) {
     var track2 = [];
     for (var i = 0; i < keyArray.length; i++) {
       for (var j = 0; j < selectedMapData.length; j++) {
-        if (keyArray[i] == selectedMapData[j].stationID) {
+        if (keyArray[i] === selectedMapData[j].stationID) {
           track2.push([
             selectedMapData[j].stationLat,
             selectedMapData[j].stationLng
