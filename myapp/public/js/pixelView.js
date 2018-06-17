@@ -30,6 +30,7 @@ function pixelView(fileName,systemName, pStage, pixelGraphics, pRenderer) {
         .range([0, 1]);
       pixelGraphics.lineStyle(1, 0xfff9f6, 0.6);
       var margin = { left:7, top: 10, bottom: 40, right: 5 };
+      console.log('pData: ', pData);
       for (var i = 0; i < pData.length; i++) {
         for (var j = 0; j < pData[i].length; j++) {
           if (pData[i][j] === 0) {
@@ -48,8 +49,8 @@ function pixelView(fileName,systemName, pStage, pixelGraphics, pRenderer) {
             );
           } else if (systemName === "Wenzhou") {
             pixelGraphics.drawRect(
-              margin.left + (pixelLength) * (pData[i].length - j),
-              margin.top + pixelLength * (17 - i),
+              margin.left + (pixelLength) * j,
+              margin.top + pixelLength * i,
               (pixelLength),
               pixelLength
             );
