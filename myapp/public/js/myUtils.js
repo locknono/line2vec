@@ -56,10 +56,10 @@ function drawScatterPlot(
   scatterPlotHeight,
   stage,
   circle,
-  comDetecFlag
+  comDetecFlag,
+  labelData=undefined
 ) {
   circle.clear();
-  console.log('scatterData: ', scatterData);
   var xyScale = getScatterXYScale(
       scatterData,
       scatterPlotWidth,
@@ -67,6 +67,7 @@ function drawScatterPlot(
     ),
     xScale = xyScale[0],
     yScale = xyScale[1];
+    
   for (var i = 0; i < scatterData.length; i++) {
     if (comDetecFlag == false) {
       circle.beginFill(op.scatterColor);
@@ -77,6 +78,15 @@ function drawScatterPlot(
     }
     circle.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
     circle.endFill();
+  }
+  if(labelData!==undefined){
+    for (var i = 0; i < labelData.length; i++) {
+        circle.beginFill(
+          labelColorScale(0x000000)
+        );
+      circle.drawCircle(xScale(labelData[i].x), yScale(labelData[i].y), 1.5);
+      circle.endFill();
+    }
   }
   setTimeout(function(){
     renderer.render(stage);

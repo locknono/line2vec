@@ -4,11 +4,13 @@ var op = (function () {
     var res_path=root_path+'res/';
     var pixel_file = root_path+'pixel.json';
     var track_file = root_path + '18Data_track.json';
-    
+    var station_file=root_path+'stationIDLocation.csv';
+    var original_file=root_path+'linedetail_label.csv';
+    var sample_file=root_path+'linedetail_label_sample.csv';
 
     //style
     var minArtLineWidth = 2,
-        maxArtLineWidth = 15
+        maxArtLineWidth = 15,
     circleBarStartColor = "#fff4b3",
         circleBarEndColor = "#F22613",
         scatterColor = 0xd9d9d9;
