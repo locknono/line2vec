@@ -1,13 +1,14 @@
 function download_sprite_as_png(renderer, sprite, fileName) {
-	renderer.extract.canvas(sprite).toBlob(function(b){
-		var a = document.createElement('a');
-		document.body.append(a);
-		a.download = fileName;
+  renderer.extract.canvas(sprite).toBlob(function (b) {
+    var a = document.createElement('a');
+    document.body.append(a);
+    a.download = fileName;
     a.href = URL.createObjectURL(b);
-		a.click();
-		a.remove();
-	}, 'image/png');
+    a.click();
+    a.remove();
+  }, 'image/png');
 }
+
 
 function calDistance(point1, point2) {
   return Math.sqrt(
@@ -68,18 +69,18 @@ function drawScatterPlot(
   stage,
   circle,
   comDetecFlag,
-  labelData=undefined
-  
+  labelData = undefined
+
 ) {
-   circle.clear();
+  circle.clear();
   var xyScale = getScatterXYScale(
       scatterData,
       scatterPlotWidth,
       scatterPlotHeight
     ),
     xScale = xyScale[0],
-    yScale = xyScale[1]; 
-    /*
+    yScale = xyScale[1];
+  /*
    for (var i = 0; i < scatterData.length; i++) {
     if (comDetecFlag == false) {
       circle.beginFill(op.scatterColor);
@@ -90,25 +91,25 @@ function drawScatterPlot(
     }
     circle.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
     circle.endFill();
-  } */ 
+  } */
 
-  if(comDetecFlag===true){
-    d3.select("#scatterImg").attr("src",op.originalScatterImg.replace('.png','_com.png'));
-  }else{
-    d3.select("#scatterImg").attr("src",op.originalScatterImg);
+  if (comDetecFlag === true) {
+    d3.select("#scatterImg").attr("src", op.originalScatterImg.replace('.png', '_com.png'));
+  } else {
+    d3.select("#scatterImg").attr("src", op.originalScatterImg);
   }
 
-   if(labelData!==undefined){
+  if (labelData !== undefined) {
     for (var i = 0; i < labelData.length; i++) {
-        circle.beginFill(
-          labelColorScale(0x000000)
-        );
+      circle.beginFill(
+        labelColorScale(0x000000)
+      );
       circle.drawCircle(xScale(labelData[i].x), yScale(labelData[i].y), 1.5);
       circle.endFill();
     }
-  } 
+  }
   renderer.render(stage);
- // download_sprite_as_png(renderer,stage,'a.png');
+  // download_sprite_as_png(renderer,stage,'a.png');
 }
 
 function unbindEvents() {
