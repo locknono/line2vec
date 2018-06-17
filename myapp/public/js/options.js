@@ -11,7 +11,7 @@ var op = (function () {
     };
     var pixel_file = root_path + 'pixel.json';
     var track_file = root_path + '18Data_track.json';
-
+    
     //style
     var minArtLineWidth = 2,
         maxArtLineWidth = 15,
