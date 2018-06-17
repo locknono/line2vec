@@ -94,7 +94,7 @@ router.post("/drawArtLine", function (req, res) {
   //得到采样后的轨迹集合:
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
 
-  let sampleFileName = path.resolve(__dirname, '../public/data/BS/RandomSample_5753.csv');
+  let sampleFileName = path.resolve(__dirname, '../public/data/BS/linedetail_label_sample.csv');
 
   var sampledScatterData = d3.csvParse(
     fs
@@ -130,7 +130,6 @@ router.post("/drawArtLine", function (req, res) {
   //thisTimeAllTrack是一个三维数组，每个元素代表一个人的轨迹，每个人的轨迹数组中的每一个元素这个人轨迹的一段
   //这一段中包含了站点的信息，顺序存储
   for (var i = 0; i < thisTimeAllTrack.length; i++) {
-    console.log(i);
     for (var j = 0; j < thisTimeAllTrack[i].length; j++) {
       //thisTimeAllTrack[i][j]代表某个人的某段轨迹
       flag = 1;
