@@ -59,11 +59,6 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
       var maxIntersantion = d3.max(intersanctionArray, function(d) {
         return d3.max(d);
       });
-      //console.log("avgIntersaction: ", avgIntersaction);
-      //console.log("maxIntersantion: ", maxIntersantion);
-      ////console.log("intersanctionArray: ", intersanctionArray);
-      ////console.log("sumVolumeData: ", sumVolumeData);
-
       //ebt
       var Tc_sum_ebt = 0;
       var maxEbt = -1;
@@ -148,7 +143,6 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
         avgIntersaction,
         maxIntersantion
       ];
-      console.log(Tc_data);
       resolve(Tc_data);
     });
   });

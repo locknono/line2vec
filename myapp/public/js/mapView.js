@@ -19,6 +19,9 @@ L.tileLayer(osmUrl, {
 }).addTo(map);
 map.zoomControl.remove();
 
+map.on("click",e=>{
+  console.log(e);
+})
 var options = {
   position: "topleft", // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
   drawMarker: false, // adds button to draw markers

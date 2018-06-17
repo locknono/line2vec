@@ -41,16 +41,16 @@ function pixelView(fileName,systemName, pStage, pixelGraphics, pRenderer) {
           }
           if (systemName === "Chicago") {
             pixelGraphics.drawRect(
-              margin.left + pixelLength * i,
+              margin.left + (pixelLength+1) * i,
               margin.top + pixelLength * (pData[i].length - j),
-              pixelLength,
+              (pixelLength+1),
               pixelLength
             );
           } else if (systemName === "Wenzhou") {
             pixelGraphics.drawRect(
-              margin.left + pixelLength * (pData[i].length - j),
-              margin.top + pixelLength * (16 - i),
-              pixelLength,
+              margin.left + (pixelLength) * (pData[i].length - j),
+              margin.top + pixelLength * (17 - i),
+              (pixelLength),
               pixelLength
             );
           }
