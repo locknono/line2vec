@@ -157,10 +157,7 @@ var renderer = PIXI.autoDetectRenderer(scatterPlotWidth+0.01, scatterPlotHeight+
   resolution: 1
 });
 
-
-var sprite = PIXI.Sprite.fromImage('images/a.png');
-scatterCircleGraphics.addChild(sprite);
-d3.select("#scatterPlot").append("img").attr("src",op.originalScatterImg)
+d3.select("#scatterImg").attr("src",op.originalScatterImg)
 .style("width",scatterPlotWidth)
 .style("height",scatterPlotHeight)
 .style("position","absolute")
@@ -1533,7 +1530,7 @@ function load(
               }
               ////////////
               //////////////
-              /* drawScatterPlot(
+              drawScatterPlot(
                 scatterData,
                 labelColorScale,
                 scatterPlotWidth,
@@ -1542,7 +1539,7 @@ function load(
                 scatterCircleGraphics,
                 comDetecFlag,
                 labelData
-              ); */
+              );
               drawLines(labelData, comDetecFlag);
             });
           } else {
