@@ -165,6 +165,7 @@ d3.select("#scatterImg").attr("src",op.originalScatterImg)
 
 
 
+
 document.getElementById("scatterPlot").appendChild(renderer.view);
 var pCanvas = document.getElementById("pixelCanvas");
 var pStage = new PIXI.Container();
@@ -213,6 +214,30 @@ function load(
     var sampledScatterData = values[2];
     var filterScatterData = [];
     var filterFlag = false;
+
+    function downloadPng(comDetecFlag=true) {
+      scatterCircleGraphics.clear();
+      var xyScale = getScatterXYScale(
+          scatterData,
+          scatterPlotWidth,
+          scatterPlotHeight
+        ),
+        xScale = xyScale[0],
+        yScale = xyScale[1];
+      for (var i = 0; i < scatterData.length; i++) {
+        if (comDetecFlag == false) {
+          scatterCircleGraphics.beginFill(op.scatterColor);
+        } else {
+          scatterCircleGraphics.beginFill(
+            op.labelColorScale(scatterData[i].label).replace("#", "0x")
+          );
+        }
+        scatterCircleGraphics.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
+        scatterCircleGraphics.endFill();
+      }
+      download_sprite_as_png(renderer, stage, 'a.png');
+    }
+
     $("#linesNumberBeforeSample").text(
       "Original Flow Count:" + scatterData.length
     );
