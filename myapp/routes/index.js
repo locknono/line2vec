@@ -10,6 +10,9 @@ var path = require("path");
 router.get("/", function (req, res, next) {
   res.render("index", {});
 });
+router.get("/drawArrow", function (req, res, next) {
+  res.render("drawArrow");
+});
 
 router.get("/getTraffic", function (req, res) {
   var id = req.query.id;
