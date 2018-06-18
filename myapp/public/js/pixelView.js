@@ -30,7 +30,6 @@ function pixelView(fileName,systemName, pStage, pixelGraphics, pRenderer) {
         .range([0, 1]);
       pixelGraphics.lineStyle(1, 0xfff9f6, 0.6);
       var margin = { left:7, top: 10, bottom: 40, right: 5 };
-      console.log('pData: ', pData);
       for (var i = 0; i < pData.length; i++) {
         for (var j = 0; j < pData[i].length; j++) {
           if (pData[i][j] === 0) {

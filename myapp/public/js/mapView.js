@@ -362,12 +362,214 @@ function load(
       //   })
 
       $(".leaflet-pm-icon-circle").unbind();
+
+      //one svg layer will be added to the map when drag or zoom 
+      //map works fine when drag after post,but zoom fails
       var d3Overlay = L.d3SvgOverlay(
         function (selection, projection) {
           map.off("pm:create");
+
+          function drawArtLine(timeString) {
+            new Promise(function (resolve, reject) {
+              $.ajax({
+                type: "post",
+                url: "/drawArtLine",
+                data: {
+                  selectedMapData: selectedMapData,
+                  timeString: timeString
+                },
+                success: function (data) {
+                  resolve(data);
+                },
+                error: function () {
+
+                }
+              });
+            }).then(function (resData) {
+              var allTrack = resData.allTrack;
+              var thisTimeTrackSet = resData.thisTimeTrackSet;
+              maxValue = d3.max(allTrack, function (d) {
+                return d.value;
+              });
+              minValue = d3.min(allTrack, function (d) {
+                return d.value;
+              });
+
+              drawStraightLine(allTrack);
+
+              $("#flowSlider").slider({
+                //range:true,
+                min: minValue,
+                max: maxValue,
+                step: 1,
+                value: minValue,
+                // value:[0,100],
+                slide: function (event, ui) {
+                  $("#flowSliderAmount").val(ui.value);
+                  flowSliderValue = ui.value;
+                  drawStraightLine(allTrack);
+                },
+                stop: function (event, ui) {
+                  flowSliderValue = ui.value;
+                  drawStraightLine(allTrack);
+                }
+              });
+
+              function drawStraightLine(allTrack) {
+                allTrack.sort(function (a, b) {
+                  return b.lineCoors.length - a.lineCoors.length;
+                });
+                selection.selectAll(".artLine").remove();
+                var colorDefs = selection.append("defs");
+                var linearGradient = colorDefs
+                  .append("linearGradient")
+                  .attr("id", "linearColor")
+                  .attr("x1", "0%")
+                  .attr("y1", "0%")
+                  .attr("x2", "100%")
+                  .attr("y2", "100%");
+                var stop1 = linearGradient
+                  .append("stop")
+                  .attr("offset", "0%")
+                  .style("stop-color", d3.interpolateYlGnBu(0).toString());
+
+                var stop2 = linearGradient
+                  .append("stop")
+                  .attr("offset", "100%")
+                  .style("stop-color", d3.interpolateYlGnBu(1).toString());
+
+                var lineGenarator = d3
+                  .line()
+                  .x(function (d) {
+                    return projection.latLngToLayerPoint(d).x;
+                  })
+                  .y(function (d) {
+                    return projection.latLngToLayerPoint(d).y;
+                  })
+                  .curve(d3.curveCardinal.tension(0.3));
+
+                var defs = selection.append("defs");
+                var arrowMarker = defs
+                  .append("marker")
+                  .attr("id", "arrow")
+                  .attr("markerUnits", "strokeWidth")
+                  .attr("markerWidth", "2")
+                  .attr("markerHeight", "2")
+                  .attr("fill", "none")
+                  .attr("stroke", "url(#" + linearGradient.attr("id") + ")")
+                  .attr("viewBox", "0 0 12 12")
+                  .attr("refX", "6")
+                  .attr("refY", "6")
+                  .attr("orient", "auto");
+                var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+                arrowMarker
+                  .append("path")
+                  .attr("d", arrow_path)
+                  .attr("fill", "url(#" + linearGradient.attr("id") + ")");
+
+                var widthScale = d3
+                  .scaleLinear()
+                  .domain([minValue, maxValue])
+                  .range([op.minArtLineWidth, op.maxArtLineWidth]);
+                for (let i = artLineStartIndex; i < artLineEndIndex; i++) {
+                  if (i >= allTrack.length - 1) {
+                    break;
+                  }
+                  if (
+                    allTrack[i].lineCoors.length - 1 >= artLineMinValue &&
+                    allTrack[i].lineCoors.length - 1 <= artLineMaxValue &&
+                    allTrack[i].value >= flowSliderValue
+                  ) {
+                    //   .attr("marker-mid", "url(#arrow)")
+                    var path = d3.path();
+                    for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
+                      if (j === 0) {
+                        path.moveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[0]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[0]).y);
+
+                      }
+                      if (j % 3 === 0 && j !== 0) {
+                        path.bezierCurveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
+                        map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
+                        map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
+                      }
+                    }
+                    selection
+                      .append("path")
+                      .attr("class", "artLine")
+                      .style(
+                        "stroke",
+                        "url(#" + linearGradient.attr("id") + ")"
+                      )
+                      .attr("stroke-width", widthScale(allTrack[i].value))
+                      .attr("fill", "none")
+                      .attr("d", path);
+                    //  .attr("marker-start",
+                    //      "url(#arrow)")
+                    // .attr("marker-mid",
+                    //      "url(#arrow)")
+                    //  .attr("marker-end",
+                    //      "url(#arrow)")
+                  }
+                }
+              }
+
+              var recordArray = underMap(thisTimeTrackSet);
+              var rectWidth = d3
+                .select(".underMapRectG")
+                .select("rect")
+                .attr("width");
+
+              var rectHeight = d3
+                .select(".underMapRectG")
+                .select("rect")
+                .attr("height");
+
+              var rectBrush = d3
+                .brushX()
+                .extent([
+                  [10, 20],
+                  [690, 150]
+                ])
+                .on("start brush", rectBrushed)
+                .on("end", rectBrushEnd);
+
+              d3
+                .select("#underMapView")
+                .selectAll(".underMapBrush")
+                .remove();
+              d3
+                .select("#underMapView")
+                .append("g")
+                .attr("class", "underMapBrush")
+                .call(rectBrush);
+
+              function rectBrushed() {
+                x1 = d3.event.selection[0];
+                x2 = d3.event.selection[1];
+                artLineStartIndex = parseInt((x1 - 10) / rectWidth);
+                
+                artLineEndIndex = parseInt((x2 - 10) / rectWidth);
+                
+                /*  artLineMaxValue = recordArray[artLineStartIndex];
+                 artLineMinValue = recordArray[artLineEndIndex]; */
+                drawStraightLine(allTrack);
+              }
+
+              function rectBrushEnd() {
+                x1 = d3.event.selection[0];
+                x2 = d3.event.selection[1];
+                artLineStartIndex = parseInt((x1 - 10) / rectWidth);
+                
+                artLineEndIndex = parseInt((x2 - 10) / rectWidth);
+                
+                /*   artLineMaxValue = recordArray[artLineStartIndex];
+                  artLineMinValue = recordArray[artLineEndIndex]; */
+                drawStraightLine(allTrack);
+              }
+            })
+          }
+          
           map.on("pm:create", function (e) {
-            ////
-            ////
             var circle = e.layer;
             lastLayer = e.layer;
             lastLayers.push(e.layer);
@@ -404,235 +606,26 @@ function load(
               var data = scatterData;
             }
 
+            //get selected map data
             for (var i = 0; i < data.length; i++) {
               for (var j = 0; j < selectedMapData.length; j++) {
-                if (data[i].source != selectedMapData[j].stationID) {
+                if (data[i].source !== selectedMapData[j].stationID) {
                   continue;
                 }
                 for (var s = 0; s < selectedMapData.length; s++) {
-                  if (data[i].target == selectedMapData[s].stationID) {
+                  if (data[i].target === selectedMapData[s].stationID) {
                     selectedMapLines.push(data[i]);
                   }
                 }
               }
             }
-            var originalLLines = [];
-            for (var i = 0; i < scatterData.length; i++) {
-              for (var j = 0; j < selectedMapData.length; j++) {
-                if (scatterData[i].source != selectedMapData[j].stationID) {
-                  continue;
-                }
-                for (var s = 0; s < selectedMapData.length; s++) {
-                  if (scatterData[i].target == selectedMapData[s].stationID) {
-                    originalLLines.push(data[i]);
-                  }
-                }
-              }
-            }
+
+
             allSelectedMapLines.push(selectedMapLines);
             //    allSelectedMapLines);
             multidrawCircles(allSelectedMapLines, comDetecFlag);
             //  multidrawLines(allSelectedMapLines);
-            function drawArtLine(timeString) {
-              new Promise(function (resolve, reject) {
-                $.ajax({
-                  type: "post",
-                  url: "/drawArtLine",
-                  data: {
-                    selectedMapData: selectedMapData,
-                    timeString: timeString
-                  },
-                  success: function (data) {
-                    resolve(data);
-                  },
-                  error: function () {
-
-                  }
-                });
-              }).then(function (resData) {
-                var allTrack = resData.allTrack;
-                var thisTimeTrackSet = resData.thisTimeTrackSet;
-                maxValue = d3.max(allTrack, function (d) {
-                  return d.value;
-                });
-                minValue = d3.min(allTrack, function (d) {
-                  return d.value;
-                });
-
-                drawStraightLine(allTrack);
-
-                $("#flowSlider").slider({
-                  //range:true,
-                  min: minValue,
-                  max: maxValue,
-                  step: 1,
-                  value: minValue,
-                  // value:[0,100],
-                  slide: function (event, ui) {
-                    $("#flowSliderAmount").val(ui.value);
-                    flowSliderValue = ui.value;
-                    drawStraightLine(allTrack);
-                  },
-                  stop: function (event, ui) {
-                    flowSliderValue = ui.value;
-                    drawStraightLine(allTrack);
-                  }
-                });
-
-                function drawStraightLine(allTrack) {
-                  allTrack.sort(function (a, b) {
-                    return b.lineCoors.length - a.lineCoors.length;
-                  });
-                  selection.selectAll(".artLine").remove();
-                  var colorDefs = selection.append("defs");
-                  var linearGradient = colorDefs
-                    .append("linearGradient")
-                    .attr("id", "linearColor")
-                    .attr("x1", "0%")
-                    .attr("y1", "0%")
-                    .attr("x2", "100%")
-                    .attr("y2", "100%");
-                  var stop1 = linearGradient
-                    .append("stop")
-                    .attr("offset", "0%")
-                    .style("stop-color", d3.interpolateYlGnBu(0).toString());
-
-                  var stop2 = linearGradient
-                    .append("stop")
-                    .attr("offset", "100%")
-                    .style("stop-color", d3.interpolateYlGnBu(1).toString());
-
-                  var lineGenarator = d3
-                    .line()
-                    .x(function (d) {
-                      return projection.latLngToLayerPoint(d).x;
-                    })
-                    .y(function (d) {
-                      return projection.latLngToLayerPoint(d).y;
-                    })
-                    .curve(d3.curveCardinal.tension(0.3));
-
-                  var defs = selection.append("defs");
-                  var arrowMarker = defs
-                    .append("marker")
-                    .attr("id", "arrow")
-                    .attr("markerUnits", "strokeWidth")
-                    .attr("markerWidth", "2")
-                    .attr("markerHeight", "2")
-                    .attr("fill", "none")
-                    .attr("stroke", "url(#" + linearGradient.attr("id") + ")")
-                    .attr("viewBox", "0 0 12 12")
-                    .attr("refX", "6")
-                    .attr("refY", "6")
-                    .attr("orient", "auto");
-                  var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
-                  arrowMarker
-                    .append("path")
-                    .attr("d", arrow_path)
-                    .attr("fill", "url(#" + linearGradient.attr("id") + ")");
-
-                  var widthScale = d3
-                    .scaleLinear()
-                    .domain([minValue, maxValue])
-                    .range([op.minArtLineWidth, op.maxArtLineWidth]);
-                  for (let i = artLineStartIndex; i < artLineEndIndex; i++) {
-                    console.log(allTrack[i]);
-                    if (i >= allTrack.length - 1) {
-                      break;
-                    }
-                    if (
-                      allTrack[i].lineCoors.length - 1 >= artLineMinValue &&
-                      allTrack[i].lineCoors.length - 1 <= artLineMaxValue &&
-                      allTrack[i].value >= flowSliderValue
-                    ) {
-                      //   .attr("marker-mid", "url(#arrow)")
-                      var path = d3.path();
-                      for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
-                        if (j === 0) {
-                          path.moveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[0]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[0]).y);
-
-                        }
-                        if (j % 3 === 0 && j !== 0) {
-                          path.bezierCurveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
-                          map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
-                          map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
-                        }
-                      }
-                      selection
-                        .append("path")
-                        .attr("class", "artLine")
-                        .style(
-                          "stroke",
-                          "url(#" + linearGradient.attr("id") + ")"
-                        )
-                        .attr("stroke-width", widthScale(allTrack[i].value))
-                        .attr("fill", "none")
-                        .attr("d", path);
-                      //  .attr("marker-start",
-                      //      "url(#arrow)")
-                      // .attr("marker-mid",
-                      //      "url(#arrow)")
-                      //  .attr("marker-end",
-                      //      "url(#arrow)")
-                    }
-                  }
-                }
-
-                var recordArray = underMap(thisTimeTrackSet);
-                var rectWidth = d3
-                  .select(".underMapRectG")
-                  .select("rect")
-                  .attr("width");
-
-                var rectHeight = d3
-                  .select(".underMapRectG")
-                  .select("rect")
-                  .attr("height");
-
-                var rectBrush = d3
-                  .brushX()
-                  .extent([
-                    [10, 20],
-                    [690, 150]
-                  ])
-                  .on("start brush", rectBrushed)
-                  .on("end", rectBrushEnd);
-
-                d3
-                  .select("#underMapView")
-                  .selectAll(".underMapBrush")
-                  .remove();
-                d3
-                  .select("#underMapView")
-                  .append("g")
-                  .attr("class", "underMapBrush")
-                  .call(rectBrush);
-
-                function rectBrushed() {
-                  x1 = d3.event.selection[0];
-                  x2 = d3.event.selection[1];
-                  artLineStartIndex = parseInt((x1 - 10) / rectWidth);
-                  console.log('artLineStartIndex: ', artLineStartIndex);
-                  artLineEndIndex = parseInt((x2 - 10) / rectWidth);
-                  console.log('artLineEndIndex: ', artLineEndIndex);
-                  /*  artLineMaxValue = recordArray[artLineStartIndex];
-                   artLineMinValue = recordArray[artLineEndIndex]; */
-                  drawStraightLine(allTrack);
-                }
-
-                function rectBrushEnd() {
-                  x1 = d3.event.selection[0];
-                  x2 = d3.event.selection[1];
-                  artLineStartIndex = parseInt((x1 - 10) / rectWidth);
-                  console.log('artLineStartIndex: ', artLineStartIndex);
-                  artLineEndIndex = parseInt((x2 - 10) / rectWidth);
-                  console.log('artLineEndIndex: ', artLineEndIndex);
-                  /*   artLineMaxValue = recordArray[artLineStartIndex];
-                    artLineMinValue = recordArray[artLineEndIndex]; */
-                  drawStraightLine(allTrack);
-                }
-              })
-            }
+        
             drawArtLine(timeString);
             //change flow count text
             var AllLength = 0;
@@ -1082,6 +1075,144 @@ function load(
             $(".leaflet-pm-icon-delete").attr("name", "false");
           }); //create 的括号
 
+          if(firstDraw){
+            $("#sample").click(function () {
+              drawArtLine(timeString);
+              var sampleRateScale = d3
+                .scaleOrdinal()
+                .domain([40, 20, 10, 5])
+                .range([1, 2, 3, 4]);
+              var methodScale = d3
+                .scaleOrdinal()
+                .domain(["0", "1", "2", "012"])
+                .range([3, 2, 1, 0]);
+              var method = "";
+    
+              var folderName = op.res_path + 'BSlinedetail_label' + sampleRate.toString() + "_seq";
+    
+              if ($("#checkBtw").is(":checked")) {
+                folderName += "0";
+                method += "0";
+              }
+              if ($("#checkOverlap").is(":checked")) {
+                folderName += "1";
+                method += "1";
+              }
+              if ($("#checkComm").is(":checked")) {
+                folderName += "2";
+                method += "2";
+              }
+              var sampledScatterDataFileName = folderName + "/0.csv";
+    
+              var edgeBtwFileName = folderName + "/1.csv";
+              var pixelFileName = folderName + "/2.json";
+              addHistogram2(edgeBtwFileName);
+              pixelView(
+                pixelFileName,
+                op.system_name,
+                pStage,
+                pixelGraphics,
+                pRenderer
+              );
+              getScatterData(sampledScatterDataFileName).then(function (value) {
+                sampledScatterData = value;
+                drawScatterPlot(
+                  sampledScatterData,
+                  op.labelColorScale,
+                  scatterPlotWidth,
+                  scatterPlotHeight,
+                  stage,
+                  scatterCircleGraphics,
+                  comDetecFlag
+                );
+              });
+              var index = sampleRateScale(sampleRate) * 4 - methodScale(method);
+    
+              var scaleArray = [];
+              var maxArray1 = [12, 2779, 2, 2, 2, 65952, 600, 7039];
+              var minArray1 = [2, 500, 0, 0, 0, 2000, 250, 2500];
+              for (var i = 0; i < 8; i++) {
+                var linear = d3
+                  .scaleLinear()
+                  .domain([minArray1[i], maxArray1[i]])
+                  .range([40, 120]);
+                scaleArray.push(linear);
+              }
+              var allRadiusArray = [];
+    
+              var radius = [];
+              for (var j = 0; j < 8; j++)
+                radius.push(scaleArray[j](radarData[0][j]));
+              allRadiusArray.push(radius);
+    
+              var radius = [];
+              for (var j = 0; j < 8; j++)
+                radius.push(scaleArray[j](radarData[index][j]));
+              allRadiusArray.push(radius);
+    
+    
+              addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
+    
+              scatterCircleGraphics.clear();
+              drawScatterPlot(
+                sampledScatterData,
+                op.labelColorScale,
+                scatterPlotWidth,
+                scatterPlotHeight,
+                stage,
+                scatterCircleGraphics,
+                comDetecFlag
+              );
+    
+              multidrawCircles(allSelectedMapLines, comDetecFlag);
+              sampled = true;
+              brush.on("start brush", brushed).on("end", brushEnded);
+              brushTime = 0;
+              let sRect = $(".selection");
+              let brushX = parseFloat(sRect.attr("x"));
+              let brushY = parseFloat(sRect.attr("y"));
+              let brushWidth = parseFloat(sRect.attr("width"));
+              let brushHeight = parseFloat(sRect.attr("height"));
+    
+              if (selectedCircles.length === scatterData.length) {
+                drawLines(sampledScatterData, comDetecFlag);
+                selectedCircles = sampledScatterData;
+              } else {
+                if (!isNaN(brushX)) {
+                  d3
+                    .selectAll(".brush")
+                    .call(brush)
+                    .call(brush.move, [
+                      [brushX, brushY],
+                      [brushX + brushWidth, brushY + brushHeight]
+                    ]);
+                }
+              }
+              selectedLineGraphics.clear();
+              selectedCircleGraphics.clear();
+              renderer.render(stage);
+    
+              $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
+              var sampledAllSelectedMapLines = [];
+              for (var i = 0; i < allSelectedMapLines.length; i++) {
+                sampledAllSelectedMapLines[i] = [];
+                for (var j = 0; j < allSelectedMapLines[i].length; j++) {
+                  for (var s = 0; s < sampledScatterData.length; s++) {
+                    if (
+                      allSelectedMapLines[i][j].source ==
+                      sampledScatterData[s].source &&
+                      allSelectedMapLines[i][j].target ==
+                      sampledScatterData[s].target
+                    ) {
+                      sampledAllSelectedMapLines[i].push(allSelectedMapLines[i][j]);
+                    }
+                  }
+                }
+              }
+              allSelectedMapLines = sampledAllSelectedMapLines;
+            });
+          }
+
           d3.select(".leaflet-pm-icon-delete").on("click", function () {
             if ($(".leaflet-pm-icon-delete").attr("name") === "false") {
               //selection.selectAll(".svgCircle").on(".drag", null);
@@ -1112,6 +1243,7 @@ function load(
       );
 
       d3Overlay.addTo(map);
+    
 
       function drawLines(scatterData, comDetecFlag) {
         line.clear();
@@ -1660,141 +1792,7 @@ function load(
               .setAttribute("src", "images/selectPointClose.png");
           }
         });
-        //sample button
-        $("#sample").click(function () {
-          var sampleRateScale = d3
-            .scaleOrdinal()
-            .domain([40, 20, 10, 5])
-            .range([1, 2, 3, 4]);
-          var methodScale = d3
-            .scaleOrdinal()
-            .domain(["0", "1", "2", "012"])
-            .range([3, 2, 1, 0]);
-          var method = "";
-
-          var folderName = op.res_path + 'BSlinedetail_label' + sampleRate.toString() + "_seq";
-
-          if ($("#checkBtw").is(":checked")) {
-            folderName += "0";
-            method += "0";
-          }
-          if ($("#checkOverlap").is(":checked")) {
-            folderName += "1";
-            method += "1";
-          }
-          if ($("#checkComm").is(":checked")) {
-            folderName += "2";
-            method += "2";
-          }
-          var sampledScatterDataFileName = folderName + "/0.csv";
-
-          var edgeBtwFileName = folderName + "/1.csv";
-          var pixelFileName = folderName + "/2.json";
-          addHistogram2(edgeBtwFileName);
-          pixelView(
-            pixelFileName,
-            op.system_name,
-            pStage,
-            pixelGraphics,
-            pRenderer
-          );
-          getScatterData(sampledScatterDataFileName).then(function (value) {
-            sampledScatterData = value;
-            drawScatterPlot(
-              sampledScatterData,
-              op.labelColorScale,
-              scatterPlotWidth,
-              scatterPlotHeight,
-              stage,
-              scatterCircleGraphics,
-              comDetecFlag
-            );
-          });
-          var index = sampleRateScale(sampleRate) * 4 - methodScale(method);
-
-          var scaleArray = [];
-          var maxArray1 = [12, 2779, 2, 2, 2, 65952, 600, 7039];
-          var minArray1 = [2, 500, 0, 0, 0, 2000, 250, 2500];
-          for (var i = 0; i < 8; i++) {
-            var linear = d3
-              .scaleLinear()
-              .domain([minArray1[i], maxArray1[i]])
-              .range([40, 120]);
-            scaleArray.push(linear);
-          }
-          var allRadiusArray = [];
-
-          var radius = [];
-          for (var j = 0; j < 8; j++)
-            radius.push(scaleArray[j](radarData[0][j]));
-          allRadiusArray.push(radius);
-
-          var radius = [];
-          for (var j = 0; j < 8; j++)
-            radius.push(scaleArray[j](radarData[index][j]));
-          allRadiusArray.push(radius);
-
-
-          addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
-
-          scatterCircleGraphics.clear();
-          drawScatterPlot(
-            sampledScatterData,
-            op.labelColorScale,
-            scatterPlotWidth,
-            scatterPlotHeight,
-            stage,
-            scatterCircleGraphics,
-            comDetecFlag
-          );
-
-          multidrawCircles(allSelectedMapLines, comDetecFlag);
-          sampled = true;
-          brush.on("start brush", brushed).on("end", brushEnded);
-          brushTime = 0;
-          let sRect = $(".selection");
-          let brushX = parseFloat(sRect.attr("x"));
-          let brushY = parseFloat(sRect.attr("y"));
-          let brushWidth = parseFloat(sRect.attr("width"));
-          let brushHeight = parseFloat(sRect.attr("height"));
-
-          if (selectedCircles.length === scatterData.length) {
-            drawLines(sampledScatterData, comDetecFlag);
-            selectedCircles = sampledScatterData;
-          } else {
-            if (!isNaN(brushX)) {
-              d3
-                .selectAll(".brush")
-                .call(brush)
-                .call(brush.move, [
-                  [brushX, brushY],
-                  [brushX + brushWidth, brushY + brushHeight]
-                ]);
-            }
-          }
-          selectedLineGraphics.clear();
-          selectedCircleGraphics.clear();
-          renderer.render(stage);
-
-          $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
-          var sampledAllSelectedMapLines = [];
-          for (var i = 0; i < allSelectedMapLines.length; i++) {
-            sampledAllSelectedMapLines[i] = [];
-            for (var j = 0; j < allSelectedMapLines[i].length; j++) {
-              for (var s = 0; s < sampledScatterData.length; s++) {
-                if (
-                  allSelectedMapLines[i][j].source ==
-                  sampledScatterData[s].source &&
-                  allSelectedMapLines[i][j].target ==
-                  sampledScatterData[s].target
-                ) {
-                  sampledAllSelectedMapLines[i].push(allSelectedMapLines[i][j]);
-                }
-              }
-            }
-          }
-          allSelectedMapLines = sampledAllSelectedMapLines;
-        });
+        
 
         $("#reset").click(function () {
           selectAllFlag = false;

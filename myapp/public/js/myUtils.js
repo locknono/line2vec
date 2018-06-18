@@ -116,7 +116,7 @@ function unbindEvents() {
   $("#BrushButton").unbind();
   $("#reset").unbind();
   //$("#word2vec").unbind();
-  $("#sample").unbind();
+  //$("#sample").unbind();
   $("#initialize").unbind();
   $("#selectAll").unbind();
   $("#selectPointButton").unbind();
