@@ -162,9 +162,6 @@ d3.select("#scatterImg").attr("src", op.originalScatterImg)
   .style("position", "absolute")
   .style("top", "0px")
 
-
-
-
 document.getElementById("scatterPlot").appendChild(renderer.view);
 var pCanvas = document.getElementById("pixelCanvas");
 var pStage = new PIXI.Container();
@@ -446,7 +443,7 @@ function load(
                   .y(function (d) {
                     return projection.latLngToLayerPoint(d).y;
                   })
-                  .curve(d3.curveCardinal.tension(0.3));
+                  .curve(d3.curveNatural);
 
                 var defs = selection.append("defs");
                 var arrowMarker = defs
@@ -478,7 +475,26 @@ function load(
                   if (i >= allTrack.length - 1) {
                     break;
                   }
-                  if (
+                  let coors = allTrack[i].lineCoors;
+                  let coorsSet = new Set();
+                  for (let j = 0; j < coors.length; j++) {
+                    coorsSet.add(coors[j][0] + '-' + coors[j][1]);
+                  }
+                  if (coorsSet.size === 2) {
+                    selection
+                      .append("path")
+                      .attr("class", "artLine")
+                      .style(
+                        "stroke",
+                        "url(#" + linearGradient.attr("id") + ")"
+                      )
+                      .attr("stroke-width", widthScale(Math.log2(allTrack[i].value)))
+                      .attr("fill", "none")
+                      .attr("d", lineGenarator([coors[0], coors[1]]))
+                  }
+                  console.log('coorsSet: ', coorsSet);
+
+                  /* if (
                     allTrack[i].value >= flowSliderValue
                   ) {
                     selection
@@ -492,7 +508,7 @@ function load(
                       .attr("fill", "none")
                       .attr("d", lineGenarator(allTrack[i].lineCoors))
                       /* .attr("marker-start",
-                        "url(#arrow)")  */
+                        "url(#arrow)")  
                       .attr("marker-mid", d => {
                         if (allTrack[i].lineCoors.length <= 2) {
                           return "none"
@@ -506,7 +522,7 @@ function load(
                         } else {
                           return "url(#arrow)"
                         }
-                      })
+                      }) 
 
                     /*   //   .attr("marker-mid", "url(#arrow)")
                       var path = d3.path();
@@ -521,9 +537,9 @@ function load(
                             map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
                         }
                       } */
-                  }
                 }
               }
+
               var recordArray = underMap(thisTimeTrackSet);
               var rectWidth = d3
                 .select(".underMapRectG")

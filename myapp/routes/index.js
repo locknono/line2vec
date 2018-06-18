@@ -76,7 +76,7 @@ router.post("/drawArtLine", function (req, res) {
 
   let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
 
-  let sFile=req.body.sFile;
+  let sFile = req.body.sFile;
 
   var data = JSON.parse(
     fs.readFileSync(trackFileName)
@@ -102,7 +102,7 @@ router.post("/drawArtLine", function (req, res) {
   //得到采样后的轨迹集合:
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
 
-  let sampleFileName = path.resolve(__dirname, '../public/'+sFile);
+  let sampleFileName = path.resolve(__dirname, '../public/' + sFile);
   console.log('sampleFileName: ', sampleFileName);
 
   var sampledScatterData = d3.csvParse(
