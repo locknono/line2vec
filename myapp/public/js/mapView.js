@@ -11,7 +11,7 @@ var osmUrl =
   'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
 L.tileLayer(osmUrl, {
   minZoom: 1,
-  maxZoom: 17,
+  maxZoom: 18,
   //用了mapbox的图层
   attribution: layer,
   //访问令牌
@@ -367,13 +367,15 @@ function load(
           map.off("pm:create");
 
           function drawArtLine(timeString) {
-            console.log("draw art line");
+
+
             new Promise(function (resolve, reject) {
               $.ajax({
                 type: "post",
                 url: "/drawArtLine",
                 data: {
                   selectedMapData: selectedMapData,
+
                   timeString: timeString,
                   sFile: op.getSampleFile(),
                 },
@@ -415,7 +417,6 @@ function load(
               });
 
               function drawStraightLine(allTrack) {
-                console.log('allTrack: ', allTrack);
                 allTrack.sort(function (a, b) {
                   return b.lineCoors.length - a.lineCoors.length;
                 });
@@ -441,13 +442,14 @@ function load(
                 var lineGenarator = d3
                   .line()
                   .x(function (d) {
-                    console.log(d);
-                    return map.latLngToLayerPoint(d).x;
+
+                    return projection.latLngToLayerPoint(d).x;
+
                   })
                   .y(function (d) {
-                    return map.latLngToLayerPoint(d).y;
+                    return projection.latLngToLayerPoint(d).y;
                   })
-                  //.curve(d3.curveCardinal.tension(0.3));
+                  .curve(d3.curveCardinal.tension(0.3));
 
                 var defs = selection.append("defs");
                 var arrowMarker = defs
@@ -456,62 +458,73 @@ function load(
                   .attr("markerUnits", "strokeWidth")
                   .attr("markerWidth", "2")
                   .attr("markerHeight", "2")
-                  .attr("fill", "none")
-                  .attr("stroke", "url(#" + linearGradient.attr("id") + ")")
+                  .attr("fill", "black")
+                  .attr("stroke", "#000000")
                   .attr("viewBox", "0 0 12 12")
                   .attr("refX", "6")
                   .attr("refY", "6")
                   .attr("orient", "auto");
                 var arrow_path = "M2,2 L10,6 L2,10 L6,6 L2,2";
+
                 arrowMarker
                   .append("path")
                   .attr("d", arrow_path)
-                  .attr("fill", "url(#" + linearGradient.attr("id") + ")");
+                  .style("z-index", 5000)
+                  .style("fill", "#000000");
 
                 var widthScale = d3
                   .scaleLinear()
                   .domain([minValue, maxValue])
                   .range([op.minArtLineWidth, op.maxArtLineWidth]);
-                for (let i = artLineStartIndex; i < artLineEndIndex; i++) {
+                for (let i = artLineStartIndex; i <= artLineEndIndex; i++) {
                   if (i >= allTrack.length - 1) {
                     break;
                   }
                   if (
-                    allTrack[i].lineCoors.length - 1 >= artLineMinValue &&
-                    allTrack[i].lineCoors.length - 1 <= artLineMaxValue &&
                     allTrack[i].value >= flowSliderValue
                   ) {
                     selection
-                    .append("path")
-                    .attr("class", "artLine")
-                    .style(
-                      "stroke",
-                      "url(#" + linearGradient.attr("id") + ")"
-                    )
-                    .attr("stroke-width", widthScale(allTrack[i].value))
-                    .attr("fill", "none")
-                    .attr("d", lineGenarator(allTrack[i].lineCoors));
+                      .append("path")
+                      .attr("class", "artLine")
+                      .style(
+                        "stroke",
+                        "url(#" + linearGradient.attr("id") + ")"
+                      )
+                      .attr("stroke-width", widthScale(allTrack[i].value))
+                      .attr("fill", "none")
+                      .attr("d", lineGenarator(allTrack[i].lineCoors))
+                      /* .attr("marker-start",
+                        "url(#arrow)")  */
+                      .attr("marker-mid", d => {
+                        if (allTrack[i].lineCoors.length <= 2) {
+                          return "none"
+                        } else {
+                          return "url(#arrow)"
+                        }
+                      })
+                      .attr("marker-end", function (d) {
+                        if (allTrack[i].lineCoors.length > 2) {
+                          return "none"
+                        } else {
+                          return "url(#arrow)"
+                        }
+                      })
 
-                  /*   //   .attr("marker-mid", "url(#arrow)")
-                    var path = d3.path();
-                    for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
-                      if (j === 0) {
-                        path.moveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[0]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[0]).y);
+                    /*   //   .attr("marker-mid", "url(#arrow)")
+                      var path = d3.path();
+                      for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
+                        if (j === 0) {
+                          path.moveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[0]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[0]).y);
 
-                      }
-                      if (j % 3 === 0 && j !== 0) {
-                        path.bezierCurveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
-                          map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
-                          map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
-                      }
-                    } */
-          
-                    //  .attr("marker-start",
-                    //      "url(#arrow)")
-                    // .attr("marker-mid",
-                    //      "url(#arrow)")
-                    //  .attr("marker-end",
-                    //      "url(#arrow)")
+                        }
+                        if (j % 3 === 0 && j !== 0) {
+                          path.bezierCurveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
+                            map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
+                            map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
+                        }
+                      } */
+
+
                   }
                 }
               }
@@ -550,8 +563,10 @@ function load(
                 x1 = d3.event.selection[0];
                 x2 = d3.event.selection[1];
                 artLineStartIndex = parseInt((x1 - 10) / rectWidth);
+                console.log('artLineStartIndex: ', artLineStartIndex);
 
                 artLineEndIndex = parseInt((x2 - 10) / rectWidth);
+                console.log('artLineEndIndex: ', artLineEndIndex);
 
                 /*  artLineMaxValue = recordArray[artLineStartIndex];
                  artLineMinValue = recordArray[artLineEndIndex]; */
@@ -1079,7 +1094,7 @@ function load(
 
           if (firstDraw) {
             $("#sample").click(function () {
-              if(selectedMapData.length!==0){
+              if (selectedMapData.length !== 0) {
                 drawArtLine(timeString);
               }
               var sampleRateScale = d3
@@ -1093,7 +1108,7 @@ function load(
                 .range([3, 2, 1, 0]);
               var method = "";
               var sampledScatterDataFileName = op.getSampleFile();
-              console.log('sampledScatterDataFileName: ', sampledScatterDataFileName);
+
 
               var edgeBtwFileName = op.folderName + "/1.csv";
               var pixelFileName = op.folderName + "/2.json";
