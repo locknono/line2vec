@@ -52,11 +52,11 @@ var arcArray = [];
 var comDetecFlag = false;
 var originalColor = 0xc2c2c2;
 var selectedColor = 0x3388ff;
-var artLineMaxValue = 100;
+var artLineMaxValue = 1000;
 var artLineMinValue = 0;
 var sampleRate = 40;
-var startIndex = 0;
-var endIndex = 200;
+var artLineStartIndex = 0;
+var artLineEndIndex = 200;
 var timeString = "6-8";
 var selectAllFlag = false;
 var allTrack = [];
@@ -480,7 +480,6 @@ function load(
                 });
 
                 function drawStraightLine(allTrack) {
-                  console.log('allTrack: ', allTrack);
                   allTrack.sort(function (a, b) {
                     return b.lineCoors.length - a.lineCoors.length;
                   });
@@ -536,7 +535,8 @@ function load(
                     .scaleLinear()
                     .domain([minValue, maxValue])
                     .range([op.minArtLineWidth, op.maxArtLineWidth]);
-                  for (var i = startIndex; i < endIndex; i++) {
+                  for (let i = artLineStartIndex; i < artLineEndIndex; i++) {
+                    console.log(allTrack[i]);
                     if (i >= allTrack.length - 1) {
                       break;
                     }
@@ -547,15 +547,15 @@ function load(
                     ) {
                       //   .attr("marker-mid", "url(#arrow)")
                       var path = d3.path();
-                      for (var j = 0; j < allTrack[i].lineCoors.length; j++) {
+                      for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
                         if (j === 0) {
-                          path.moveTo(projection.latLngToLayerPoint(allTrack[i].lineCoors[0]).x, projection.latLngToLayerPoint(allTrack[i].lineCoors[0]).y);
+                          path.moveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[0]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[0]).y);
 
                         }
-                        if (j % 3 === 0&&j!==0) {
-                          path.bezierCurveTo(projection.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, projection.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
-                          projection.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, projection.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
-                          projection.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, projection.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
+                        if (j % 3 === 0 && j !== 0) {
+                          path.bezierCurveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
+                          map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
+                          map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
                         }
                       }
                       selection
@@ -611,20 +611,24 @@ function load(
                 function rectBrushed() {
                   x1 = d3.event.selection[0];
                   x2 = d3.event.selection[1];
-                  let startIndex = parseInt((x1 - 10) / rectWidth);
-                  let endIndex = parseInt((x2 - 10) / rectWidth);
-                  artLineMaxValue = recordArray[startIndex];
-                  artLineMinValue = recordArray[endIndex];
+                  artLineStartIndex = parseInt((x1 - 10) / rectWidth);
+                  console.log('artLineStartIndex: ', artLineStartIndex);
+                  artLineEndIndex = parseInt((x2 - 10) / rectWidth);
+                  console.log('artLineEndIndex: ', artLineEndIndex);
+                  /*  artLineMaxValue = recordArray[artLineStartIndex];
+                   artLineMinValue = recordArray[artLineEndIndex]; */
                   drawStraightLine(allTrack);
                 }
 
                 function rectBrushEnd() {
                   x1 = d3.event.selection[0];
                   x2 = d3.event.selection[1];
-                  let startIndex = parseInt((x1 - 10) / rectWidth);
-                  let endIndex = parseInt((x2 - 10) / rectWidth);
-                  artLineMaxValue = recordArray[startIndex];
-                  artLineMinValue = recordArray[endIndex];
+                  artLineStartIndex = parseInt((x1 - 10) / rectWidth);
+                  console.log('artLineStartIndex: ', artLineStartIndex);
+                  artLineEndIndex = parseInt((x2 - 10) / rectWidth);
+                  console.log('artLineEndIndex: ', artLineEndIndex);
+                  /*   artLineMaxValue = recordArray[artLineStartIndex];
+                    artLineMinValue = recordArray[artLineEndIndex]; */
                   drawStraightLine(allTrack);
                 }
               })
