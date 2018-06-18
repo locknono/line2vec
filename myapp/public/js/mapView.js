@@ -415,6 +415,7 @@ function load(
               });
 
               function drawStraightLine(allTrack) {
+                console.log('allTrack: ', allTrack);
                 allTrack.sort(function (a, b) {
                   return b.lineCoors.length - a.lineCoors.length;
                 });
@@ -440,12 +441,13 @@ function load(
                 var lineGenarator = d3
                   .line()
                   .x(function (d) {
-                    return projection.latLngToLayerPoint(d).x;
+                    console.log(d);
+                    return map.latLngToLayerPoint(d).x;
                   })
                   .y(function (d) {
-                    return projection.latLngToLayerPoint(d).y;
+                    return map.latLngToLayerPoint(d).y;
                   })
-                  .curve(d3.curveCardinal.tension(0.3));
+                  //.curve(d3.curveCardinal.tension(0.3));
 
                 var defs = selection.append("defs");
                 var arrowMarker = defs
@@ -479,7 +481,18 @@ function load(
                     allTrack[i].lineCoors.length - 1 <= artLineMaxValue &&
                     allTrack[i].value >= flowSliderValue
                   ) {
-                    //   .attr("marker-mid", "url(#arrow)")
+                    selection
+                    .append("path")
+                    .attr("class", "artLine")
+                    .style(
+                      "stroke",
+                      "url(#" + linearGradient.attr("id") + ")"
+                    )
+                    .attr("stroke-width", widthScale(allTrack[i].value))
+                    .attr("fill", "none")
+                    .attr("d", lineGenarator(allTrack[i].lineCoors));
+
+                  /*   //   .attr("marker-mid", "url(#arrow)")
                     var path = d3.path();
                     for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
                       if (j === 0) {
@@ -491,17 +504,8 @@ function load(
                           map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
                           map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
                       }
-                    }
-                    selection
-                      .append("path")
-                      .attr("class", "artLine")
-                      .style(
-                        "stroke",
-                        "url(#" + linearGradient.attr("id") + ")"
-                      )
-                      .attr("stroke-width", widthScale(allTrack[i].value))
-                      .attr("fill", "none")
-                      .attr("d", path);
+                    } */
+          
                     //  .attr("marker-start",
                     //      "url(#arrow)")
                     // .attr("marker-mid",
