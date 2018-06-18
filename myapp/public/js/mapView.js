@@ -58,6 +58,7 @@ var artLineEndIndex = 200;
 var timeString = "6-8";
 var selectAllFlag = false;
 var allTrack = [];
+var selectedMapLines = [];
 // add leaflet.pm controls to the map
 
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
@@ -367,8 +368,6 @@ function load(
           map.off("pm:create");
 
           function drawArtLine(timeString) {
-
-
             new Promise(function (resolve, reject) {
               $.ajax({
                 type: "post",
@@ -563,13 +562,7 @@ function load(
                 x1 = d3.event.selection[0];
                 x2 = d3.event.selection[1];
                 artLineStartIndex = parseInt((x1 - 10) / rectWidth);
-                console.log('artLineStartIndex: ', artLineStartIndex);
-
                 artLineEndIndex = parseInt((x2 - 10) / rectWidth);
-                console.log('artLineEndIndex: ', artLineEndIndex);
-
-                /*  artLineMaxValue = recordArray[artLineStartIndex];
-                 artLineMinValue = recordArray[artLineEndIndex]; */
                 drawStraightLine(allTrack);
               }
 
@@ -577,11 +570,7 @@ function load(
                 x1 = d3.event.selection[0];
                 x2 = d3.event.selection[1];
                 artLineStartIndex = parseInt((x1 - 10) / rectWidth);
-
                 artLineEndIndex = parseInt((x2 - 10) / rectWidth);
-
-                /*   artLineMaxValue = recordArray[artLineStartIndex];
-                  artLineMinValue = recordArray[artLineEndIndex]; */
                 drawStraightLine(allTrack);
               }
             })
@@ -598,14 +587,9 @@ function load(
             var clickSourceLatLng = e.layer._latlng;
             minRadius = e.layer._radius;
 
-            ////
-            ////
-            /////
             transformArray.push(containerPoint1);
+            //get selected map data
             selectedMapData = [];
-            var selectedMapLines = [];
-
-            ////
             for (var i = 0; i < mapData.length; i++) {
               let stationPoint = mapData[i].stationLocation;
               if (
@@ -615,23 +599,25 @@ function load(
                 ) <= minRadius
               ) {
                 selectedMapData.push(mapData[i]);
+
               }
             }
-            ////
             if (sampled === true) {
               var data = sampledScatterData;
+
             } else if (sampled === false) {
               var data = scatterData;
             }
 
-            //get selected map data
+            //use loose equal here,one is string the other is float
+            selectedMapLines = [];
             for (var i = 0; i < data.length; i++) {
               for (var j = 0; j < selectedMapData.length; j++) {
-                if (data[i].source !== selectedMapData[j].stationID) {
+                if (data[i].source != selectedMapData[j].stationID) {
                   continue;
                 }
                 for (var s = 0; s < selectedMapData.length; s++) {
-                  if (data[i].target === selectedMapData[s].stationID) {
+                  if (data[i].target == selectedMapData[s].stationID) {
                     selectedMapLines.push(data[i]);
                   }
                 }
@@ -640,7 +626,7 @@ function load(
 
 
             allSelectedMapLines.push(selectedMapLines);
-            //    allSelectedMapLines);
+
             multidrawCircles(allSelectedMapLines, comDetecFlag);
             //  multidrawLines(allSelectedMapLines);
 
@@ -651,16 +637,11 @@ function load(
               AllLength += allSelectedMapLines[i].length;
             }
             $("#selectedNumber").text("Selected Flows:" + AllLength);
-            ////
-            // //////////////
 
-            baseshowflux(getSitesName(selectedMapLines)).then(function (
-              volumeData
-            ) {
+            baseshowflux(getSitesName(selectedMapLines)).then(function (volumeData) {
               if (volumeData.length === 0) {
                 return;
               }
-              //
               changeVolumeArray(volumeData);
               var hourLineNumber = getHourLineNumber(volumeData);
               avgVolumeData = getAvgVolumeData(volumeData);
@@ -672,8 +653,6 @@ function load(
                 allArcArray,
                 scales
               );
-              //
-
               getRadarData(
                 selectedMapData,
                 scatterData,
@@ -686,7 +665,6 @@ function load(
                 .attr("class", "d3-tip")
                 .offset([-10, 0])
                 .html(function (d, i) {
-                  //////////////
                   return (
                     "<strong>Flow:</strong> <span style='color:red'>" +
                     d3.format(".4")(avgVolumeData[i]) +
@@ -723,7 +701,6 @@ function load(
                     .select(this)
                     .style("stroke", "#B25C00")
                     .style("stroke-width", "3px");
-                  // ////
                 })
                 .on("mouseover", tip.show)
                 .on("mouseout", tip.hide)
@@ -779,13 +756,10 @@ function load(
                 var stratTime = i * 3;
                 var endTime = i * 3 + 2;
                 timeString = stratTime.toString() + "-" + endTime.toString();
-
                 drawArtLine(timeString);
                 selection.selectAll(".timeArcPath").style("fill", "#CCCCCC");
                 d3.select(this).style("fill", "#858585");
               });
-
-
 
             var circle = selection
               .append("circle")
@@ -811,20 +785,10 @@ function load(
             circle.attr("zoomScale", map.getZoom());
 
             function dragStarted() {
-              ////////////
               selection.selectAll(".artLine").remove();
               selection.selectAll(".timeArc").remove();
               bars[parseFloat(circle.attr("id"))].remove();
               SVGcurrentZoom = map.getZoom();
-              ////
-              ////
-
-              /*  let circleCenter = [parseFloat(circle.attr("cx")), parseFloat(circle.attr("cy"))];
-                              //////////////
-                              //////////////
-                                  + Math.pow(circleCenter[1] - d3.mouse(this)[1], 2)
-                              ));
-                              */
               circle
                 .attr("cx", d3.mouse(this)[0])
                 .attr("cy", d3.mouse(this)[1]);
@@ -833,17 +797,12 @@ function load(
                 "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
               );
               map.dragging.disable();
-              ////
-              //   map.containerPointToLayerPoint()
-              ////
-              ////
               dragDrawLines(allSelectedMapLines[parseFloat(circle.attr("id"))]);
               dragDrawCircles(
                 allSelectedMapLines[parseFloat(circle.attr("id"))]
               );
               allSelectedMapLines[parseFloat(circle.attr("id"))] = [];
               multidrawCircles(allSelectedMapLines, comDetecFlag);
-              //multidrawLines(allSelectedMapLines);
             }
 
             function draged() {
@@ -854,7 +813,6 @@ function load(
                 "transform",
                 "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
               );
-              //   ////
               selectedMapData = [];
               selectedMapLines = [];
               let clickPoint = {
@@ -865,7 +823,6 @@ function load(
                 SVGcurrentZoom,
                 parseFloat(circle.attr("zoomScale"))
               );
-              ////
               for (var i = 0; i < mapData.length; i++) {
                 let stationPoint = mapData[i].stationLocation;
                 if (
@@ -1097,6 +1054,104 @@ function load(
               if (selectedMapData.length !== 0) {
                 drawArtLine(timeString);
               }
+              
+              selectedMapLines = [];
+              if (sampled === false) {
+                data = scatterData;
+              } else {
+                data = sampledScatterData;
+              }
+              for (var i = 0; i < data.length; i++) {
+                for (var j = 0; j < selectedMapData.length; j++) {
+                  if (data[i].source != selectedMapData[j].stationID) {
+                    continue;
+                  }
+                  for (var s = 0; s < selectedMapData.length; s++) {
+                    if (data[i].target == selectedMapData[s].stationID) {
+                      selectedMapLines.push(data[i]);
+                    }
+                  }
+                }
+              }
+
+              baseshowflux(getSitesName(selectedMapLines)).then(function (volumeData) {
+                if (volumeData.length === 0) {
+                  return;
+                }
+                changeVolumeArray(volumeData);
+                var hourLineNumber = getHourLineNumber(volumeData);
+                avgVolumeData = getAvgVolumeData(volumeData);
+                var scales = getArcScale(avgVolumeData, minRadius);
+                getArcArray(
+                  volumeData,
+                  avgVolumeData,
+                  minRadius,
+                  allArcArray,
+                  scales
+                );
+                getRadarData(
+                  selectedMapData,
+                  scatterData,
+                  sampledScatterData,
+                  volumeData,
+                  maxValue
+                );
+                var tip = d3
+                  .tip()
+                  .attr("class", "d3-tip")
+                  .offset([-10, 0])
+                  .html(function (d, i) {
+                    return (
+                      "<strong>Flow:</strong> <span style='color:red'>" +
+                      d3.format(".4")(avgVolumeData[i]) +
+                      "</span><br></br><strong>Line Number:</strong> <span style='color:red'>" +
+                      d3.format(".4")(hourLineNumber[i]) +
+                      "</span>"
+                    );
+                  });
+                selection.call(tip);
+                selection.selectAll("[name='" + (lastLayers.length - 1).toString() + "']").remove();
+                circleBars = selection
+                  .append("g")
+                  .attr("name", (lastLayers.length - 1).toString())
+                  .selectAll("path")
+                  .data(allArcArray[allArcArray.length - 1])
+                  .enter()
+                  .append("path")
+                  .attr("d", function (d) {
+                    return arc(d);
+                  })
+                  .attr("class", "arcs")
+                  .style("stroke", "none")
+                  .style("stroke-width", "0.2px")
+                  .style("fill", function (d, i) {
+                    return circleBarsInterpolate(scales[1](avgVolumeData[i]));
+                  })
+                  .style("pointer-events", "auto")
+                  .style("cursor", "crosshair")
+                  .on("click", function () {
+                    d3
+                      .selectAll(".arcs")
+                      .style("stroke", "steelblue")
+                      .style("stroke-width", "0.2px");
+                    d3
+                      .select(this)
+                      .style("stroke", "#B25C00")
+                      .style("stroke-width", "3px");
+                  })
+                  .on("mouseover", tip.show)
+                  .on("mouseout", tip.hide)
+                  .attr(
+                    "transform",
+                    "translate(" +
+                    transformArray[transformArray.length - 1].x +
+                    "," +
+                    transformArray[transformArray.length - 1].y +
+                    ")"
+                  );
+                bars[bars.length - 1] = circleBars;
+              });
+
               var sampleRateScale = d3
                 .scaleOrdinal()
                 .domain([40, 20, 10, 5])
@@ -1495,7 +1550,6 @@ function load(
                 1
               );
             }
-
             allSelectedCirclesGraphics.drawCircle(
               xScale(allSelectedMapLines[j][i].x),
               yScale(allSelectedMapLines[j][i].y),
