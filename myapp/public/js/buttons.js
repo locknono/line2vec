@@ -21,13 +21,13 @@ $(function () {
     $("#slider2").slider({
         //range:true,
         min: 5,
-        max: 60,
+        max: 100,
         step: 5,
         value: 40,
         // value:[0,100],
         slide: function (event, ui) {
             $("#amount2").val(ui.value);
-            op.sample_rate = ui.value;
+            op.changeSampleRate(ui.value);
         },
         stop: function (event, ui) {}
     });
