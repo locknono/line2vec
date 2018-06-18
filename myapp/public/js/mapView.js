@@ -521,12 +521,9 @@ function load(
                             map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
                         }
                       } */
-
-
                   }
                 }
               }
-
               var recordArray = underMap(thisTimeTrackSet);
               var rectWidth = d3
                 .select(".underMapRectG")
@@ -808,8 +805,7 @@ function load(
               circle
                 .attr("cx", d3.mouse(this)[0])
                 .attr("cy", d3.mouse(this)[1]);
-              bars[parseFloat(circle.attr("id"))].attr(
-                "transform",
+              bars[parseFloat(circle.attr("id"))].attr("transform",
                 "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
               );
               selectedMapData = [];
@@ -818,10 +814,7 @@ function load(
                 x: map.mouseEventToLayerPoint(d3.event.sourceEvent).x,
                 y: map.mouseEventToLayerPoint(d3.event.sourceEvent).y
               };
-              let thisCircleZoomScale = map.getZoomScale(
-                SVGcurrentZoom,
-                parseFloat(circle.attr("zoomScale"))
-              );
+              let thisCircleZoomScale = map.getZoomScale(SVGcurrentZoom, parseFloat(circle.attr("zoomScale")));
               for (var i = 0; i < mapData.length; i++) {
                 let stationPoint = mapData[i].stationLocation;
                 if (
@@ -857,9 +850,7 @@ function load(
               }
               AllLength += selectedMapLines.length;
               $("#selectedNumber").text("Selected Flows:" + AllLength);
-
               dragDrawLines(selectedMapLines);
-              ////
               dragDrawCircles(selectedMapLines);
             }
 
@@ -889,20 +880,16 @@ function load(
               dragLineGraphics.clear();
               leafletRenderer.render(container);
               map.dragging.enable();
-              allSelectedMapLines[
-                parseFloat(circle.attr("id"))
-              ] = selectedMapLines;
+              allSelectedMapLines[parseFloat(circle.attr("id"))] = selectedMapLines;
 
               var AllLength = 0;
               for (var i = 0; i < allSelectedMapLines.length; i++) {
                 AllLength += allSelectedMapLines[i].length;
               }
               $("#selectedNumber").text("Selected Flows:" + AllLength);
-              //  multidrawLines(allSelectedMapLines);
               drawArtLine(timeString);
               dragDrawCricleGraphics.clear();
               multidrawCircles(allSelectedMapLines, comDetecFlag);
-              ////
               baseshowflux(getSitesName(selectedMapLines)).then(function (
                 volumeData
               ) {
