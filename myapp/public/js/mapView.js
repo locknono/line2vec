@@ -18,7 +18,6 @@ L.tileLayer(osmUrl, {
   accessToken: "your.mapbox.access.token"
 }).addTo(map);
 map.zoomControl.remove();
-
 var options = {
   position: "topleft", // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
   drawMarker: false, // adds button to draw markers
@@ -54,7 +53,6 @@ var originalColor = 0xc2c2c2;
 var selectedColor = 0x3388ff;
 var artLineMaxValue = 1000;
 var artLineMinValue = 0;
-var sampleRate = 40;
 var artLineStartIndex = 0;
 var artLineEndIndex = 200;
 var timeString = "6-8";
@@ -280,7 +278,6 @@ function load(
     var dragLineGraphics = new PIXI.Graphics();
     var selectedMapCircleGraphics = new PIXI.Graphics();
     var selectedCircles = [];
-    var SVGzoomScale;
     var SVGcurrentZoom;
     var drag;
     var selectedMapData = [];
@@ -376,7 +373,8 @@ function load(
                 url: "/drawArtLine",
                 data: {
                   selectedMapData: selectedMapData,
-                  timeString: timeString
+                  timeString: timeString,
+                  sampleRate: op.sample_rate,
                 },
                 success: function (data) {
                   resolve(data);
@@ -489,8 +487,8 @@ function load(
                       }
                       if (j % 3 === 0 && j !== 0) {
                         path.bezierCurveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
-                        map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
-                        map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
+                          map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
+                          map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
                       }
                     }
                     selection
@@ -547,9 +545,9 @@ function load(
                 x1 = d3.event.selection[0];
                 x2 = d3.event.selection[1];
                 artLineStartIndex = parseInt((x1 - 10) / rectWidth);
-                
+
                 artLineEndIndex = parseInt((x2 - 10) / rectWidth);
-                
+
                 /*  artLineMaxValue = recordArray[artLineStartIndex];
                  artLineMinValue = recordArray[artLineEndIndex]; */
                 drawStraightLine(allTrack);
@@ -559,16 +557,16 @@ function load(
                 x1 = d3.event.selection[0];
                 x2 = d3.event.selection[1];
                 artLineStartIndex = parseInt((x1 - 10) / rectWidth);
-                
+
                 artLineEndIndex = parseInt((x2 - 10) / rectWidth);
-                
+
                 /*   artLineMaxValue = recordArray[artLineStartIndex];
                   artLineMinValue = recordArray[artLineEndIndex]; */
                 drawStraightLine(allTrack);
               }
             })
           }
-          
+
           map.on("pm:create", function (e) {
             var circle = e.layer;
             lastLayer = e.layer;
@@ -625,7 +623,7 @@ function load(
             //    allSelectedMapLines);
             multidrawCircles(allSelectedMapLines, comDetecFlag);
             //  multidrawLines(allSelectedMapLines);
-        
+
             drawArtLine(timeString);
             //change flow count text
             var AllLength = 0;
@@ -797,7 +795,6 @@ function load(
               selection.selectAll(".artLine").remove();
               selection.selectAll(".timeArc").remove();
               bars[parseFloat(circle.attr("id"))].remove();
-              SVGzoomScale = map.getZoomScale(map.getZoom(), SVGcurrentZoom);
               SVGcurrentZoom = map.getZoom();
               ////
               ////
@@ -1075,37 +1072,26 @@ function load(
             $(".leaflet-pm-icon-delete").attr("name", "false");
           }); //create 的括号
 
-          if(firstDraw){
+          if (firstDraw) {
             $("#sample").click(function () {
-              drawArtLine(timeString);
+              if(selectedMapData.length!==0){
+                drawArtLine(timeString);
+              }
               var sampleRateScale = d3
                 .scaleOrdinal()
                 .domain([40, 20, 10, 5])
                 .range([1, 2, 3, 4]);
+
               var methodScale = d3
                 .scaleOrdinal()
                 .domain(["0", "1", "2", "012"])
                 .range([3, 2, 1, 0]);
               var method = "";
-    
-              var folderName = op.res_path + 'BSlinedetail_label' + sampleRate.toString() + "_seq";
-    
-              if ($("#checkBtw").is(":checked")) {
-                folderName += "0";
-                method += "0";
-              }
-              if ($("#checkOverlap").is(":checked")) {
-                folderName += "1";
-                method += "1";
-              }
-              if ($("#checkComm").is(":checked")) {
-                folderName += "2";
-                method += "2";
-              }
-              var sampledScatterDataFileName = folderName + "/0.csv";
-    
-              var edgeBtwFileName = folderName + "/1.csv";
-              var pixelFileName = folderName + "/2.json";
+              var sampledScatterDataFileName = op.getSampleFile();
+              console.log('sampledScatterDataFileName: ', sampledScatterDataFileName);
+
+              var edgeBtwFileName = op.folderName + "/1.csv";
+              var pixelFileName = op.folderName + "/2.json";
               addHistogram2(edgeBtwFileName);
               pixelView(
                 pixelFileName,
@@ -1126,8 +1112,8 @@ function load(
                   comDetecFlag
                 );
               });
-              var index = sampleRateScale(sampleRate) * 4 - methodScale(method);
-    
+              var index = sampleRateScale(op.sample_rate) * 4 - methodScale(method);
+
               var scaleArray = [];
               var maxArray1 = [12, 2779, 2, 2, 2, 65952, 600, 7039];
               var minArray1 = [2, 500, 0, 0, 0, 2000, 250, 2500];
@@ -1139,20 +1125,20 @@ function load(
                 scaleArray.push(linear);
               }
               var allRadiusArray = [];
-    
+
               var radius = [];
               for (var j = 0; j < 8; j++)
                 radius.push(scaleArray[j](radarData[0][j]));
               allRadiusArray.push(radius);
-    
+
               var radius = [];
               for (var j = 0; j < 8; j++)
                 radius.push(scaleArray[j](radarData[index][j]));
               allRadiusArray.push(radius);
-    
-    
+
+
               addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
-    
+
               scatterCircleGraphics.clear();
               drawScatterPlot(
                 sampledScatterData,
@@ -1163,7 +1149,7 @@ function load(
                 scatterCircleGraphics,
                 comDetecFlag
               );
-    
+
               multidrawCircles(allSelectedMapLines, comDetecFlag);
               sampled = true;
               brush.on("start brush", brushed).on("end", brushEnded);
@@ -1173,7 +1159,7 @@ function load(
               let brushY = parseFloat(sRect.attr("y"));
               let brushWidth = parseFloat(sRect.attr("width"));
               let brushHeight = parseFloat(sRect.attr("height"));
-    
+
               if (selectedCircles.length === scatterData.length) {
                 drawLines(sampledScatterData, comDetecFlag);
                 selectedCircles = sampledScatterData;
@@ -1191,7 +1177,7 @@ function load(
               selectedLineGraphics.clear();
               selectedCircleGraphics.clear();
               renderer.render(stage);
-    
+
               $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
               var sampledAllSelectedMapLines = [];
               for (var i = 0; i < allSelectedMapLines.length; i++) {
@@ -1243,7 +1229,7 @@ function load(
       );
 
       d3Overlay.addTo(map);
-    
+
 
       function drawLines(scatterData, comDetecFlag) {
         line.clear();
@@ -1792,7 +1778,7 @@ function load(
               .setAttribute("src", "images/selectPointClose.png");
           }
         });
-        
+
 
         $("#reset").click(function () {
           selectAllFlag = false;
