@@ -1054,104 +1054,6 @@ function load(
               if (selectedMapData.length !== 0) {
                 drawArtLine(timeString);
               }
-              
-              selectedMapLines = [];
-              if (sampled === false) {
-                data = scatterData;
-              } else {
-                data = sampledScatterData;
-              }
-              for (var i = 0; i < data.length; i++) {
-                for (var j = 0; j < selectedMapData.length; j++) {
-                  if (data[i].source != selectedMapData[j].stationID) {
-                    continue;
-                  }
-                  for (var s = 0; s < selectedMapData.length; s++) {
-                    if (data[i].target == selectedMapData[s].stationID) {
-                      selectedMapLines.push(data[i]);
-                    }
-                  }
-                }
-              }
-
-              baseshowflux(getSitesName(selectedMapLines)).then(function (volumeData) {
-                if (volumeData.length === 0) {
-                  return;
-                }
-                changeVolumeArray(volumeData);
-                var hourLineNumber = getHourLineNumber(volumeData);
-                avgVolumeData = getAvgVolumeData(volumeData);
-                var scales = getArcScale(avgVolumeData, minRadius);
-                getArcArray(
-                  volumeData,
-                  avgVolumeData,
-                  minRadius,
-                  allArcArray,
-                  scales
-                );
-                getRadarData(
-                  selectedMapData,
-                  scatterData,
-                  sampledScatterData,
-                  volumeData,
-                  maxValue
-                );
-                var tip = d3
-                  .tip()
-                  .attr("class", "d3-tip")
-                  .offset([-10, 0])
-                  .html(function (d, i) {
-                    return (
-                      "<strong>Flow:</strong> <span style='color:red'>" +
-                      d3.format(".4")(avgVolumeData[i]) +
-                      "</span><br></br><strong>Line Number:</strong> <span style='color:red'>" +
-                      d3.format(".4")(hourLineNumber[i]) +
-                      "</span>"
-                    );
-                  });
-                selection.call(tip);
-                selection.selectAll("[name='" + (lastLayers.length - 1).toString() + "']").remove();
-                circleBars = selection
-                  .append("g")
-                  .attr("name", (lastLayers.length - 1).toString())
-                  .selectAll("path")
-                  .data(allArcArray[allArcArray.length - 1])
-                  .enter()
-                  .append("path")
-                  .attr("d", function (d) {
-                    return arc(d);
-                  })
-                  .attr("class", "arcs")
-                  .style("stroke", "none")
-                  .style("stroke-width", "0.2px")
-                  .style("fill", function (d, i) {
-                    return circleBarsInterpolate(scales[1](avgVolumeData[i]));
-                  })
-                  .style("pointer-events", "auto")
-                  .style("cursor", "crosshair")
-                  .on("click", function () {
-                    d3
-                      .selectAll(".arcs")
-                      .style("stroke", "steelblue")
-                      .style("stroke-width", "0.2px");
-                    d3
-                      .select(this)
-                      .style("stroke", "#B25C00")
-                      .style("stroke-width", "3px");
-                  })
-                  .on("mouseover", tip.show)
-                  .on("mouseout", tip.hide)
-                  .attr(
-                    "transform",
-                    "translate(" +
-                    transformArray[transformArray.length - 1].x +
-                    "," +
-                    transformArray[transformArray.length - 1].y +
-                    ")"
-                  );
-                bars[bars.length - 1] = circleBars;
-              });
-
               var sampleRateScale = d3
                 .scaleOrdinal()
                 .domain([40, 20, 10, 5])
@@ -1163,8 +1065,6 @@ function load(
                 .range([3, 2, 1, 0]);
               var method = "";
               var sampledScatterDataFileName = op.getSampleFile();
-
-
               var edgeBtwFileName = op.folderName + "/1.csv";
               var pixelFileName = op.folderName + "/2.json";
               addHistogram2(edgeBtwFileName);
@@ -1177,6 +1077,98 @@ function load(
               );
               getScatterData(sampledScatterDataFileName).then(function (value) {
                 sampledScatterData = value;
+                selectedMapLines = [];
+                data = sampledScatterData;
+                for (var i = 0; i < data.length; i++) {
+                  for (var j = 0; j < selectedMapData.length; j++) {
+                    if (data[i].source != selectedMapData[j].stationID) {
+                      continue;
+                    }
+                    for (var s = 0; s < selectedMapData.length; s++) {
+                      if (data[i].target == selectedMapData[s].stationID) {
+                        selectedMapLines.push(data[i]);
+                      }
+                    }
+                  }
+                }
+
+                baseshowflux(getSitesName(selectedMapLines)).then(function (volumeData) {
+                  if (volumeData.length === 0) {
+                    return;
+                  }
+                  changeVolumeArray(volumeData);
+                  var hourLineNumber = getHourLineNumber(volumeData);
+                  avgVolumeData = getAvgVolumeData(volumeData);
+                  var scales = getArcScale(avgVolumeData, minRadius);
+                  getArcArray(
+                    volumeData,
+                    avgVolumeData,
+                    minRadius,
+                    allArcArray,
+                    scales
+                  );
+                  getRadarData(
+                    selectedMapData,
+                    scatterData,
+                    sampledScatterData,
+                    volumeData,
+                    maxValue
+                  );
+                  var tip = d3
+                    .tip()
+                    .attr("class", "d3-tip")
+                    .offset([-10, 0])
+                    .html(function (d, i) {
+                      return (
+                        "<strong>Flow:</strong> <span style='color:red'>" +
+                        d3.format(".4")(avgVolumeData[i]) +
+                        "</span><br></br><strong>Line Number:</strong> <span style='color:red'>" +
+                        d3.format(".4")(hourLineNumber[i]) +
+                        "</span>"
+                      );
+                    });
+                  selection.call(tip);
+                  selection.selectAll("[name='" + (lastLayers.length - 1).toString() + "']").remove();
+                  circleBars = selection
+                    .append("g")
+                    .attr("name", (lastLayers.length - 1).toString())
+                    .selectAll("path")
+                    .data(allArcArray[allArcArray.length - 1])
+                    .enter()
+                    .append("path")
+                    .attr("d", function (d) {
+                      return arc(d);
+                    })
+                    .attr("class", "arcs")
+                    .style("stroke", "none")
+                    .style("stroke-width", "0.2px")
+                    .style("fill", function (d, i) {
+                      return circleBarsInterpolate(scales[1](avgVolumeData[i]));
+                    })
+                    .style("pointer-events", "auto")
+                    .style("cursor", "crosshair")
+                    .on("click", function () {
+                      d3
+                        .selectAll(".arcs")
+                        .style("stroke", "steelblue")
+                        .style("stroke-width", "0.2px");
+                      d3
+                        .select(this)
+                        .style("stroke", "#B25C00")
+                        .style("stroke-width", "3px");
+                    })
+                    .on("mouseover", tip.show)
+                    .on("mouseout", tip.hide)
+                    .attr(
+                      "transform",
+                      "translate(" +
+                      transformArray[transformArray.length - 1].x +
+                      "," +
+                      transformArray[transformArray.length - 1].y +
+                      ")"
+                    );
+                  bars[bars.length - 1] = circleBars;
+                });
                 drawScatterPlot(
                   sampledScatterData,
                   op.labelColorScale,
