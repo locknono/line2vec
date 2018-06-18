@@ -74,7 +74,6 @@ router.post("/drawArtLine", function (req, res) {
   let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
 
   let sFile=req.body.sFile;
-  console.log('sFile: ', sFile);
 
   var data = JSON.parse(
     fs.readFileSync(trackFileName)
@@ -120,7 +119,7 @@ router.post("/drawArtLine", function (req, res) {
     element.fre = parseFloat(element.fre);
     element.ebt = parseFloat(element.ebt);
   });
-  console.log("readFinishi")
+  console.log("readFinish")
 
   for (var i = 0; i < sampledScatterData.length; i++) {
     sampledSourceTragetArray.push(
