@@ -441,9 +441,7 @@ function load(
                 var lineGenarator = d3
                   .line()
                   .x(function (d) {
-
                     return projection.latLngToLayerPoint(d).x;
-
                   })
                   .y(function (d) {
                     return projection.latLngToLayerPoint(d).y;
@@ -470,7 +468,8 @@ function load(
                   .attr("d", arrow_path)
                   .style("z-index", 5000)
                   .style("fill", "#000000");
-
+                minValue = 0;
+                maxValue = 8;
                 var widthScale = d3
                   .scaleLinear()
                   .domain([minValue, maxValue])
@@ -489,7 +488,7 @@ function load(
                         "stroke",
                         "url(#" + linearGradient.attr("id") + ")"
                       )
-                      .attr("stroke-width", widthScale(allTrack[i].value))
+                      .attr("stroke-width", widthScale(Math.log2(allTrack[i].value)))
                       .attr("fill", "none")
                       .attr("d", lineGenarator(allTrack[i].lineCoors))
                       /* .attr("marker-start",
