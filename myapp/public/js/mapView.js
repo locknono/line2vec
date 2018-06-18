@@ -151,7 +151,7 @@ var scatterCanvas = document.getElementById("scatterCanvas");
 var renderer = PIXI.autoDetectRenderer(scatterPlotWidth + 0.01, scatterPlotHeight + 0.02, {
   view: scatterCanvas,
   forceFXAA: false,
-  antialias: true,
+  antialias: false,
   transparent: !0,
   resolution: 1
 });
