@@ -66,7 +66,7 @@ var op = (function () {
             "#4B3700", //17
         ]);
     //style
-    var minArtLineWidth = 2,
+    var minArtLineWidth = 1,
         maxArtLineWidth = 15,
         circleBarStartColor = "#fff4b3",
         circleBarEndColor = "#F22613",
