@@ -27,7 +27,7 @@ $(function () {
         // value:[0,100],
         slide: function (event, ui) {
             $("#amount2").val(ui.value);
-            sampleRate = ui.value;
+            op.sample_rate = ui.value;
         },
         stop: function (event, ui) {}
     });

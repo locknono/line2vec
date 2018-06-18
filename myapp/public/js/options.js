@@ -15,29 +15,54 @@ var op = (function () {
     var track_file = root_path + '18Data_track.json';
     var originalScatterImg = img_root_path + 'original.png';
 
+    var sample_rate = 40;
+    var sample_method = "";
+    var folderName = res_path + 'BSlinedetail_label' + sample_rate.toString() + "_seq";
+    
+    function changeSampleRate(rate) {
+        this.sample_rate = rate;
+    }
+
+    function getSampleFile() {
+        this.folderName = this.res_path + 'BSlinedetail_label' + this.sample_rate.toString() + "_seq";
+        this.sample_method = "";
+        if ($("#checkBtw").is(":checked")) {
+            this.folderName += "0";
+            this.sample_method += "0";
+        }
+        if ($("#checkOverlap").is(":checked")) {
+            this.folderName += "1";
+            this.sample_method += "1";
+        }
+        if ($("#checkComm").is(":checked")) {
+            this.folderName += "2";
+            this.sample_method += "2";
+        }
+        return this.folderName + "/0.csv";
+    }
     var labelColorScale = d3
         .scaleOrdinal()
-        .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11,12,13,14,15,16,17])
+        .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
         .range([
-            "#fb8072",//-1
-            "#80b1d3",//0
+            "#fb8072", //-1
+            "#80b1d3", //0
             "#fdb462",
             "#b3de69",
             "#fccde5",
             "#d9d9d9",
-            "#bc80bd",//5
+            "#bc80bd", //5
             "#ccebc5",
             "#ffed6f",
             "#8dd3c7",
             "#ffffb3",
-            "#FFFF00",//10
+            "#FFFF00", //10
             "#CCCCCC",
             "#E8CB0C",
             "#FC6AE5",
             "#47781C",
-            "#6F7F6B",//15
-            "#FDA318",//16
-            "#4B3700",//17
+            "#6F7F6B", //15
+            "#FDA318", //16
+            "#4B3700", //17
         ]);
     //style
     var minArtLineWidth = 2,
@@ -58,6 +83,11 @@ var op = (function () {
         res_path: res_path,
         pixel_file: pixel_file,
         originalScatterImg: originalScatterImg,
-        labelColorScale:labelColorScale,
+        labelColorScale: labelColorScale,
+        sample_rate: sample_rate,
+        changeSampleRate: changeSampleRate,
+        getSampleFile: getSampleFile,
+        sample_method: sample_method,
+        folderName:folderName,
     }
 }())
