@@ -367,6 +367,7 @@ function load(
           map.off("pm:create");
 
           function drawArtLine(timeString) {
+            console.log("draw art line");
             new Promise(function (resolve, reject) {
               $.ajax({
                 type: "post",
@@ -374,7 +375,7 @@ function load(
                 data: {
                   selectedMapData: selectedMapData,
                   timeString: timeString,
-                  sampleRate: op.sample_rate,
+                  sFile: op.getSampleFile(),
                 },
                 success: function (data) {
                   resolve(data);

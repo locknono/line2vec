@@ -27,17 +27,18 @@ var op = (function () {
         this.folderName = this.res_path + 'BSlinedetail_label' + this.sample_rate.toString() + "_seq";
         this.sample_method = "";
         if ($("#checkBtw").is(":checked")) {
-            this.folderName += "0";
             this.sample_method += "0";
         }
         if ($("#checkOverlap").is(":checked")) {
-            this.folderName += "1";
             this.sample_method += "1";
         }
         if ($("#checkComm").is(":checked")) {
-            this.folderName += "2";
             this.sample_method += "2";
         }
+        if(this.sample_method===''){
+            this.sample_method='012'
+        }
+        this.folderName+=this.sample_method;
         return this.folderName + "/0.csv";
     }
     var labelColorScale = d3
