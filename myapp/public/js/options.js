@@ -16,7 +16,7 @@ var op = (function () {
     var originalScatterImg = img_root_path + 'original.png';
 
     var sample_rate = 40;
-    var sample_method = "";
+    var sample_method = "012";
     var folderName = res_path + 'BSlinedetail_label' + sample_rate.toString() + "_seq";
     
     function changeSampleRate(rate) {
@@ -90,5 +90,6 @@ var op = (function () {
         getSampleFile: getSampleFile,
         sample_method: sample_method,
         folderName:folderName,
+        img_root_path:img_root_path,
     }
 }())

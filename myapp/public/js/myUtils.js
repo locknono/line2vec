@@ -70,7 +70,6 @@ function drawScatterPlot(
   circle,
   comDetecFlag,
   labelData = undefined
-
 ) {
   circle.clear();
   var xyScale = getScatterXYScale(
@@ -80,25 +79,22 @@ function drawScatterPlot(
     ),
     xScale = xyScale[0],
     yScale = xyScale[1];
-  /*
-   for (var i = 0; i < scatterData.length; i++) {
-    if (comDetecFlag == false) {
-      circle.beginFill(op.scatterColor);
+  let imgFileName = op.img_root_path+op.sample_rate + '_' + op.sample_method+'.png';
+  console.log('imgFileName: ', imgFileName);
+  if(scatterData.length>35000){
+    if (comDetecFlag === true) {
+      d3.select("#scatterImg").attr("src", op.originalScatterImg.replace('.png', '_com.png'));
     } else {
-      circle.beginFill(
-        labelColorScale(scatterData[i].label).replace("#", "0x")
-      );
+      d3.select("#scatterImg").attr("src", op.originalScatterImg);
     }
-    circle.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
-    circle.endFill();
-  } */
-
-  if (comDetecFlag === true) {
-    d3.select("#scatterImg").attr("src", op.originalScatterImg.replace('.png', '_com.png'));
-  } else {
-    d3.select("#scatterImg").attr("src", op.originalScatterImg);
+  }else{
+    if (comDetecFlag === true) {
+      d3.select("#scatterImg").attr("src", imgFileName.replace('.png', '_com.png'));
+    } else {
+      d3.select("#scatterImg").attr("src", imgFileName);
+    }
   }
-
+  
   if (labelData !== undefined) {
     for (var i = 0; i < labelData.length; i++) {
       circle.beginFill(

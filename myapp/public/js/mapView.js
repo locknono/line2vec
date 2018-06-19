@@ -207,13 +207,14 @@ function load(
     var sampledScatterData = values[2];
     var filterScatterData = [];
     var filterFlag = false;
-
+    //downloadPng(scatterData);
     function downloadPng(sampledScatterData) {
       if ($("#comDetec").is(":checked")) {
         var comDetecFlag = true;
       }else{
         var comDetecFlag = false;
       }
+     // comDetecFlag=true;
       scatterCircleGraphics.clear();
       var xyScale = getScatterXYScale(
           scatterData,
