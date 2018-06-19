@@ -201,8 +201,6 @@ function load(
     getMapData(stationIDLocationFile),
     getScatterData(linedetail_labelFile),
     getScatterData(linedetail_label_sampleFile)
-    //   getFluxData('data/BSFluxData.json'),
-    // getSampledScatterData(randomSampleFile)
   ]).then(function (values) {
     var mapData = values[0];
     var scatterData = values[1];
@@ -210,7 +208,11 @@ function load(
     var filterScatterData = [];
     var filterFlag = false;
 
-    function downloadPng(comDetecFlag = true) {
+    function downloadPng(sampledScatterData) {
+      console.log('sampledScatterData: ', sampledScatterData);
+      if ($("#comDetec").is(":checked")) {
+        var comDetecFlag = true;
+      }
       scatterCircleGraphics.clear();
       var xyScale = getScatterXYScale(
           scatterData,
@@ -219,38 +221,96 @@ function load(
         ),
         xScale = xyScale[0],
         yScale = xyScale[1];
-      for (var i = 0; i < scatterData.length; i++) {
-        if (scatterData[i].label === -1) {
+      //draw inter first
+      for (var i = 0; i < sampledScatterData.length; i++) {
+        if (sampledScatterData[i].label !== -1) {
           continue;
         }
         if (comDetecFlag == false) {
           scatterCircleGraphics.beginFill(op.scatterColor);
         } else {
           scatterCircleGraphics.beginFill(
-            op.labelColorScale(scatterData[i].label).replace("#", "0x")
+            op.labelColorScale(sampledScatterData[i].label).replace("#", "0x")
           );
         }
-        scatterCircleGraphics.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
+        scatterCircleGraphics.drawCircle(xScale(sampledScatterData[i].x), yScale(sampledScatterData[i].y), 1.5);
         scatterCircleGraphics.endFill();
       }
-      //draw inter last
-      for (var i = 0; i < scatterData.length; i++) {
-        if (scatterData[i].label !== -1) {
+      for (var i = 0; i < sampledScatterData.length; i++) {
+        if (sampledScatterData[i].label === -1) {
           continue;
         }
         if (comDetecFlag == false) {
           scatterCircleGraphics.beginFill(op.scatterColor);
         } else {
           scatterCircleGraphics.beginFill(
-            op.labelColorScale(scatterData[i].label).replace("#", "0x")
+            op.labelColorScale(sampledScatterData[i].label).replace("#", "0x")
           );
         }
-        scatterCircleGraphics.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
+        scatterCircleGraphics.drawCircle(xScale(sampledScatterData[i].x), yScale(sampledScatterData[i].y), 1.5);
         scatterCircleGraphics.endFill();
       }
-      download_sprite_as_png(renderer, stage, 'a.png');
+      var fileName = '';
+      fileName += op.sample_rate + '_'
+      var sample_method = "";
+      if ($("#checkBtw").is(":checked")) {
+        sample_method += "0";
+      }
+      if ($("#checkOverlap").is(":checked")) {
+        sample_method += "1";
+      }
+      if ($("#checkComm").is(":checked")) {
+        sample_method += "2";
+      }
+      if (sample_method === '') {
+        sample_method = '012'
+      }
+      fileName += sample_method
+      if ($("#comDetec").is(":checked")) {
+        fileName += "_com";
+      }
+      download_sprite_as_png(renderer, stage, fileName);
     }
-    // downloadPng();
+    setTimeout(function () {
+      for (let i = 0; i < 4; i++) {
+        if (i === 0) {
+          op.sample_rate = 40;
+        } else if (i === 1) {
+          op.sample_rate = 20;
+        } else if (i === 2) {
+          op.sample_rate = 10;
+        } else if (i === 3) {
+          op.sample_rate = 5;
+        }
+        for (let j = 0; j < 4; j++) {
+          if (j === 0) {
+            $('#checkBtw').trigger('click');
+            getScatterData(op.getSampleFile()).then(function (value) {
+              downloadPng(value);
+            })
+          } else if (j === 1) {
+            $('#checkBtw').trigger('click');
+            $('#checkOverlap').trigger('click');
+            getScatterData(op.getSampleFile()).then(function (value) {
+              downloadPng(value);
+            })
+          } else if (j === 2) {
+            $('#checkOverlap').trigger('click');
+            $('#checkComm').trigger('click');
+            getScatterData(op.getSampleFile()).then(function (value) {
+              downloadPng(value);
+            })
+          } else if (j === 3) {
+            $('#checkComm').trigger('click');
+            getScatterData(op.getSampleFile()).then(function (value) {
+              downloadPng(value);
+            })
+          }
+        }
+      }
+    }, 3000)
+
+    //  downloadPng(sampledScatterData);
 
     $("#linesNumberBeforeSample").text(
       "Original Flow Count:" + scatterData.length
@@ -545,9 +605,9 @@ function load(
 
                     var color = d3.interpolate(d3.interpolateYlGnBu(0), d3.interpolateYlGnBu(1));
                     var path = selection.selectAll("[id='artLine" + i + "']").remove();
-                    if (coors.length > 2 && coorsSet.size > 2) {
+                    if (coors.length > 5 && coorsSet.size > 2) {
                       path
-                        .data(quads(samples(path.node(), 2)))
+                        .data(quads(samples(path.node(), 1)))
                         .enter().append("path")
                         .style("fill", function (d) {
                           return color(d.t);
@@ -557,9 +617,8 @@ function load(
                         })
                         .attr("d", function (d) {
                           for (var s = 0; s < d.length; s++) {
-                            console.log(d);
+
                             if (d[s] === undefined || Number.isNaN(d[s])) {
-                              console.log(d);
                               console.log('path.node(): ', path.node());
                               break;
                             }
@@ -1207,6 +1266,7 @@ function load(
                   }
                 }
               });
+
               $("#sample").click(function () {
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);

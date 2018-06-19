@@ -1,6 +1,4 @@
 $(function () {
-
-
     $("#flowSlider").slider({
         //range:true,
         min: 1,
@@ -12,7 +10,6 @@ $(function () {
         stop: function (event, ui) {}
     });
     $("#flowSliderAmount").val($("#flowSlider").slider("value"));
-
     $("#sortable").sortable({
         revert: true
     });

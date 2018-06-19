@@ -45,7 +45,7 @@ var op = (function () {
         .scaleOrdinal()
         .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
         .range([
-            "#fb8072", //-1
+            "#4B3700", //-1
             "#80b1d3", //0
             "#fdb462",
             "#b3de69",
@@ -63,7 +63,7 @@ var op = (function () {
             "#47781C",
             "#6F7F6B", //15
             "#FDA318", //16
-            "#4B3700", //17
+            "#fb8072", //17
         ]);
     //style
     var minArtLineWidth = 1,
