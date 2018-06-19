@@ -13,6 +13,9 @@ router.get("/", function (req, res, next) {
 router.get("/drawArrow", function (req, res, next) {
   res.render("drawArrow");
 });
+router.get("/gradient", function (req, res, next) {
+  res.render("gradient");
+});
 
 router.get("/getTraffic", function (req, res) {
   var id = req.query.id;
