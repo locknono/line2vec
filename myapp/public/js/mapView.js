@@ -54,7 +54,7 @@ var selectedColor = 0x3388ff;
 var artLineMaxValue = 1000;
 var artLineMinValue = 0;
 var artLineStartIndex = 0;
-var artLineEndIndex = 200;
+var artLineEndIndex = 1000;
 var timeString = "6-8";
 var selectAllFlag = false;
 var allTrack = [];
@@ -391,13 +391,12 @@ function load(
                 minValue = d3.min(allTrack, function (d) {
                   return d.value;
                 });
-
                 drawStraightLine(allTrack);
 
                 $("#flowSlider").slider({
                   //range:true,
                   min: minValue,
-                  max: maxValue,
+                  max: 200,
                   step: 1,
                   value: minValue,
                   // value:[0,100],
@@ -466,18 +465,19 @@ function load(
                     .style("z-index", 5000)
                     .style("fill", "#000000");
                   minValue = 0;
-                  maxValue = 8;
                   var widthScale = d3
                     .scaleLinear()
-                    .domain([minValue, maxValue])
+                    .domain([minValue, 8])
                     .range([op.minArtLineWidth, op.maxArtLineWidth]);
                   for (let i = artLineStartIndex; i <= artLineEndIndex; i++) {
                     if (i >= allTrack.length - 1) {
                       break;
                     }
                     let coors = allTrack[i].lineCoors;
-
                     let coorsSet = new Set();
+                    if (allTrack[i].value < flowSliderValue) {
+                      continue;
+                    }
                     for (let j = 0; j < coors.length; j++) {
                       coorsSet.add(coors[j][0] + '-' + coors[j][1]);
                     }
@@ -485,7 +485,6 @@ function load(
                       var path = d3.path();
                       path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
                       for (let j = 0; j < coors.length - 1; j++) {
-
                         var thisPoint = coors[j].map(parseFloat);
                         var nextPoint = (coors[j + 1]).map(parseFloat);
                         var d = Math.sqrt(Math.pow(nextPoint[1] - thisPoint[1], 2) + Math.pow(nextPoint[0] - thisPoint[0], 2));
@@ -524,6 +523,12 @@ function load(
                           path.quadraticCurveTo(controlPoint.x, controlPoint.y, projectNextPoint.x, projectNextPoint.y);
                         }
                       }
+                    } else if (coorsSet.size === 2 && coors.length === 2) {
+                      var path = d3.path();
+                      path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
+                      path.lineTo(projection.latLngToLayerPoint(coors[1]).x, projection.latLngToLayerPoint(coors[1]).y);
+                    } else if (coorsSet.size > 2) {
+                      var path = lineGenarator(allTrack[i].lineCoors);
                     }
                     selection
                       .append("path")
@@ -534,6 +539,7 @@ function load(
                       )
                       .attr("stroke-width", widthScale(Math.log2(allTrack[i].value)))
                       .attr("fill", "none")
+                      .style("stroke-linecap", "round")
                       .attr("d", path);
 
                     /* if (
