@@ -364,16 +364,16 @@ function load(
           function (selection, projection) {
             map.off("pm:create");
 
-            function drawArtLine(timeString) {
+            function drawArtLine(timeString,random=false) {
               new Promise(function (resolve, reject) {
                 $.ajax({
                   type: "post",
                   url: "/drawArtLine",
                   data: {
                     selectedMapData: selectedMapData,
-
                     timeString: timeString,
                     sFile: op.getSampleFile(),
+                    randomFlag:random,
                   },
                   success: function (data) {
                     resolve(data);
@@ -1102,6 +1102,9 @@ function load(
             if (firstDraw) {
               $("#randomSample").on("click", function () {
                 if ($("#randomSample").is(":checked")) {
+                  if (selectedMapData.length !== 0) {
+                    drawArtLine(timeString,random=true);
+                  }
                 }
               });
               $("#sample").click(function () {
