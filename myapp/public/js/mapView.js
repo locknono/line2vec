@@ -1100,6 +1100,10 @@ function load(
             }); //create 的括号
 
             if (firstDraw) {
+              $("#randomSample").on("click", function () {
+                if ($("#randomSample").is(":checked")) {
+                }
+              });
               $("#sample").click(function () {
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
