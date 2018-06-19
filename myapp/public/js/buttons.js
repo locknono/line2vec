@@ -17,6 +17,19 @@ $(function () {
         revert: true
     });
     $("#sortable").disableSelection();
+    $('#randomSampleRateSlider').slider({
+        //range:true,
+        min: 5,
+        max: 100,
+        step: 5,
+        value: 5,
+        // value:[0,100],
+        slide: function (event, ui) {
+            $("#randomSampleRate").val(ui.value)
+        },
+        stop: function (event, ui) {}
+    })
+    $("#randomSampleRate").val($("#randomSampleRateSlider").slider("value"));
 
     $("#slider2").slider({
         //range:true,

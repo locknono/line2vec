@@ -1,176 +1,180 @@
 <ul class="dropdown-menu">
-        <li>
-            <a id='Chicago' href="#">Chicago</a>
-        </li>
-        <li>
-            <a id='Wenzhou' href="#">Wenzhou</a>
-        </li>
-    </ul>
-    <div id="lSide">
-        <div id='dataInfomation' class='panel panel-default'>
-            <div class="panel-heading">
-                Data Overview
-            </div>
-            <div class="panel-body" style="line-height: 25px;">
-                <label style="font-weight: normal; font-size: 12px;padding-left: 5px;">Data Set :</label>
-                <select id="selectdata" class="selectpicker show-tick" data-width="fit">
-                    <option value="1">Mobile Phone Locations</option>
-                    <option value="2">Bicycle Sharing </option>
-                    <option value="3">Taxi Track</option>
-                </select>
-                <div style="background-color: #f0f0f0;padding: 4px 5px;color: #000">
-                    <span id='stationNumber' class='dataInfo'>Location count: 582</span>
-                    <span id='linesNumberBeforeSample' class='dataInfo'>Original Flow Count:</span>
-                    <span id='linesNumberAfterSample' class='dataInfo'>Sampled Flow Count:</span>
-                    <span id='selectedNumber' class='dataInfo'>Selected Flows:0</span>
-                </div>
+    <li>
+        <a id='Chicago' href="#">Chicago</a>
+    </li>
+    <li>
+        <a id='Wenzhou' href="#">Wenzhou</a>
+    </li>
+</ul>
+<div id="lSide">
+    <div id='dataInfomation' class='panel panel-default'>
+        <div class="panel-heading">
+            Data Overview
+        </div>
+        <div class="panel-body" style="line-height: 25px;">
+            <label style="font-weight: normal; font-size: 12px;padding-left: 5px;">Data Set :</label>
+            <select id="selectdata" class="selectpicker show-tick" data-width="fit">
+                <option value="1">Mobile Phone Locations</option>
+                <option value="2">Bicycle Sharing </option>
+                <option value="3">Taxi Track</option>
+            </select>
+            <div style="background-color: #f0f0f0;padding: 4px 5px;color: #000">
+                <span id='stationNumber' class='dataInfo'>Location count: 582</span>
+                <span id='linesNumberBeforeSample' class='dataInfo'>Original Flow Count:</span>
+                <span id='linesNumberAfterSample' class='dataInfo'>Sampled Flow Count:</span>
+                <span id='selectedNumber' class='dataInfo'>Selected Flows:0</span>
             </div>
         </div>
-        <div id="traditional" class="panel panel-default">
-            <div class="panel-heading">
-                Traditional Flow Map
+    </div>
+    <div id="traditional" class="panel panel-default">
+        <div class="panel-heading">
+            Traditional Flow Map
+        </div>
+        <div class="panel-body">
+            <li style="display:inline-block;height:20px;width: 285px;padding: 0px 3px">
+                <span style="float:left;line-height: 20px;  font-size: 10px;">Filter(Flow Volume):
+                    <input type="text" id="amount1" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 26px">
+                </span>
+                <div id="slider1" class="slider"></div>
+
+                <span style="position:absolute;left:7px;line-height: 20px;  font-size: 10px;">Sample Rate:
+                    <input type="text" id="randomSampleRate" readonly style="left:0px;border:0; color:#333; font-weight:bold;margin-left:32px;width:16px">%
+                </span>
+                <div id="randomSampleRateSlider" class="slider"></div>
+            </li>
+            <div>
+                <ul style=" padding: 12px 5px; line-height: 15px; font-size: 10px;vertical-align: text-bottom;margin:0px;">
+                    <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" style="margin-top:4px;">EdgeBundling
+                    <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" style="margin-left: 10px;">Cluster of flows
+                    <br/>
+                    <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" id='comDetec'>Community Detection
+                </ul>
             </div>
-            <div class="panel-body">
-                <li style="display:inline-block;height:20px;width: 285px;padding: 0px 5px">
-                    <span style="float:left;line-height: 20px;  font-size: 10px;">Filter(Flow Volume):
-                        <input type="text" id="amount1" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 26px">
+        </div>
+    </div>
+    <div id='controlPanel' class='panel panel-default'>
+        <div class="panel-heading">
+            Flow Map Abstraction
+        </div>
+        <div class="panel-body">
+            <div>
+                <li style="display:inline-block;height:20px;width: 285px;padding: 1px 5px">
+                    <span style="float:left;line-height: 20px;  font-size: 10px;">Sample Rate:
+                        <input type="text" id="amount2" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 23px">%
                     </span>
-                    <div id="slider1" class="slider"></div>
-                    
+                    <div id="slider2" class="slider"></div>
                 </li>
                 <div>
-                    <ul style=" padding: 0px 5px; line-height: 15px; font-size: 10px;vertical-align: text-bottom;margin:0px;">
-                        <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" style="margin-top:4px;">EdgeBundling
-                        <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" style="margin-left: 10px;">Cluster of flows
-                        <br/>
-                        <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" id='comDetec'>Community Detection
+                    <ul id="sortable" style=" list-style-type: none; margin: 0; padding: 0px 5px; line-height: 20px; font-size: 10px;cursor: move;">
+                        <li>
+                            <input type="checkbox" name="our_sample" id='checkBtw' />
+                            <span>Betweeness</span>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="our_sample" id='checkOverlap' />
+                            <span>Overlap</span>
+                        </li>
+                        <li>
+                            <input type="checkbox" name="our_sample" id='checkComm' />
+                            <span>Community Proportion</span>
+                        </li>
                     </ul>
                 </div>
             </div>
-        </div>
-        <div id='controlPanel' class='panel panel-default'>
-            <div class="panel-heading">
-                Flow Map Abstraction
-            </div>
-            <div class="panel-body">
-                <div>
-                    <li style="display:inline-block;height:20px;width: 285px;padding: 1px 5px">
-                        <span style="float:left;line-height: 20px;  font-size: 10px;">Sample Rate:
-                            <input type="text" id="amount2" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 23px">%
-                        </span>
-                        <div id="slider2" class="slider"></div>
-                    </li>
-                    <div>
-                        <ul id="sortable" style=" list-style-type: none; margin: 0; padding: 0px 5px; line-height: 20px; font-size: 10px;cursor: move;">
-                            <li>
-                                <input type="checkbox" name="our_sample" id='checkBtw' />
-                                <span>Betweeness</span>
-                            </li>
-                            <li>
-                                <input type="checkbox" name="our_sample" id='checkOverlap' />
-                                <span>Overlap</span>
-                            </li>
-                            <li>
-                                <input type="checkbox" name="our_sample" id='checkComm' />
-                                <span>Community Proportion</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="btn-group btn-group-justified " role="group" aria-label="..." style="margin-left: 8px;position: absolute; top:125px;width: 200px">
-                    <p>
-                        <button type="button" class="btn btn-default btn-xs" id='sample' style="width: 80px;margin-left: 16px;">Sample</button>
-                        <a href="http://localhost:3000/" class="btn btn-default btn-xs" role="button" style="width: 80px;margin-left: 5px;">Reset</a>
-                    </p>
-                </div>
-            </div>
-        </div>
-
-        <div id='pixelView' class='panel panel-default'>
-            <div id='pixelHeading' class="panel-heading">
-                Pixel Map
-            </div>
-            <div class="panel-body">
-                <div style="z-index: 3;position:absolute; font-size: 10px;font-weight: 500">
-                    <span id="pixelOriginal">Original</span>
-                    <span id="pixelSampling">Our Sampling</span>
-                </div>
-                <canvas id='pixelCanvas' style="z-index:0;position:absolute;top:20px;left:0px;">
-                </canvas>
-            </div>
-        </div>
-
-
-        <div id='histogramView' class='panel panel-default'>
-            <div class="panel-heading">Edge Betweeness </div>
-            <svg id='hisSvg' width="230" height='135'> </svg>
-        </div>
-    </div>
-
-    <div id='middle'>
-        <div id='mapview' class='panel panel-default'>
-            <div class="panel-heading">Flow Map View</div>
-            <div class="panel-body">
-                <div id="map"></div>
-            </div>
-        </div>
-        <div id='timingView' class='panel panel-default'>
-
-            <div class="panel-heading">Trajectory Segment View
-                <div id="toposlider">
-                    <span style="float:left;line-height: 20px;  font-size: 10px;font-weight: 500;">Flow Volume Filter:
-                        <input type="text" id="flowSliderAmount" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 30px;background-color: transparent">
-                    </span>
-                    <div id="flowSlider" class="slider"></div>
-                </div>
-            </div>
-            <svg id='underMapView' width='700' height='160' style="position: absolute;top:0px;left:0px">
-        </div>
-    </div>
-    <div id="rSide">
-        <div id="scatterPlot" class='panel panel-default'>
-            <div class="panel-heading">
-                Flow Representation
-            </div>
-            <canvas id='scatterCanvas' width="360px" height="350px" style="position:absolute;top:0px;left:0px;"></canvas>
-            <div id="scatterPlotWidgets">
-                <button type="button" id="reset" data-toggle="tooltip" data-placement="left" title="Reset" align="center" style="background-color: #fff0;border:none; padding-left:1px;padding-top:1px;position:absolute;top:1px;z-index:2;right:5px;width:20px;height:20px;">
-                    <span width='16px' height='16px' style='line-height:0.1;width:15px;height:15px;' class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
-                </button>
-                <button type="button" id="selectAll" data-toggle="tooltip" data-placement="left" title="Select All" align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:30px;width:20px;height:20px">
-                    <img src='images/select.png' width='16px' height='16px'>
-                </button>
-                <button type="button" class="btn btn-default" name='false' id="BrushButton" data-toggle="tooltip" data-placement="left" title="Brush"
-                    align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:55px;width:20px;height:20px">
-                    <img id='brushImg' src='images/brushClose.png' width='16px' height='16px'>
-                </button>
-                <button type="button" class="btn btn-default" name='false' id="selectPointButton" data-toggle="tooltip" data-placement="left"
-                    title="selectPoint" align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:80px;width:20px;height:20px">
-                    <img id='selectPointImg' src='images/selection-tool.png' width='16px' height='16px'>
-                </button>
-            </div>
-            <img id='scatterImg' />
-        </div>
-        <div class="panel panel-default" id="raderpic">
-            <div class="panel-heading">
-                Statistic View
-            </div>
-            <div class="panel-body">
-                <svg width="360" height="320" id='raderSvg' style="position: absolute;top:0px;left:0px;"></svg>
+            <div class="btn-group btn-group-justified " role="group" aria-label="..." style="margin-left: 8px;position: absolute; top:125px;width: 200px">
+                <p>
+                    <button type="button" class="btn btn-default btn-xs" id='sample' style="width: 80px;margin-left: 16px;">Sample</button>
+                    <a href="http://localhost:3000/" class="btn btn-default btn-xs" role="button" style="width: 80px;margin-left: 5px;">Reset</a>
+                </p>
             </div>
         </div>
     </div>
 
-    <script src='js/options.js'></script>
-    <script src="js/loadData.js"></script>
-    <script src='js/myUtils.js'></script>
-    <script src='js/addTimingView.js'></script>
-    <script src="js/pcp.js"></script>
-    <script src="js/hcluster.js"></script>
-    <script src="js/radarView.js"></script>
-    <script src="js/histogramView.js"></script>
-    <script src="js/pixelView.js"></script>
-    <script src="js/flowVolumeView.js"></script>
-    <script src="js/UnderMap.js"></script>
-    <script src='js/mapView.js'></script>
-    <script src='js/buttons.js'></script>
+    <div id='pixelView' class='panel panel-default'>
+        <div id='pixelHeading' class="panel-heading">
+            Pixel Map
+        </div>
+        <div class="panel-body">
+            <div style="z-index: 3;position:absolute; font-size: 10px;font-weight: 500">
+                <span id="pixelOriginal">Original</span>
+                <span id="pixelSampling">Our Sampling</span>
+            </div>
+            <canvas id='pixelCanvas' style="z-index:0;position:absolute;top:20px;left:0px;">
+            </canvas>
+        </div>
+    </div>
+
+
+    <div id='histogramView' class='panel panel-default'>
+        <div class="panel-heading">Edge Betweeness </div>
+        <svg id='hisSvg' width="230" height='135'> </svg>
+    </div>
+</div>
+
+<div id='middle'>
+    <div id='mapview' class='panel panel-default'>
+        <div class="panel-heading">Flow Map View</div>
+        <div class="panel-body">
+            <div id="map"></div>
+        </div>
+    </div>
+    <div id='timingView' class='panel panel-default'>
+
+        <div class="panel-heading">Trajectory Segment View
+            <div id="toposlider">
+                <span style="float:left;line-height: 20px;  font-size: 10px;font-weight: 500;">Flow Volume Filter:
+                    <input type="text" id="flowSliderAmount" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 30px;background-color: transparent">
+                </span>
+                <div id="flowSlider" class="slider"></div>
+            </div>
+        </div>
+        <svg id='underMapView' width='700' height='160' style="position: absolute;top:0px;left:0px">
+    </div>
+</div>
+<div id="rSide">
+    <div id="scatterPlot" class='panel panel-default'>
+        <div class="panel-heading">
+            Flow Representation
+        </div>
+        <canvas id='scatterCanvas' width="360px" height="350px" style="position:absolute;top:0px;left:0px;"></canvas>
+        <div id="scatterPlotWidgets">
+            <button type="button" id="reset" data-toggle="tooltip" data-placement="left" title="Reset" align="center" style="background-color: #fff0;border:none; padding-left:1px;padding-top:1px;position:absolute;top:1px;z-index:2;right:5px;width:20px;height:20px;">
+                <span width='16px' height='16px' style='line-height:0.1;width:15px;height:15px;' class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+            </button>
+            <button type="button" id="selectAll" data-toggle="tooltip" data-placement="left" title="Select All" align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:30px;width:20px;height:20px">
+                <img src='images/select.png' width='16px' height='16px'>
+            </button>
+            <button type="button" class="btn btn-default" name='false' id="BrushButton" data-toggle="tooltip" data-placement="left" title="Brush"
+                align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:55px;width:20px;height:20px">
+                <img id='brushImg' src='images/brushClose.png' width='16px' height='16px'>
+            </button>
+            <button type="button" class="btn btn-default" name='false' id="selectPointButton" data-toggle="tooltip" data-placement="left"
+                title="selectPoint" align="middle" style="background-color: #fff0;border:none; padding-left:2px;padding-top:0px;position:absolute;top:0px;z-index:2;right:80px;width:20px;height:20px">
+                <img id='selectPointImg' src='images/selection-tool.png' width='16px' height='16px'>
+            </button>
+        </div>
+        <img id='scatterImg' />
+    </div>
+    <div class="panel panel-default" id="raderpic">
+        <div class="panel-heading">
+            Statistic View
+        </div>
+        <div class="panel-body">
+            <svg width="360" height="320" id='raderSvg' style="position: absolute;top:0px;left:0px;"></svg>
+        </div>
+    </div>
+</div>
+
+<script src='js/options.js'></script>
+<script src="js/loadData.js"></script>
+<script src='js/myUtils.js'></script>
+<script src='js/addTimingView.js'></script>
+<script src="js/pcp.js"></script>
+<script src="js/hcluster.js"></script>
+<script src="js/radarView.js"></script>
+<script src="js/histogramView.js"></script>
+<script src="js/pixelView.js"></script>
+<script src="js/flowVolumeView.js"></script>
+<script src="js/UnderMap.js"></script>
+<script src='js/mapView.js'></script>
+<script src='js/buttons.js'></script>
