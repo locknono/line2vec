@@ -2,7 +2,7 @@ function pixelView(fileName,systemName, pStage, pixelGraphics, pRenderer) {
     if (systemName === "Wenzhou") {
       var file1 = op.pixel_file;
       var file3 = fileName;
-      var pixelLength = 6;
+      var pixelLength = 5.6;
     }
     Promise.all([
       getPixelData(file1),
@@ -48,8 +48,8 @@ function pixelView(fileName,systemName, pStage, pixelGraphics, pRenderer) {
             );
           } else if (systemName === "Wenzhou") {
             pixelGraphics.drawRect(
-              margin.left + (pixelLength) * j,
-              margin.top + pixelLength * i,
+              margin.left+6 + (pixelLength) * (j),
+              margin.top+8 + pixelLength * (15-i),
               (pixelLength),
               pixelLength
             );
