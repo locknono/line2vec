@@ -591,8 +591,6 @@ function load(
 
                     }
 
-
-                    // Sample the SVG path uniformly with the specified precision.
                     function samples(path, precision) {
                       var n = path.getTotalLength(),
                         t = [0],
@@ -1234,9 +1232,9 @@ function load(
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
                 }
-                getScatterData(op.getSampleFile()).then(function (value) {
+                /*getScatterData(op.getSampleFile()).then(function (value) {
                   downloadPng(value);
-                })
+                }) */
                 var sampleRateScale = d3
                   .scaleOrdinal()
                   .domain([40, 20, 10, 5])
