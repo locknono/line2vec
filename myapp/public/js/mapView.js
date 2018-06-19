@@ -209,9 +209,10 @@ function load(
     var filterFlag = false;
 
     function downloadPng(sampledScatterData) {
-      console.log('sampledScatterData: ', sampledScatterData);
       if ($("#comDetec").is(":checked")) {
         var comDetecFlag = true;
+      }else{
+        var comDetecFlag = false;
       }
       scatterCircleGraphics.clear();
       var xyScale = getScatterXYScale(
@@ -271,44 +272,6 @@ function load(
       }
       download_sprite_as_png(renderer, stage, fileName);
     }
-    setTimeout(function () {
-      for (let i = 0; i < 4; i++) {
-        if (i === 0) {
-          op.sample_rate = 40;
-        } else if (i === 1) {
-          op.sample_rate = 20;
-        } else if (i === 2) {
-          op.sample_rate = 10;
-        } else if (i === 3) {
-          op.sample_rate = 5;
-        }
-        for (let j = 0; j < 4; j++) {
-          if (j === 0) {
-            $('#checkBtw').trigger('click');
-            getScatterData(op.getSampleFile()).then(function (value) {
-              downloadPng(value);
-            })
-          } else if (j === 1) {
-            $('#checkBtw').trigger('click');
-            $('#checkOverlap').trigger('click');
-            getScatterData(op.getSampleFile()).then(function (value) {
-              downloadPng(value);
-            })
-          } else if (j === 2) {
-            $('#checkOverlap').trigger('click');
-            $('#checkComm').trigger('click');
-            getScatterData(op.getSampleFile()).then(function (value) {
-              downloadPng(value);
-            })
-          } else if (j === 3) {
-            $('#checkComm').trigger('click');
-            getScatterData(op.getSampleFile()).then(function (value) {
-              downloadPng(value);
-            })
-          }
-        }
-      }
-    }, 3000)
 
     //  downloadPng(sampledScatterData);
 
@@ -1271,6 +1234,9 @@ function load(
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
                 }
+                getScatterData(op.getSampleFile()).then(function (value) {
+                  downloadPng(value);
+                })
                 var sampleRateScale = d3
                   .scaleOrdinal()
                   .domain([40, 20, 10, 5])
