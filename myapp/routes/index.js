@@ -79,6 +79,7 @@ router.post("/drawArtLine", function (req, res) {
   let sFile = req.body.sFile;
 
   let randomFlag = req.body.randomFlag;
+  console.log('randomFlag: ', randomFlag);
   var data = JSON.parse(
     fs.readFileSync(trackFileName)
   );
@@ -102,7 +103,7 @@ router.post("/drawArtLine", function (req, res) {
   var sampledSourceTragetArray = [];
   //得到采样后的轨迹集合:
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
-  if (randomFlag === true) {
+  if (randomFlag) {
     var sampleFileName = path.resolve(__dirname, '../public/data/BS/RandomSample.csv');
   } else {
     var sampleFileName = path.resolve(__dirname, '../public/' + sFile);
