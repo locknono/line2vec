@@ -26,43 +26,17 @@
             </div>
         </div>
     </div>
-    <div id="traditional" class="panel panel-default">
-        <div class="panel-heading">
-            Traditional Flow Map
-        </div>
-        <div class="panel-body">
-            <li style="display:inline-block;height:20px;width: 285px;padding: 0px 3px">
-                <span style="float:left;line-height: 20px;  font-size: 10px;">Filter(Flow Volume):
-                    <input type="text" id="amount1" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 26px">
-                </span>
-                <div id="slider1" class="slider"></div>
-
-                <span style="position:absolute;left:7px;line-height: 20px;  font-size: 10px;">Sample Rate:
-                    <input type="text" id="randomSampleRate" readonly style="left:0px;border:0; color:#333; font-weight:bold;margin-left:32px;width:16px">%
-                </span>
-                <div id="randomSampleRateSlider" class="slider"></div>
-            </li>
-            <div>
-                <ul style=" padding: 12px 5px; line-height: 15px; font-size: 10px;vertical-align: text-bottom;margin:0px;">
-                    <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" style="margin-top:4px;">EdgeBundling
-                    <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" style="margin-left: 10px;">Cluster of flows
-                    <br/>
-                    <input class="toggle brand-toggle" type="checkbox" name="traditional_sample" id='comDetec'>Community Detection
-                </ul>
+  <div id="traditional" class="panel panel-default">
+            <div class="panel-heading">
+                Traditional Flow Map
             </div>
-        </div>
-    </div>
-    <div id='controlPanel' class='panel panel-default'>
-        <div class="panel-heading">
-            Flow Map Abstraction
-        </div>
-        <div class="panel-body">
-            <div>
-                <li style="display:inline-block;height:20px;width: 285px;padding: 1px 5px">
-                    <span style="float:left;line-height: 20px;  font-size: 10px;">Sample Rate:
-                        <input type="text" id="amount2" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 23px">%
+            <div class="panel-body">
+                <li style="display:inline-block;height:20px;width: 285px;padding: 0px 5px">
+                    <span style="float:left;line-height: 20px;  font-size: 10px;">Filter(Flow Volume):
+                        <input type="text" id="amount1" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 26px">
                     </span>
-                    <div id="slider2" class="slider"></div>
+                    <div id="slider1" class="slider"></div>
+                    
                 </li>
                 <div>
                     <ul style=" padding: 0px 5px; line-height: 15px; font-size: 10px;vertical-align: text-bottom;margin:0px;">
@@ -74,14 +48,44 @@
                     </ul>
                 </div>
             </div>
-            <div class="btn-group btn-group-justified " role="group" aria-label="..." style="margin-left: 8px;position: absolute; top:125px;width: 200px">
-                <p>
-                    <button type="button" class="btn btn-default btn-xs" id='sample' style="width: 80px;margin-left: 16px;">Sample</button>
-                    <a href="http://localhost:3000/" class="btn btn-default btn-xs" role="button" style="width: 80px;margin-left: 5px;">Reset</a>
-                </p>
+        </div>
+        <div id='controlPanel' class='panel panel-default'>
+            <div class="panel-heading">
+                Flow Map Abstraction
+            </div>
+            <div class="panel-body">
+                <div>
+                    <li style="display:inline-block;height:20px;width: 285px;padding: 1px 5px">
+                        <span style="float:left;line-height: 20px;  font-size: 10px;">Sample Rate:
+                            <input type="text" id="amount2" readonly style="border:0; color:#333; font-weight:bold;padding-left:3px;width: 23px">%
+                        </span>
+                        <div id="slider2" class="slider"></div>
+                    </li>
+                    <div>
+                        <ul id="sortable" style=" list-style-type: none; margin: 0; padding: 0px 5px; line-height: 20px; font-size: 10px;cursor: move;">
+                            <li>
+                                <input type="checkbox" name="our_sample" id='checkBtw' />
+                                <span>Betweeness</span>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="our_sample" id='checkOverlap' />
+                                <span>Overlap</span>
+                            </li>
+                            <li>
+                                <input type="checkbox" name="our_sample" id='checkComm' />
+                                <span>Community Proportion</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="btn-group btn-group-justified " role="group" aria-label="..." style="margin-left: 8px;position: absolute; top:125px;width: 200px">
+                    <p>
+                        <button type="button" class="btn btn-default btn-xs" id='sample' style="width: 80px;margin-left: 16px;">Sample</button>
+                        <a href="http://localhost:3000/" class="btn btn-default btn-xs" role="button" style="width: 80px;margin-left: 5px;">Reset</a>
+                    </p>
+                </div>
             </div>
         </div>
-    </div>
 
     <div id='pixelView' class='panel panel-default'>
         <div id='pixelHeading' class="panel-heading">
