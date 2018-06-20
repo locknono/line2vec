@@ -474,7 +474,7 @@ function load(
                     .scaleLinear()
                     .domain([minValue, 8])
                     .range([op.minArtLineWidth, op.maxArtLineWidth]);
-                  for (let i = artLineStartIndex; i <= artLineEndIndex; i++) {
+                  for (let i = artLineEndIndex; i >=artLineStartIndex ; i--) {
                     if (i >= allTrack.length - 1) {
                       break;
                     }
@@ -489,7 +489,7 @@ function load(
                     if (coorsSet.size === 2 && coors.length > 2) {
                       var path = d3.path();
                       path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
-                      for (let j = 0; j < coors.length - 1; j++) {
+                      for (let j = 0; j < 2; j++) {
                         var thisPoint = coors[j].map(parseFloat);
                         var nextPoint = (coors[j + 1]).map(parseFloat);
                         var d = Math.sqrt(Math.pow(nextPoint[1] - thisPoint[1], 2) + Math.pow(nextPoint[0] - thisPoint[0], 2));
@@ -512,7 +512,6 @@ function load(
                               var x0 = midPointX + cpDis * Math.sin(angle);
                               var y0 = midPointY - cpDis * Math.cos(angle);
                             }
-
                           } else {
                             if (j % 2 === 0) {
                               var angle = Math.acos((nextPoint[1] - thisPoint[1] > 0) ? (nextPoint[1] - thisPoint[1]) / d : (thisPoint[1] - nextPoint[1]) / d);
@@ -536,39 +535,46 @@ function load(
                       var path = lineGenarator(allTrack[i].lineCoors);
                     }
 
-                    var colorDefs = selection.append("defs");
-                    var linearGradient = colorDefs
-                      .append("linearGradient")
-                      .attr("id", "linearColor")
-                      .attr("x1", allTrack[0][0])
-                      .attr("y1", allTrack[0][1])
-                      .attr("x2", allTrack[1][0])
-                      .attr("y2", allTrack[1][1]);
-                    linearGradient
-                      .append("stop")
-                      .attr("offset", "0%")
-                      .style("stop-color", d3.interpolateYlGnBu(0).toString());
-                    linearGradient
-                      .append("stop")
-                      .attr("offset", "100%")
-                      .style("stop-color", d3.interpolateYlGnBu(1).toString());
-
-                    selection
+                    var path = selection
                       .append("path")
                       .attr("class", "artLine")
                       .attr("id", function () {
                         return "artLine" + i;
                       })
-                      /* .style("stroke", function () {
-                        
-                        //return "url(#" + linearGradient.attr("id") + ")"
-                      }) */
                       .attr("stroke-width", widthScale(Math.log2(allTrack[i].value)))
                       .attr("fill", "none")
                       .style("stroke-linecap", "round")
                       .attr("d", path);
 
+                    //set style
                     var color = d3.interpolate(d3.interpolateYlGnBu(0), d3.interpolateYlGnBu(1));
+
+                    if (coorsSet.size === 2 && coors.length === 2) {
+                      //single direction path             
+                      var colorDefs = selection.append("defs");
+                      var linearGradient = colorDefs
+                        .append("linearGradient")
+                        .attr("id", "linearColor")
+                        .attr("x1", allTrack[0][0])
+                        .attr("y1", allTrack[0][1])
+                        .attr("x2", allTrack[1][0])
+                        .attr("y2", allTrack[1][1]);
+                      linearGradient
+                        .append("stop")
+                        .attr("offset", "0%")
+                        .style("stop-color", d3.interpolateYlGnBu(0).toString());
+                      linearGradient
+                        .append("stop")
+                        .attr("offset", "100%")
+                        .style("stop-color", d3.interpolateYlGnBu(1).toString());
+                      path.style("stroke", function () {
+                        return "url(#" + linearGradient.attr("id") + ")"
+                      })
+                    } else if (coorsSet.size === 2 && coors.length > 2) {
+                      path.style("stroke", function () {
+                        return "none"
+                      })
+                    }
                     if (coorsSet.size > 2) {
                       var path = selection.selectAll("[id='artLine" + i + "']").remove();
                       path
@@ -580,16 +586,10 @@ function load(
                         .style("stroke", function (d) {
                           return color(d.t);
                         })
-                        .attr("class","artLine")
+                        .attr("class", "artLine")
                         .style("stroke-linejoin", "round")
                         .attr("d", function (d) {
-                          /* for (var s = 0; s < d.length; s++) {
-                            if (d[s] === undefined || Number.isNaN(d[s])) {
-                              
-                              break;
-                            }
-                          } */
-                          return lineJoin(d[0], d[1], d[2], d[3],widthScale(Math.log2(allTrack[i].value)));
+                          return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
                         });
 
                     }
@@ -599,7 +599,7 @@ function load(
                         t = [0],
                         i = 0,
                         dt = precision;
-                      dt = n / 8;
+                      dt = 1;
                       while ((i += dt) < n) t.push(i);
                       t.push(n);
                       return t.map(function (t) {
