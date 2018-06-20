@@ -76,9 +76,10 @@ router.post("/getBaseFlux", function (req, res) {
 router.post("/drawArtLine", function (req, res) {
   console.log("post")
   var selectedMapData = req.body.selectedMapData;
+  console.log('selectedMapData: ', selectedMapData.length);
 
   let sFile = req.body.sFile;
-
+  
   let randomFlag = req.body.randomFlag;
 
   let filterRate = parseFloat(req.body.filterRate);
@@ -86,9 +87,9 @@ router.post("/drawArtLine", function (req, res) {
   let timeString = req.body.timeString;
 
   console.log('filterRate: ', filterRate);
-
+  console.log(typeof randomFlag);
   console.log('randomFlag: ', randomFlag);
-
+  console.log('sFile: ', sFile);
   let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
   var data = JSON.parse(
 
@@ -116,12 +117,12 @@ router.post("/drawArtLine", function (req, res) {
   //当前所有的轨迹，判断是否在采样后的点中，如果不在采样后的点中，
   if (filterRate !== 0) {
     var sampleFileName = path.resolve(__dirname, '../public/data/BS/linedetail_label.csv');
-  } else if (randomFlag) {
+  } else if (randomFlag==='true') {
     var sampleFileName = path.resolve(__dirname, '../public/data/BS/RandomSample.csv');
   } else {
     var sampleFileName = path.resolve(__dirname, '../public/' + sFile);
   }
-
+  console.log('sampleFileName: ', sampleFileName);
   var sampledScatterData = d3.csvParse(
     fs
     .readFileSync(
@@ -148,10 +149,6 @@ router.post("/drawArtLine", function (req, res) {
     element.fre = parseFloat(element.fre);
     element.ebt = parseFloat(element.ebt);
   });
-  console.log('sampledScatterData: ', sampledScatterData.length);
-  console.log("readFinish")
-  console.log(sampledScatterData[0]);
-  console.log('sampledScatterData.length: ', sampledScatterData.length);
   for (var i = 0; i < sampledScatterData.length; i++) {
     sampledSourceTragetArray.push(
       sampledScatterData[i].source + "-" + sampledScatterData[i].target
@@ -162,7 +159,6 @@ router.post("/drawArtLine", function (req, res) {
     );
   }
   console.log("stArray")
-  console.log('sampledSourceTragetArray: ', sampledSourceTragetArray);
   var flag = 1;
   //thisTimeAllTrack是一个三维数组，每个元素代表一个人的轨迹，每个人的轨迹数组中的每一个元素这个人轨迹的一段
   //这一段中包含了站点的信息，顺序存储
@@ -196,11 +192,9 @@ router.post("/drawArtLine", function (req, res) {
       }
     }
   }
-  console.log("trackSet")
   var sortedKeys = Object.keys(thisTimeTrackSet).sort(function (a, b) {
     return a.split(",").length - b.split(",").length;
   });
-  console.log('sortedKeys: ', sortedKeys);
   for (var i = 0; i < sortedKeys.length; i++) {
     for (var j = 0; j < sortedKeys.length; j++) {
       if (i === j) {
