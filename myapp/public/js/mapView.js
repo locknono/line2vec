@@ -559,18 +559,18 @@ function load(
                       .attr("id", function () {
                         return "artLine" + i;
                       })
-                      .style("stroke", function () {
-                        return "url(#" + linearGradient.attr("id") + ")"
-                      })
+                      /* .style("stroke", function () {
+                        
+                        //return "url(#" + linearGradient.attr("id") + ")"
+                      }) */
                       .attr("stroke-width", widthScale(Math.log2(allTrack[i].value)))
                       .attr("fill", "none")
                       .style("stroke-linecap", "round")
                       .attr("d", path);
 
                     var color = d3.interpolate(d3.interpolateYlGnBu(0), d3.interpolateYlGnBu(1));
-                    var path = selection.selectAll("[id='artLine" + i + "']").remove();
-                    if (coors.length > 5 && coorsSet.size > 2) {
-                      
+                    if (coorsSet.size > 2) {
+                      var path = selection.selectAll("[id='artLine" + i + "']").remove();
                       path
                         .data(quads(samples(path.node(), 1)))
                         .enter().append("path")
@@ -580,6 +580,8 @@ function load(
                         .style("stroke", function (d) {
                           return color(d.t);
                         })
+                        .attr("class","artLine")
+                        .style("stroke-linejoin", "round")
                         .attr("d", function (d) {
                           /* for (var s = 0; s < d.length; s++) {
                             if (d[s] === undefined || Number.isNaN(d[s])) {
@@ -587,9 +589,7 @@ function load(
                               break;
                             }
                           } */
-                          
-                          return lineJoin(d[0], d[1], d[2], d[3], 1);
-                          
+                          return lineJoin(d[0], d[1], d[2], d[3],widthScale(Math.log2(allTrack[i].value)));
                         });
 
                     }
@@ -599,7 +599,7 @@ function load(
                         t = [0],
                         i = 0,
                         dt = precision;
-                        dt=n/8;
+                      dt = n / 8;
                       while ((i += dt) < n) t.push(i);
                       t.push(n);
                       return t.map(function (t) {
@@ -615,8 +615,8 @@ function load(
                       return d3.range(points.length - 1).map(function (i) {
                         var a = [points[i - 1], points[i], points[i + 1], points[i + 2]];
                         a.t = (points[i].t + points[i + 1].t) / 2;
-                        
-                        return a;                        
+
+                        return a;
                       });
                     }
 
@@ -628,20 +628,19 @@ function load(
                         b = [p2[0] + u12[0] * r, p2[1] + u12[1] * r],
                         c = [p2[0] - u12[0] * r, p2[1] - u12[1] * r],
                         d = [p1[0] - u12[0] * r, p1[1] - u12[1] * r];
-
-                     /*  if (p0) { // clip ad and dc using average of u01 and u12
-                        var u01 = perp(p0, p1),
-                          e = [p1[0] + u01[0] + u12[0], p1[1] + u01[1] + u12[1]];
-                        a = lineIntersect(p1, e, a, b);
-                        d = lineIntersect(p1, e, d, c);
-                        
-                      }
-                      if (p3) { // clip ab and dc using average of u12 and u23
-                        var u23 = perp(p2, p3),
-                          e = [p2[0] + u23[0] + u12[0], p2[1] + u23[1] + u12[1]];
-                        b = lineIntersect(p2, e, a, b);
-                        c = lineIntersect(p2, e, d, c);
-                      } */
+                      /*  if (p0) { // clip ad and dc using average of u01 and u12
+                         var u01 = perp(p0, p1),
+                           e = [p1[0] + u01[0] + u12[0], p1[1] + u01[1] + u12[1]];
+                         a = lineIntersect(p1, e, a, b);
+                         d = lineIntersect(p1, e, d, c);
+                         
+                       }
+                       if (p3) { // clip ab and dc using average of u12 and u23
+                         var u23 = perp(p2, p3),
+                           e = [p2[0] + u23[0] + u12[0], p2[1] + u23[1] + u12[1]];
+                         b = lineIntersect(p2, e, a, b);
+                         c = lineIntersect(p2, e, d, c);
+                       } */
                       return "M" + a + "L" + b + " " + c + " " + d + "Z";
                     }
 
