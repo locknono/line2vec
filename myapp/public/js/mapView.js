@@ -59,7 +59,7 @@ var selectAllFlag = false;
 var allTrack = [];
 var selectedMapLines = [];
 var filterRate = 0;
-var trackLength=0;
+var trackLength = 0;
 // add leaflet.pm controls to the map
 
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
@@ -1986,6 +1986,11 @@ function load(
         if (firstDraw) {
           unbindEvents();
           $("#comDetec").on("click", function () {
+            if ($("#comDetec").is(":checked")) {
+              comDetecFlag = false;
+            } else {
+              comDetecFlag = true;
+            }
             comDetecFlag = !comDetecFlag;
             if (comDetecFlag == true) {
               addCommunityRect(
@@ -2013,7 +2018,8 @@ function load(
                   stage,
                   scatterCircleGraphics,
                   comDetecFlag,
-                  labelData
+                  labelData,
+                  filterFlag
                 );
                 drawLines(labelData, comDetecFlag);
               });
