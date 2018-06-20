@@ -75,7 +75,7 @@ router.post("/getBaseFlux", function (req, res) {
 
 router.post("/drawArtLine", function (req, res) {
   console.log("post")
-  var selectedMapData = req.body.selectedMapData;
+  let selectedMapData = req.body.selectedMapData;
   console.log('selectedMapData: ', selectedMapData.length);
 
   let sFile = req.body.sFile;
@@ -92,7 +92,6 @@ router.post("/drawArtLine", function (req, res) {
   console.log('sFile: ', sFile);
   let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
   var data = JSON.parse(
-
     fs.readFileSync(trackFileName)
   );
   var thisTimeAllTrack = [];
@@ -149,6 +148,7 @@ router.post("/drawArtLine", function (req, res) {
     element.fre = parseFloat(element.fre);
     element.ebt = parseFloat(element.ebt);
   });
+  console.log('sampledScatterData: ', sampledScatterData.length);
   for (var i = 0; i < sampledScatterData.length; i++) {
     sampledSourceTragetArray.push(
       sampledScatterData[i].source + "-" + sampledScatterData[i].target
