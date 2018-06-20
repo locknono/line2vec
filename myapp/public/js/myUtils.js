@@ -69,32 +69,74 @@ function drawScatterPlot(
   stage,
   circle,
   comDetecFlag,
-  labelData = undefined
+  labelData = undefined,
+  filterFlag = false
 ) {
-  circle.clear();
-  var xyScale = getScatterXYScale(
-      scatterData,
-      scatterPlotWidth,
-      scatterPlotHeight
-    ),
-    xScale = xyScale[0],
-    yScale = xyScale[1];
-  let imgFileName = op.img_root_path+op.sample_rate + '_' + op.sample_method+'.png';
-  console.log('imgFileName: ', imgFileName);
-  if(scatterData.length>35000){
-    if (comDetecFlag === true) {
-      d3.select("#scatterImg").attr("src", op.originalScatterImg.replace('.png', '_com.png'));
+  if (filterFlag !== true) {
+    circle.clear();
+    var xyScale = getScatterXYScale(
+        scatterData,
+        scatterPlotWidth,
+        scatterPlotHeight
+      ),
+      xScale = xyScale[0],
+      yScale = xyScale[1];
+    let imgFileName = op.img_root_path + op.sample_rate + '_' + op.sample_method + '.png';
+    console.log('imgFileName: ', imgFileName);
+    if (scatterData.length > 35000) {
+      if (comDetecFlag === true) {
+        d3.select("#scatterImg").attr("src", op.originalScatterImg.replace('.png', '_com.png'));
+      } else {
+        d3.select("#scatterImg").attr("src", op.originalScatterImg);
+      }
     } else {
-      d3.select("#scatterImg").attr("src", op.originalScatterImg);
+      if (comDetecFlag === true) {
+        d3.select("#scatterImg").attr("src", imgFileName.replace('.png', '_com.png'));
+      } else {
+        d3.select("#scatterImg").attr("src", imgFileName);
+      }
     }
-  }else{
-    if (comDetecFlag === true) {
-      d3.select("#scatterImg").attr("src", imgFileName.replace('.png', '_com.png'));
-    } else {
-      d3.select("#scatterImg").attr("src", imgFileName);
+  } else if (filterFlag === true) {
+    circle.clear();console.log('scatterData: ', scatterData);
+    var xyScale = getScatterXYScale(
+        scatterData,
+        
+        scatterPlotWidth,
+        scatterPlotHeight
+      ),
+      xScale = xyScale[0],
+      yScale = xyScale[1];
+
+    //draw inter first
+    for (var i = 0; i < scatterData.length; i++) {
+      if (scatterData[i].label !== -1) {
+        continue;
+      }
+      if (comDetecFlag == false) {
+        scatterCircleGraphics.beginFill(op.scatterColor);
+      } else {
+        scatterCircleGraphics.beginFill(
+          op.labelColorScale(scatterData[i].label).replace("#", "0x")
+        );
+      }
+      scatterCircleGraphics.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
+      scatterCircleGraphics.endFill();
+    }
+    for (var i = 0; i < scatterData.length; i++) {
+      if (scatterData[i].label === -1) {
+        continue;
+      }
+      if (comDetecFlag == false) {
+        scatterCircleGraphics.beginFill(op.scatterColor);
+      } else {
+        scatterCircleGraphics.beginFill(
+          op.labelColorScale(scatterData[i].label).replace("#", "0x")
+        );
+      }
+      scatterCircleGraphics.drawCircle(xScale(scatterData[i].x), yScale(scatterData[i].y), 1.5);
+      scatterCircleGraphics.endFill();
     }
   }
-  
   if (labelData !== undefined) {
     for (var i = 0; i < labelData.length; i++) {
       circle.beginFill(

@@ -58,6 +58,7 @@ var timeString = "6-8";
 var selectAllFlag = false;
 var allTrack = [];
 var selectedMapLines = [];
+var filterRate=0;
 // add leaflet.pm controls to the map
 
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
@@ -205,7 +206,7 @@ function load(
     var mapData = values[0];
     var scatterData = values[1];
     var sampledScatterData = values[2];
-    var filterScatterData = [];
+    var filterData = [];
     var filterFlag = false;
     //downloadPng(scatterData);
     function downloadPng(sampledScatterData) {
@@ -386,7 +387,6 @@ function load(
         var d3Overlay = L.d3SvgOverlay(
           function (selection, projection) {
             map.off("pm:create");
-
             function drawArtLine(timeString, random = false) {
               new Promise(function (resolve, reject) {
                 $.ajax({
@@ -397,6 +397,8 @@ function load(
                     timeString: timeString,
                     sFile: op.getSampleFile(),
                     randomFlag: random,
+                    filterRate:filterRate
+                    
                   },
                   success: function (data) {
                     resolve(data);
@@ -591,6 +593,7 @@ function load(
                         return "url(#" + linearGradient.attr("id") + ")"
                       })
                     } else if (coorsSet.size === 2 && coors.length > 2) {
+                      var colorDefs = selection.append("defs");
                       var linearGradient = colorDefs
                         .append("linearGradient")
                         .attr("id", "Gradient")
@@ -821,12 +824,10 @@ function load(
                   ) <= minRadius
                 ) {
                   selectedMapData.push(mapData[i]);
-
                 }
               }
               if (sampled === true) {
                 var data = sampledScatterData;
-
               } else if (sampled === false) {
                 var data = scatterData;
               }
@@ -1269,6 +1270,65 @@ function load(
                   }
                 }
               });
+              //filter slider
+              $("#slider1").slider({
+                //range:true,
+                min: 0,
+                max: 100,
+                step: 1,
+                value: 0,
+                // value:[0,100],
+                slide: function (event, ui) {
+                  $("#amount1").val(ui.value);
+                },
+                stop: function (event, ui) {
+                  filterRate=ui.value;
+                  if (ui.value != 0) {
+                    filterFlag = true;
+                  } else {
+                    filterFlag = false;
+                  }
+                  var data = scatterData;
+                  let filterLength = parseInt(data.length * (ui.value / 100))
+                  filterData = [];
+                  for (var i = 0; i < filterLength; i++) {
+                    filterData.push(scatterData[i]);
+                  }
+                  if (filterFlag === true) {
+                    d3.select("#scatterImg").attr("src", op.img_root_path + "blank.png");
+                  }
+                  drawScatterPlot(
+                    filterData,
+                    op.labelColorScale,
+                    scatterPlotWidth,
+                    scatterPlotHeight,
+                    stage,
+                    scatterCircleGraphics,
+                    comDetecFlag,
+                    labelData = undefined,
+                    filterFlag
+                  );
+                  drawArtLine(timeString);
+                  if (selectAllFlag == true) {
+                    drawLines(filterData, comDetecFlag);
+                  }
+                  let sRect = $(".selection");
+                  let brushX = parseFloat(sRect.attr("x"));
+                  let brushY = parseFloat(sRect.attr("y"));
+                  let brushWidth = parseFloat(sRect.attr("width"));
+                  let brushHeight = parseFloat(sRect.attr("height"));
+                  if (!isNaN(brushX)) {
+                    d3
+                      .selectAll(".brush")
+                      .call(brush)
+                      .call(brush.move, [
+                        [brushX, brushY],
+                        [brushX + brushWidth, brushY + brushHeight]
+                      ]);
+                  }
+                }
+              });
+              $("#amount1").val($("#slider1").slider("value"));
 
               $("#sample").click(function () {
                 if (selectedMapData.length !== 0) {
@@ -1722,7 +1782,7 @@ function load(
             var data = scatterData;
           }
           if (filterFlag === true) {
-            var data = filterScatterData;
+            var data = filterData;
           }
           for (var i = 0; i < data.length; i++) {
             var thisPoint = data[i];
@@ -1876,7 +1936,7 @@ function load(
                 yScale = xyScale[1];
             }
             if (filterFlag === true) {
-              var data = filterScatterData;
+              var data = filterData;
             } else if (sampled === false) {
               var data = scatterData;
             } else if (sampled === true) {
@@ -2117,66 +2177,6 @@ function load(
           $("#edgeBundle").on("click", function () {
             drawBundlingLines();
           });
-          $("#slider1").slider({
-            //range:true,
-            min: 0,
-            max: 1000,
-            step: 1,
-            value: 0,
-            // value:[0,100],
-            slide: function (event, ui) {
-              $("#amount1").val(ui.value);
-            },
-            stop: function (event, ui) {
-              if (ui.value != 0) {
-                filterFlag = true;
-              } else {
-                filterFlag = false;
-              }
-              filterScatterData = [];
-
-              if (sampled !== true) {
-                var data = scatterData;
-              } else if (sampled === true) {
-                var data = sampledScatterData;
-              }
-
-              for (var i = 0; i < data.length; i++) {
-                if (data[i].fre > ui.value) {
-                  filterScatterData.push(data[i]);
-                }
-              }
-              drawScatterPlot(
-                filterScatterData,
-                op.labelColorScale,
-                scatterPlotWidth,
-                scatterPlotHeight,
-                stage,
-                scatterCircleGraphics,
-                comDetecFlag
-              );
-              if (selectAllFlag == true) {
-                drawLines(filterScatterData, comDetecFlag);
-              }
-              let sRect = $(".selection");
-              let brushX = parseFloat(sRect.attr("x"));
-              let brushY = parseFloat(sRect.attr("y"));
-              let brushWidth = parseFloat(sRect.attr("width"));
-              let brushHeight = parseFloat(sRect.attr("height"));
-
-              if (!isNaN(brushX)) {
-                d3
-                  .selectAll(".brush")
-                  .call(brush)
-                  .call(brush.move, [
-                    [brushX, brushY],
-                    [brushX + brushWidth, brushY + brushHeight]
-                  ]);
-              }
-            }
-          });
-
-          $("#amount1").val($("#slider1").slider("value"));
 
           $("#selectAll").click(function () {
             selectAllFlag = true;
