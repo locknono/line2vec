@@ -474,9 +474,9 @@ function load(
                     .scaleLinear()
                     .domain([minValue, 8])
                     .range([op.minArtLineWidth, op.maxArtLineWidth]);
-                  for (let i = artLineEndIndex; i >=artLineStartIndex ; i--) {
+                  for (let i = artLineEndIndex; i >= artLineStartIndex; i--) {
                     if (i >= allTrack.length - 1) {
-                      break;
+                      continue;
                     }
                     let coors = allTrack[i].lineCoors;
                     let coorsSet = new Set();
@@ -550,15 +550,35 @@ function load(
                     var color = d3.interpolate(d3.interpolateYlGnBu(0), d3.interpolateYlGnBu(1));
 
                     if (coorsSet.size === 2 && coors.length === 2) {
-                      //single direction path             
+                      /*  let projectCoor1 = projection.latLngToLayerPoint(coors[0]);
+                       let projectCoor2 = projection.latLngToLayerPoint(coors[1]); */
                       var colorDefs = selection.append("defs");
                       var linearGradient = colorDefs
                         .append("linearGradient")
-                        .attr("id", "linearColor")
-                        .attr("x1", allTrack[0][0])
-                        .attr("y1", allTrack[0][1])
-                        .attr("x2", allTrack[1][0])
-                        .attr("y2", allTrack[1][1]);
+                        .attr("id", "Gradient")
+                      /* if (projectCoor1.x < projectCoor2.x && projectCoor1.y < projectCoor2.y) {
+                        linearGradient.attr("x1", "0%")
+                          .attr("y1", "0%")
+                          .attr("x2", "100%")
+                          .attr("y2", "100%")
+                      } else if (projectCoor1.x > projectCoor2.x && projectCoor1.y < projectCoor2.y) {
+                        linearGradient.attr("x1", "100%")
+                          .attr("y1", "0%")
+                          .attr("x2", "0%")
+                          .attr("y2", "100%")
+                      }
+                      if (projectCoor1.x < projectCoor2.x && projectCoor1.y > projectCoor2.y) {
+                        linearGradient.attr("x1", "0%")
+                          .attr("y1", "100%")
+                          .attr("x2", "100%")
+                          .attr("y2", "0%")
+                      }
+                      if (projectCoor1.x > projectCoor2.x && projectCoor1.y > projectCoor2.y) {
+                        linearGradient.attr("x1", "100%")
+                          .attr("y1", "100%")
+                          .attr("x2", "0%")
+                          .attr("y2", "0%")
+                      } */
                       linearGradient
                         .append("stop")
                         .attr("offset", "0%")
@@ -571,15 +591,32 @@ function load(
                         return "url(#" + linearGradient.attr("id") + ")"
                       })
                     } else if (coorsSet.size === 2 && coors.length > 2) {
+                      var linearGradient = colorDefs
+                        .append("linearGradient")
+                        .attr("id", "Gradient")
+                      linearGradient
+                        .append("stop")
+                        .attr("offset", "0%")
+                        .style("stop-color", d3.interpolateYlGnBu(0).toString());
+                      linearGradient
+                        .append("stop")
+                        .attr("offset", "100%")
+                        .style("stop-color", d3.interpolateYlGnBu(1).toString());
                       path.style("stroke", function () {
-                        return "none"
+                        return "url(#" + linearGradient.attr("id") + ")"
                       })
+
+                      /* path.style("stroke", function () {
+                        var colorDefs = selection.append("defs");
+                        return "black"
+                      }) */
                     }
-                    if (coorsSet.size > 2) {
+                    if (coorsSet.size > 2 /*|| (coorsSet.size===2&&coors.length===2)*/ ) {
                       var path = selection.selectAll("[id='artLine" + i + "']").remove();
                       path
                         .data(quads(samples(path.node(), 1)))
-                        .enter().append("path")
+                        .enter()
+                        .append("path")
                         .style("fill", function (d) {
                           return color(d.t);
                         })
@@ -587,7 +624,8 @@ function load(
                           return color(d.t);
                         })
                         .attr("class", "artLine")
-                        .style("stroke-linejoin", "round")
+                        .attr("stroke-linecap", "round")
+                        .attr("stroke-linejoin", "round")
                         .attr("d", function (d) {
                           return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
                         });
