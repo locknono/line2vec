@@ -58,7 +58,7 @@ var timeString = "6-8";
 var selectAllFlag = false;
 var allTrack = [];
 var selectedMapLines = [];
-var filterRate=0;
+var filterRate = 0;
 // add leaflet.pm controls to the map
 
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
@@ -387,6 +387,7 @@ function load(
         var d3Overlay = L.d3SvgOverlay(
           function (selection, projection) {
             map.off("pm:create");
+
             function drawArtLine(timeString, random = false) {
               new Promise(function (resolve, reject) {
                 $.ajax({
@@ -397,8 +398,8 @@ function load(
                     timeString: timeString,
                     sFile: op.getSampleFile(),
                     randomFlag: random,
-                    filterRate:filterRate
-                    
+                    filterRate: filterRate
+
                   },
                   success: function (data) {
                     resolve(data);
@@ -640,7 +641,7 @@ function load(
                         t = [0],
                         i = 0,
                         dt = precision;
-                      dt = 1;
+                      dt = 3;
                       while ((i += dt) < n) t.push(i);
                       t.push(n);
                       return t.map(function (t) {
@@ -1275,14 +1276,14 @@ function load(
                 //range:true,
                 min: 0,
                 max: 100,
-                step: 1,
+                step: 5,
                 value: 0,
                 // value:[0,100],
                 slide: function (event, ui) {
                   $("#amount1").val(ui.value);
                 },
                 stop: function (event, ui) {
-                  filterRate=ui.value;
+                  filterRate = ui.value;
                   if (ui.value != 0) {
                     filterFlag = true;
                   } else {
@@ -1308,7 +1309,9 @@ function load(
                     labelData = undefined,
                     filterFlag
                   );
-                  drawArtLine(timeString);
+                  if (selectedMapData.length > 0) {
+                    drawArtLine(timeString);
+                  }
                   if (selectAllFlag == true) {
                     drawLines(filterData, comDetecFlag);
                   }
