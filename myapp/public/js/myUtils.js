@@ -72,6 +72,7 @@ function drawScatterPlot(
   labelData = undefined,
   filterFlag = false
 ) {
+  console.log('comDetecFlag: ', comDetecFlag);
   if (filterFlag !== true) {
     circle.clear();
     var xyScale = getScatterXYScale(
@@ -97,16 +98,15 @@ function drawScatterPlot(
       }
     }
   } else if (filterFlag === true) {
-    circle.clear();console.log('scatterData: ', scatterData);
+    console.log("draw filter")
+    circle.clear();
     var xyScale = getScatterXYScale(
         scatterData,
-        
         scatterPlotWidth,
         scatterPlotHeight
       ),
       xScale = xyScale[0],
       yScale = xyScale[1];
-
     //draw inter first
     for (var i = 0; i < scatterData.length; i++) {
       if (scatterData[i].label !== -1) {
