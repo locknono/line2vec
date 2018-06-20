@@ -59,6 +59,7 @@ var selectAllFlag = false;
 var allTrack = [];
 var selectedMapLines = [];
 var filterRate = 0;
+var trackLength=0;
 // add leaflet.pm controls to the map
 
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
@@ -410,6 +411,7 @@ function load(
                 });
               }).then(function (resData) {
                 var allTrack = resData.allTrack;
+                $("#selectedNumber").text("Selected Flows:" + allTrack.length);
                 var thisTimeTrackSet = resData.thisTimeTrackSet;
                 maxValue = d3.max(allTrack, function (d) {
                   return d.value;
@@ -757,11 +759,11 @@ function load(
 
                 var recordArray = underMap(thisTimeTrackSet);
                 var rectWidth = d3
-                
+
                   .select(".underMapRectG")
                   .select("rect")
                   .attr("width");
-                  
+
                 var rectHeight = d3
                   .select(".underMapRectG")
                   .select("rect")
@@ -798,9 +800,9 @@ function load(
                   x1 = d3.event.selection[0];
                   x2 = d3.event.selection[1];
                   artLineStartIndex = parseInt((x1 - 10) / rectWidth);
-                  
+
                   artLineEndIndex = parseInt((x2 - 10) / rectWidth);
-                  
+
                   drawStraightLine(allTrack);
                 }
               })
