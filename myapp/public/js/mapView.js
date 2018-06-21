@@ -1351,6 +1351,12 @@ function load(
                   .domain([40, 20, 10, 5])
                   .range([1, 2, 3, 4]);
 
+                d3.csv(op.getSampleFile(), function (d) {
+                  $("#linesNumberAfterSample").text(
+                    "Sampled Flow Count:" + d.length
+                  );
+                })
+
                 var methodScale = d3
                   .scaleOrdinal()
                   .domain(["0", "1", "2", "012"])
@@ -1986,12 +1992,8 @@ function load(
         if (firstDraw) {
           unbindEvents();
           $("#comDetec").on("click", function () {
-            if ($("#comDetec").is(":checked")) {
-              comDetecFlag = false;
-            } else {
-              comDetecFlag = true;
-            }
             comDetecFlag = !comDetecFlag;
+            console.log('comDetecFlag: ', comDetecFlag);
             if (comDetecFlag == true) {
               addCommunityRect(
                 scatterData,
@@ -2019,7 +2021,7 @@ function load(
                   scatterCircleGraphics,
                   comDetecFlag,
                   labelData,
-                  filterFlag
+                  filterRate
                 );
                 drawLines(labelData, comDetecFlag);
               });
@@ -2291,12 +2293,12 @@ function load(
     ]);
 
     pixelView(
-      "data/res/BSlinedetail_label40_seq012/2.json",
+      "data/BS/res/BSlinedetail_label40_seq012/2.json",
       op.system_name,
       pStage,
       pixelGraphics,
       pRenderer
     );
-    addhistogram("data/res/BSlinedetail_label40_seq012/1.csv");
+    addhistogram("data/BS/res/BSlinedetail_label40_seq012/1.csv");
   }); //promise.then
 } //load()
