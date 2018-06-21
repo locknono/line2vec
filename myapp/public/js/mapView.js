@@ -151,8 +151,7 @@ stage.addChild(selectedCircleGraphics);
 var scatterCanvas = document.getElementById("scatterCanvas");
 var renderer = PIXI.autoDetectRenderer(scatterPlotWidth + 0.01, scatterPlotHeight + 0.02, {
   view: scatterCanvas,
-  forceFXAA: false,
-  antialias: false,
+  antialias: true,
   transparent: !0,
   resolution: 1
 });
@@ -596,6 +595,7 @@ function load(
                       path.style("stroke", function () {
                         return "url(#" + linearGradient.attr("id") + ")"
                       })
+                      //  path.style("background","-moz-linear-gradient( top,#ccc,#000)")
                     } else if (coorsSet.size === 2 && coors.length > 2) {
                       var colorDefs = selection.append("defs");
                       var linearGradient = colorDefs
@@ -1282,7 +1282,7 @@ function load(
                 //range:true,
                 min: 0,
                 max: 100,
-                step: 5,
+                step: 2,
                 value: 0,
                 // value:[0,100],
                 slide: function (event, ui) {
@@ -1467,6 +1467,7 @@ function load(
                       );
                     bars[bars.length - 1] = circleBars;
                   });
+
                   drawScatterPlot(
                     sampledScatterData,
                     op.labelColorScale,
@@ -1503,17 +1504,6 @@ function load(
 
 
                 addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
-
-                scatterCircleGraphics.clear();
-                drawScatterPlot(
-                  sampledScatterData,
-                  op.labelColorScale,
-                  scatterPlotWidth,
-                  scatterPlotHeight,
-                  stage,
-                  scatterCircleGraphics,
-                  comDetecFlag
-                );
 
                 multidrawCircles(allSelectedMapLines, comDetecFlag);
                 sampled = true;
@@ -1811,9 +1801,7 @@ function load(
           $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
           selectedMapCircleGraphics.clear();
         }
-
         var selectedSourceTarget = [];
-
         var selectedLineGraphics = new PIXI.Graphics();
         leafletPixiContaioner.addChild(selectedLineGraphics);
 
@@ -2005,25 +1993,76 @@ function load(
               $(".labelRect").unbind();
               scatterSvg.selectAll(".labelRect").on("click", function (d) {
                 var labelData = [];
-                for (var i = 0; i < scatterData.length; i++) {
-                  if (scatterData[i].label == d) {
-                    labelData.push(scatterData[i]);
+                if (filterRate === 0) {
+                  if (sampledScatterData.length > 0) {
+                    for (var i = 0; i < sampledScatterData.length; i++) {
+                      if (scatterData[i].label == d) {
+                        labelData.push(scatterData[i]);
+                      }
+                    }
+                  } else {
+                    if (sampledScatterData.length > 0) {
+                      for (var i = 0; i < sampledScatterData.length; i++) {
+                        if (scatterData[i].label == d) {
+                          labelData.push(scatterData[i]);
+                        }
+                      }
+                    }
+                  }
+                } else {
+                  for (var i = 0; i < filterData.length; i++) {
+                    if (scatterData[i].label == d) {
+                      labelData.push(scatterData[i]);
+                    }
                   }
                 }
-                ////////////
-                //////////////
-                drawScatterPlot(
-                  scatterData,
-                  op.labelColorScale,
-                  scatterPlotWidth,
-                  scatterPlotHeight,
-                  stage,
-                  scatterCircleGraphics,
-                  comDetecFlag,
-                  labelData,
-                  filterRate
-                );
                 drawLines(labelData, comDetecFlag);
+
+                if (filterRate === 0) {
+                  if(sampledScatterData.length>0){
+                    drawScatterPlot(
+                      sampledScatterData,
+                      op.labelColorScale,
+                      scatterPlotWidth,
+                      scatterPlotHeight,
+                      stage,
+                      scatterCircleGraphics,
+                      comDetecFlag,
+                      labelData,
+                      filterRate
+                    );
+                  }else{
+                    drawScatterPlot(
+                      scatterData,
+                      op.labelColorScale,
+                      scatterPlotWidth,
+                      scatterPlotHeight,
+                      stage,
+                      scatterCircleGraphics,
+                      comDetecFlag,
+                      labelData,
+                      filterRate
+                    );
+                  }     
+                } else {
+                  if (filterRate === 0) {
+                    drawScatterPlot(
+                      filterData,
+                      op.labelColorScale,
+                      scatterPlotWidth,
+                      scatterPlotHeight,
+                      stage,
+                      scatterCircleGraphics,
+                      comDetecFlag,
+                      labelData,
+                      filterRate
+                    );
+                  }
+                }
+
+                console.log('comDetecFlag: ', comDetecFlag);
+                console.log('labelData: ', labelData);
+
               });
             } else {
               scatterSvg.selectAll(".labelRect").remove();
@@ -2197,36 +2236,28 @@ function load(
 
           $("#selectAll").click(function () {
             selectAllFlag = true;
+            d3
+              .select(".selection")
+              .transition()
+              .duration(750)
+              .attr("x", 0)
+              .attr("y", 0)
+              .attr("height", 50)
+              .attr("width", 50);
+            d3.selectAll(".brush").call(brush.move, [
+              [0, 0],
+              [50, 50]
+            ]);
             if (sampled === true) {
-              d3
-                .select(".selection")
-                .transition()
-                .duration(750)
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("height", 50)
-                .attr("width", 50);
-              d3.selectAll(".brush").call(brush.move, [
-                [0, 0],
-                [50, 50]
-              ]);
               drawLines(sampledScatterData, comDetecFlag);
               selectedCircles = sampledScatterData;
             } else {
-              d3
-                .select(".selection")
-                .transition()
-                .duration(750)
-                .attr("x", 0)
-                .attr("y", 0)
-                .attr("height", 50)
-                .attr("width", 50);
-              d3.selectAll(".brush").call(brush.move, [
-                [0, 0],
-                [50, 50]
-              ]);
               drawLines(scatterData, comDetecFlag);
               selectedCircles = scatterData;
+            }
+            if (filterRate !== 0) {
+              drawLines(filterData, comDetecFlag);
+              selectedCircles = filterData;
             }
             $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
           });
