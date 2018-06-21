@@ -6,7 +6,7 @@ var map = L.map("map", {
   renderer: L.canvas()
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
-  "https://api.mapbox.com/styles/v1/locknono/cjh7jj0mo0yu32rlnk52glz3f/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja25vbm8iLCJhIjoiY2poN2ppZHptMDM2bDMzbnhiYW9icjN4MiJ9.GalwMO67A3HawYH_Tg0-Qg",
+  "https://api.mapbox.com/styles/v1/lockyes/cjioj6gi726xw2rqvswvhv1gw/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
   layer =
   'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
 L.tileLayer(osmUrl, {
@@ -637,7 +637,8 @@ function load(
                         .attr("stroke-linecap", "round")
                         .attr("stroke-linejoin", "round")
                         .attr("d", function (d) {
-                          return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
+                          return lineJoin(d[0], d[1], d[2], d[3], 1);
+                          // return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
                         });
 
                     }
@@ -647,7 +648,7 @@ function load(
                         t = [0],
                         i = 0,
                         dt = precision;
-                      dt = 1;
+                      dt = 2;
                       while ((i += dt) < n) t.push(i);
                       t.push(n);
                       return t.map(function (t) {
@@ -1594,12 +1595,12 @@ function load(
           line.clear();
           for (var i = 0; i < scatterData.length; i++) {
             if (comDetecFlag == false) {
-              line.lineStyle(0.1, originalColor, 0.5);
+              line.lineStyle(0.1, originalColor, 0.2);
             } else {
               line.lineStyle(
                 0.1,
                 op.labelColorScale(scatterData[i].label).replace("#", "0x"),
-                0.5
+                0.2
               );
             }
             //  line.beginFill(op.labelColorScale(scatterData[i].label).replace('#', '0x'), 0.2);
