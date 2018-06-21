@@ -1278,7 +1278,7 @@ function load(
                 }
               });
               //filter slider
-              $("#slider1").slider({
+              $("#filterSlider").slider({
                 //range:true,
                 min: 0,
                 max: 100,
@@ -1313,7 +1313,7 @@ function load(
                     scatterCircleGraphics,
                     comDetecFlag,
                     labelData = undefined,
-                    filterFlag
+                    filterRate
                   );
                   if (selectedMapData.length > 0) {
                     drawArtLine(timeString);
@@ -1337,7 +1337,7 @@ function load(
                   }
                 }
               });
-              $("#amount1").val($("#slider1").slider("value"));
+              $("#amount1").val($("#filterSlider").slider("value"));
 
               $("#sample").click(function () {
                 if (selectedMapData.length !== 0) {
@@ -2297,6 +2297,6 @@ function load(
       pixelGraphics,
       pRenderer
     );
-    addHistogram2("data/res/BSlinedetail_label5_seq012/1.csv");
+    addHistogram2("data/res/BSlinedetail_label40_seq012/1.csv");
   }); //promise.then
 } //load()

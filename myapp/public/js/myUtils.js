@@ -70,10 +70,10 @@ function drawScatterPlot(
   circle,
   comDetecFlag,
   labelData = undefined,
-  filterFlag = false
+  filterRate = 0
 ) {
   console.log('comDetecFlag: ', comDetecFlag);
-  if (filterFlag !== true) {
+  if (filterRate === true) {
     circle.clear();
     var xyScale = getScatterXYScale(
         scatterData,
@@ -97,7 +97,7 @@ function drawScatterPlot(
         d3.select("#scatterImg").attr("src", imgFileName);
       }
     }
-  } else if (filterFlag === true) {
+  } else if (filterRate !== 0) {
     console.log("draw filter")
     circle.clear();
     var xyScale = getScatterXYScale(
