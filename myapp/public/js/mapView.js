@@ -60,6 +60,7 @@ var allTrack = [];
 var selectedMapLines = [];
 var filterRate = 0;
 var trackLength = 0;
+var sampleFlag=false;
 // add leaflet.pm controls to the map
 
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
@@ -398,8 +399,9 @@ function load(
                     timeString: timeString,
                     sFile: op.getSampleFile(),
                     randomFlag: random,
-                    filterRate: filterRate
-
+                    filterRate: filterRate,
+                    sample_rate:op.sample_rate,
+                    sampleFlag:sampleFlag,
                   },
                   success: function (data) {
                     resolve(data);
@@ -410,6 +412,7 @@ function load(
                 });
               }).then(function (resData) {
                 var allTrack = resData.allTrack;
+                
                 $("#selectedNumber").text("Selected Flows:" + allTrack.length);
                 var thisTimeTrackSet = resData.thisTimeTrackSet;
                 maxValue = d3.max(allTrack, function (d) {
@@ -423,7 +426,7 @@ function load(
                 $("#flowSlider").slider({
                   //range:true,
                   min: minValue,
-                  max: 200,
+                  max: 50,
                   step: 1,
                   value: minValue,
                   // value:[0,100],
@@ -507,7 +510,7 @@ function load(
                           }
                           var k = (nextPoint[1] - thisPoint[1]) / (nextPoint[0] - thisPoint[0]);
                           var b = midPointY - k * midPointX;
-                          var cpDis = d / 5;
+                          var cpDis = d / 3;
                           if (k > 0) {
                             var angle = Math.asin((nextPoint[1] - thisPoint[1] > 0) ? (nextPoint[1] - thisPoint[1]) / d : (thisPoint[1] - nextPoint[1]) / d);
                             if (j % 2 === 0) {
@@ -618,7 +621,7 @@ function load(
                         return "black"
                       }) */
                     }
-                    if (coorsSet.size > 2 /*|| (coorsSet.size===2&&coors.length===2)*/ ) {
+                    if (coorsSet.size >= 2 /*|| (coorsSet.size===2&&coors.length===2)*/ ) {
                       var path = selection.selectAll("[id='artLine" + i + "']").remove();
                       path
                         .data(quads(samples(path.node(), 1)))
@@ -644,7 +647,7 @@ function load(
                         t = [0],
                         i = 0,
                         dt = precision;
-                      dt = 4;
+                      dt = 1;
                       while ((i += dt) < n) t.push(i);
                       t.push(n);
                       return t.map(function (t) {
@@ -1340,6 +1343,7 @@ function load(
               $("#amount1").val($("#filterSlider").slider("value"));
 
               $("#sample").click(function () {
+                sampleFlag=true;
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
                 }
@@ -1995,21 +1999,21 @@ function load(
                 var labelData = [];
                 if (filterRate === 0) {
                   if (sampledScatterData.length > 0) {
+                    console.log("sample");
                     for (var i = 0; i < sampledScatterData.length; i++) {
-                      if (scatterData[i].label == d) {
-                        labelData.push(scatterData[i]);
+                      if (sampledScatterData[i].label == d) {
+                        labelData.push(sampledScatterData[i]);
                       }
                     }
                   } else {
-                    if (sampledScatterData.length > 0) {
-                      for (var i = 0; i < sampledScatterData.length; i++) {
+                      for (var i = 0; i < scatterData.length; i++) {
                         if (scatterData[i].label == d) {
                           labelData.push(scatterData[i]);
                         }
                       }
-                    }
                   }
                 } else {
+                  console.log("filter")
                   for (var i = 0; i < filterData.length; i++) {
                     if (scatterData[i].label == d) {
                       labelData.push(scatterData[i]);

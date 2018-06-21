@@ -86,10 +86,13 @@ router.post("/drawArtLine", function (req, res) {
 
   let timeString = req.body.timeString;
 
-  console.log('filterRate: ', filterRate);
-  console.log(typeof randomFlag);
-  console.log('randomFlag: ', randomFlag);
-  console.log('sFile: ', sFile);
+  let sampleRate=req.body.sample_rate;
+
+  let sampleFlag=req.body.sampleFlag;
+  console.log('sampleFlag: ', sampleFlag);
+  console.log('sampleFlag: ', typeof sampleFlag);
+
+  console.log('sampleRate: ', sampleRate);
   let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
   var data = JSON.parse(
     fs.readFileSync(trackFileName)
@@ -119,7 +122,11 @@ router.post("/drawArtLine", function (req, res) {
   } else if (randomFlag==='true') {
     var sampleFileName = path.resolve(__dirname, '../public/data/BS/RandomSample.csv');
   } else {
-    var sampleFileName = path.resolve(__dirname, '../public/' + sFile);
+    if(sampleFlag=='false'){
+      var sampleFileName = path.resolve(__dirname, '../public/data/BS/linedetail_label.csv');
+    }else{
+      var sampleFileName = path.resolve(__dirname, '../public/' + sFile);
+    }
   }
   console.log('sampleFileName: ', sampleFileName);
   var sampledScatterData = d3.csvParse(
