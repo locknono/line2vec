@@ -1358,9 +1358,8 @@ function load(
                 var method = "";
                 var sampledScatterDataFileName = op.getSampleFile();
                 var edgeBtwFileName = op.folderName + "/1.csv";
-                console.log('edgeBtwFileName: ', edgeBtwFileName);
                 var pixelFileName = op.folderName + "/2.json";
-                addHistogram2(edgeBtwFileName);
+                addhistogram(edgeBtwFileName);
                 pixelView(
                   pixelFileName,
                   op.system_name,
@@ -2298,6 +2297,6 @@ function load(
       pixelGraphics,
       pRenderer
     );
-    addHistogram2("data/res/BSlinedetail_label40_seq012/1.csv");
+    addhistogram("data/res/BSlinedetail_label40_seq012/1.csv");
   }); //promise.then
 } //load()
