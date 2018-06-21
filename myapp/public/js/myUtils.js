@@ -72,8 +72,7 @@ function drawScatterPlot(
   labelData = undefined,
   filterRate = 0
 ) {
-  console.log('comDetecFlag: ', comDetecFlag);
-  if (filterRate === true) {
+  if (filterRate === 0) {
     circle.clear();
     var xyScale = getScatterXYScale(
         scatterData,
@@ -83,7 +82,6 @@ function drawScatterPlot(
       xScale = xyScale[0],
       yScale = xyScale[1];
     let imgFileName = op.img_root_path + op.sample_rate + '_' + op.sample_method + '.png';
-    console.log('imgFileName: ', imgFileName);
     if (scatterData.length > 35000) {
       if (comDetecFlag === true) {
         d3.select("#scatterImg").attr("src", op.originalScatterImg.replace('.png', '_com.png'));
@@ -98,7 +96,6 @@ function drawScatterPlot(
       }
     }
   } else if (filterRate !== 0) {
-    console.log("draw filter")
     circle.clear();
     var xyScale = getScatterXYScale(
         scatterData,
