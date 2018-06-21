@@ -1358,6 +1358,7 @@ function load(
                 var method = "";
                 var sampledScatterDataFileName = op.getSampleFile();
                 var edgeBtwFileName = op.folderName + "/1.csv";
+                console.log('edgeBtwFileName: ', edgeBtwFileName);
                 var pixelFileName = op.folderName + "/2.json";
                 addHistogram2(edgeBtwFileName);
                 pixelView(
