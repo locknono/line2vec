@@ -361,11 +361,12 @@ function load(
     }
 
     leafletPixiOverlay = L.pixiOverlay(function (utils) {
-        var zoom = utils.getMap().getZoom();  
+        var zoom = utils.getMap().getZoom();
         var container = utils.getContainer();
         var leafletRenderer = utils.getRenderer();
         var project = utils.latLngToLayerPoint;
         var scale = utils.getScale();
+        console.log('scale: ', scale);
         var arcColor = d3.scaleThreshold();
 
         arcColor
@@ -632,8 +633,8 @@ function load(
                         .attr("stroke-linecap", "round")
                         .attr("stroke-linejoin", "round")
                         .attr("d", function (d) {
-                          return lineJoin(d[0], d[1], d[2], d[3], 1);
-                          // return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
+                          //return lineJoin(d[0], d[1], d[2], d[3], 1);
+                           return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
                         });
 
                     }
@@ -811,12 +812,13 @@ function load(
               var circle = e.layer;
               lastLayer = e.layer;
               lastLayers.push(e.layer);
-
+              op.drawZoom=map.getZoom();
               // e.layer.pm.toggleEdit(options);
               map.removeLayer(circle);
               var containerPoint1 = e.layer._point;  
               var clickSourceLatLng = e.layer._latlng;
               minRadius = e.layer._radius;
+              console.log('minRadius: ', minRadius);
 
               transformArray.push(containerPoint1);
               //get selected map data
@@ -1337,7 +1339,11 @@ function load(
               });
               $("#amount1").val($("#filterSlider").slider("value"));
 
-              $("#sample").click(function () {
+              $("#sample").click(function (e) {
+                console.log(map.getZoom());
+                console.log(minRadius);
+                // let curZoom=
+                minRadius=minRadius*(map.getZoom())
                 sampleFlag = true;
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
@@ -1591,6 +1597,9 @@ function load(
           for (var i = 0; i < scatterData.length; i++) {
             if (comDetecFlag == false) {
               line.lineStyle(0.1, op.originalLineColor, op.lineOpacity);
+              if(scatterData[i].ebt > 100){
+                line.lineStyle(0.1, "0x000000", op.lineOpacity);
+              }
             } else {
               line.lineStyle(
                 0.1,

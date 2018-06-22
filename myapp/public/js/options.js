@@ -27,10 +27,10 @@ var op = (function () {
         this.folderName = this.res_path + 'BSlinedetail_label' + this.sample_rate.toString() + "_seq";
         this.sample_method = "";
         if ($("#checkBtw").is(":checked")) {
-            this.sample_method += "0";
+            this.sample_method += "1";
         }
         if ($("#checkOverlap").is(":checked")) {
-            this.sample_method += "1";
+            this.sample_method += "0";
         }
         if ($("#checkComm").is(":checked")) {
             this.sample_method += "2";
@@ -91,7 +91,8 @@ var op = (function () {
         sample_method: sample_method,
         folderName:folderName,
         img_root_path:img_root_path,
-        originalLineColor:0xC2C2C2,
-        lineOpacity:0.5
+        originalLineColor:0xa0a0a0,
+        lineOpacity:0.8,
+        drawZoom:-1,
     }
 }())
