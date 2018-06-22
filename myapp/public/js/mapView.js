@@ -1594,12 +1594,12 @@ function load(
           line.clear();
           for (var i = 0; i < scatterData.length; i++) {
             if (comDetecFlag == false) {
-              line.lineStyle(0.1, op.originalLineColor, 0.2);
+              line.lineStyle(0.1, op.originalLineColor, op.lineOpacity);
             } else {
               line.lineStyle(
                 0.1,
                 op.labelColorScale(scatterData[i].label).replace("#", "0x"),
-                0.2
+                op.lineOpacity
               );
             }
             //  line.beginFill(op.labelColorScale(scatterData[i].label).replace('#', '0x'), 0.2);
