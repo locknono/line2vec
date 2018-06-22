@@ -361,7 +361,7 @@ function load(
     }
 
     leafletPixiOverlay = L.pixiOverlay(function (utils) {
-        var zoom = utils.getMap().getZoom();
+        var zoom = utils.getMap().getZoom();  
         var container = utils.getContainer();
         var leafletRenderer = utils.getRenderer();
         var project = utils.latLngToLayerPoint;
@@ -384,7 +384,6 @@ function load(
         var d3Overlay = L.d3SvgOverlay(
           function (selection, projection) {
             map.off("pm:create");
-
             function drawArtLine(timeString, random = false) {
               new Promise(function (resolve, reject) {
                 $.ajax({
@@ -815,7 +814,7 @@ function load(
 
               // e.layer.pm.toggleEdit(options);
               map.removeLayer(circle);
-              var containerPoint1 = e.layer._point;
+              var containerPoint1 = e.layer._point;  
               var clickSourceLatLng = e.layer._latlng;
               minRadius = e.layer._radius;
 
@@ -826,8 +825,8 @@ function load(
                 let stationPoint = mapData[i].stationLocation;
                 if (
                   calDis(
-                    map.latLngToLayerPoint(stationPoint),
-                    map.latLngToLayerPoint(clickSourceLatLng)
+                    projection.latLngToLayerPoint(stationPoint),
+                    projection.latLngToLayerPoint(clickSourceLatLng)
                   ) <= minRadius
                 ) {
                   selectedMapData.push(mapData[i]);
@@ -866,7 +865,6 @@ function load(
               for (var i = 0; i < allSelectedMapLines.length; i++) {
                 AllLength += allSelectedMapLines[i].length;
               }
-              $("#selectedNumber").text("Selected Flows:" + AllLength);
 
               baseshowflux(getSitesName(selectedMapLines)).then(function (volumeData) {
                 if (volumeData.length === 0) {
@@ -1052,7 +1050,7 @@ function load(
                 for (var i = 0; i < mapData.length; i++) {
                   let stationPoint = mapData[i].stationLocation;
                   if (
-                    calDis(map.latLngToLayerPoint(stationPoint), clickPoint) <=
+                    calDis(projection.latLngToLayerPoint(stationPoint), clickPoint) <=
                     parseFloat(circle.attr("r")) * thisCircleZoomScale
                   ) {
                     selectedMapData.push(mapData[i]);
@@ -1422,12 +1420,14 @@ function load(
                         );
                       });
                     selection.call(tip);
-                    selection.selectAll("[name='" + (lastLayers.length - 1).toString() + "']").remove();
+                    d3.selectAll("[name='" + (lastLayers.length - 1).toString() + "']").remove();
+                    console.log('allArcArray: ', allArcArray);
                     circleBars = selection
                       .append("g")
                       .attr("name", (lastLayers.length - 1).toString())
                       .selectAll("path")
                       .data(allArcArray[allArcArray.length - 1])
+                      
                       .enter()
                       .append("path")
                       .attr("d", function (d) {
@@ -1459,11 +1459,11 @@ function load(
                         transformArray[transformArray.length - 1].x +
                         "," +
                         transformArray[transformArray.length - 1].y +
+                        
                         ")"
                       );
                     bars[bars.length - 1] = circleBars;
                   });
-
                   drawScatterPlot(
                     sampledScatterData,
                     op.labelColorScale,
@@ -2296,7 +2296,7 @@ function load(
       [18.022, 2779.0, 0.988, 1.072, 1, 3415, 537.882, 3874.0]
     ];
     var scaleArray = [];
-    
+
     var maxArray1 = [35, 2779, 2, 2, 2, 63475, 620, 7039];
     var minArray1 = [2, 500, 0, 0, 0, 2000, 250, 2500];
 

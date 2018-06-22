@@ -48,8 +48,9 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
       for (var i = 0; i < selectedMapLines.length; i++) {
         for (var j = 0; j < selectedMapLines.length; j++) {
           var tcl = selectedMapLines[i];
+          var tc2 = selectedMapLines[j];
           if (i == j) continue;
-          if (crossTC(tcl.scor, tcl.tcor, tcl.scor, tcl.tcor)) {
+          if (crossTC(tcl.scor, tcl.tcor, tc2.scor, tc2.tcor)) {
             intersanctionArray[i][j]++;
             crossovers++;
           }
