@@ -254,7 +254,7 @@ function load(
         scatterCircleGraphics.endFill();
       }
       var fileName = '';
-      fileName += op.sample_rate + '_'
+      fileName += op.sample_rate + '_';
       var sample_method = "";
       if ($("#checkBtw").is(":checked")) {
         sample_method += "0";
@@ -264,9 +264,6 @@ function load(
       }
       if ($("#checkComm").is(":checked")) {
         sample_method += "2";
-      }
-      if (sample_method === '') {
-        sample_method = '012'
       }
       fileName += sample_method
       if ($("#comDetec").is(":checked")) {
@@ -1349,7 +1346,7 @@ function load(
                 }
                 /*getScatterData(op.getSampleFile()).then(function (value) {
                   downloadPng(value);
-                }) */
+                })*/
                 var sampleRateScale = d3
                   .scaleOrdinal()
                   .domain([40, 20, 10, 5])
