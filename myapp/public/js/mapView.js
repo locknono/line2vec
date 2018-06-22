@@ -817,8 +817,10 @@ function load(
               // e.layer.pm.toggleEdit(options);
               map.removeLayer(circle);
               var containerPoint1 = e.layer._point;
+              
               var clickSourceLatLng = e.layer._latlng;
               minRadius = e.layer._radius;
+              console.log('e: ', e);
               console.log('minRadius: ', minRadius);
 
               transformArray.push(containerPoint1);
@@ -1342,13 +1344,11 @@ function load(
 
               $("#sample").click(function (e) {
                 console.log('op.drawZoom: ', op.drawZoom);
-                console.log(minRadius);
-                console.log('minRadius: ', minRadius);
                 let curZoom = map.getZoom();
                 console.log('curZoom: ', curZoom);
-                var zoomDiff = curZoom - op.drawZoom;
+                var zoomDiff = curZoom - 14;
                 console.log('zoomDiff: ', zoomDiff);
-               // minRadius = zoomDiff > 0 ? Math.pow(Math.sqrt(2),zoomDiff) * minRadius:minRadius;
+                //minRadius = zoomDiff > 0 ? Math.pow(2,zoomDiff) * minRadius:minRadius;
                 console.log('minRadius: ', minRadius);
                 sampleFlag = true;
                 if (selectedMapData.length !== 0) {
@@ -1622,6 +1622,7 @@ function load(
             line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
             //  line.endFill();
           }
+          
           for(let i =0;i<ebtArray.length;i++){
             if (comDetecFlag == false) {
               line.lineStyle(0.1, "0x000000", op.lineOpacity);
