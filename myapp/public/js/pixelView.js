@@ -82,9 +82,9 @@ function pixelView(fileName, systemName, pStage, pixelGraphics, pRenderer) {
         } else if (systemName === "Wenzhou") {
           pixelGraphics.drawRect(
             18 * pixelLength +
-            margin.left+15 +
+            margin.left + 15 +
             pixelLength * (j),
-            margin.top+8 + pixelLength * (15 - i),
+            margin.top + 8 + pixelLength * (15 - i),
             pixelLength,
             pixelLength
           );

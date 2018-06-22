@@ -6,7 +6,7 @@ var map = L.map("map", {
   renderer: L.canvas()
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
-  "https://api.mapbox.com/styles/v1/lockyes/cjioj6gi726xw2rqvswvhv1gw/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
+  "https://api.mapbox.com/styles/v1/lockyes/cjipnxop538w02spbcw7r50n4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
   layer =
   'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
 L.tileLayer(osmUrl, {
@@ -48,7 +48,6 @@ var minRadius;
 var allArcArray = [];
 var arcArray = [];
 var comDetecFlag = false;
-var originalColor = 0xc2c2c2;
 var selectedColor = 0x3388ff;
 var artLineMaxValue = 1000;
 var artLineMinValue = 0;
@@ -1595,7 +1594,7 @@ function load(
           line.clear();
           for (var i = 0; i < scatterData.length; i++) {
             if (comDetecFlag == false) {
-              line.lineStyle(0.1, originalColor, 0.2);
+              line.lineStyle(0.1, op.originalLineColor, 0.2);
             } else {
               line.lineStyle(
                 0.1,
@@ -1624,7 +1623,7 @@ function load(
                 0.5
               );
             } else {
-              dragLineGraphics.lineStyle(0.05, originalColor, 0.5);
+              dragLineGraphics.lineStyle(0.05, op.originalLineColor, 0.5);
             }
 
             let layerSourcePoint = project(selectedMapLines[i].scor);
