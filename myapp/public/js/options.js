@@ -41,6 +41,9 @@ var op = (function () {
         this.folderName+=this.sample_method;
         return this.folderName + "/0.csv";
     }
+
+    
+    //style
     var labelColorScale = d3
         .scaleOrdinal()
         .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
@@ -65,7 +68,7 @@ var op = (function () {
             "#FDA318", //16
             "#fb8072", //17
         ]);
-    //style
+    var originalLineColor=0x3C3B3B;
     var minArtLineWidth = 1,
         maxArtLineWidth = 15,
         circleBarStartColor = "#fff4b3",
@@ -80,7 +83,7 @@ var op = (function () {
         maxArtLineWidth: maxArtLineWidth,
         circleBarStartColor: circleBarStartColor,
         circleBarEndColor: circleBarEndColor,
-        scatterColor: scatterColor,
+        scatterColor: 0xC2C2C2,
         res_path: res_path,
         pixel_file: pixel_file,
         originalScatterImg: originalScatterImg,
@@ -91,5 +94,6 @@ var op = (function () {
         sample_method: sample_method,
         folderName:folderName,
         img_root_path:img_root_path,
+        originalLineColor:originalLineColor,
     }
 }())
