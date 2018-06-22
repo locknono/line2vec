@@ -59,7 +59,7 @@ var allTrack = [];
 var selectedMapLines = [];
 var filterRate = 0;
 var trackLength = 0;
-var sampleFlag=false;
+var sampleFlag = false;
 // add leaflet.pm controls to the map
 
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
@@ -399,8 +399,8 @@ function load(
                     sFile: op.getSampleFile(),
                     randomFlag: random,
                     filterRate: filterRate,
-                    sample_rate:op.sample_rate,
-                    sampleFlag:sampleFlag,
+                    sample_rate: op.sample_rate,
+                    sampleFlag: sampleFlag,
                   },
                   success: function (data) {
                     resolve(data);
@@ -411,7 +411,7 @@ function load(
                 });
               }).then(function (resData) {
                 var allTrack = resData.allTrack;
-                
+
                 $("#selectedNumber").text("Selected Flows:" + allTrack.length);
                 var thisTimeTrackSet = resData.thisTimeTrackSet;
                 maxValue = d3.max(allTrack, function (d) {
@@ -1343,7 +1343,7 @@ function load(
               $("#amount1").val($("#filterSlider").slider("value"));
 
               $("#sample").click(function () {
-                sampleFlag=true;
+                sampleFlag = true;
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
                 }
@@ -1354,12 +1354,6 @@ function load(
                   .scaleOrdinal()
                   .domain([40, 20, 10, 5])
                   .range([1, 2, 3, 4]);
-
-                d3.csv(op.getSampleFile(), function (d) {
-                  $("#linesNumberAfterSample").text(
-                    "Sampled Flow Count:" + d.length
-                  );
-                })
 
                 var methodScale = d3
                   .scaleOrdinal()
@@ -1379,6 +1373,7 @@ function load(
                 );
                 getScatterData(sampledScatterDataFileName).then(function (value) {
                   sampledScatterData = value;
+                  $("#linesNumberAfterSample").text("Sampled Flow Count:" + sampledScatterData.length);
                   selectedMapLines = [];
                   data = sampledScatterData;
                   for (var i = 0; i < data.length; i++) {
@@ -1481,6 +1476,24 @@ function load(
                     scatterCircleGraphics,
                     comDetecFlag
                   );
+
+                  if (selectAllFlag === true) {
+                    console.log("draw all lines");
+                    console.log('sampledScatterData: ', sampledScatterData);
+                    drawLines(sampledScatterData, comDetecFlag);
+                    selectedCircles = sampledScatterData;
+                  } else {
+                    if (!isNaN(brushX)) {
+                      d3
+                        .selectAll(".brush")
+                        .call(brush)
+                        .call(brush.move, [
+                          [brushX, brushY],
+                          [brushX + brushWidth, brushY + brushHeight]
+                        ]);
+                    }
+                  }
+                  $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
                 });
                 var index = sampleRateScale(op.sample_rate) * 4 - methodScale(method);
 
@@ -1519,25 +1532,11 @@ function load(
                 let brushWidth = parseFloat(sRect.attr("width"));
                 let brushHeight = parseFloat(sRect.attr("height"));
 
-                if (selectedCircles.length === scatterData.length) {
-                  drawLines(sampledScatterData, comDetecFlag);
-                  selectedCircles = sampledScatterData;
-                } else {
-                  if (!isNaN(brushX)) {
-                    d3
-                      .selectAll(".brush")
-                      .call(brush)
-                      .call(brush.move, [
-                        [brushX, brushY],
-                        [brushX + brushWidth, brushY + brushHeight]
-                      ]);
-                  }
-                }
+
                 selectedLineGraphics.clear();
                 selectedCircleGraphics.clear();
                 renderer.render(stage);
 
-                $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
                 var sampledAllSelectedMapLines = [];
                 for (var i = 0; i < allSelectedMapLines.length; i++) {
                   sampledAllSelectedMapLines[i] = [];
@@ -1999,18 +1998,17 @@ function load(
                 var labelData = [];
                 if (filterRate === 0) {
                   if (sampledScatterData.length > 0) {
-                    console.log("sample");
                     for (var i = 0; i < sampledScatterData.length; i++) {
                       if (sampledScatterData[i].label == d) {
                         labelData.push(sampledScatterData[i]);
                       }
                     }
                   } else {
-                      for (var i = 0; i < scatterData.length; i++) {
-                        if (scatterData[i].label == d) {
-                          labelData.push(scatterData[i]);
-                        }
+                    for (var i = 0; i < scatterData.length; i++) {
+                      if (scatterData[i].label == d) {
+                        labelData.push(scatterData[i]);
                       }
+                    }
                   }
                 } else {
                   console.log("filter")
@@ -2023,7 +2021,7 @@ function load(
                 drawLines(labelData, comDetecFlag);
 
                 if (filterRate === 0) {
-                  if(sampledScatterData.length>0){
+                  if (sampledScatterData.length > 0) {
                     drawScatterPlot(
                       sampledScatterData,
                       op.labelColorScale,
@@ -2035,7 +2033,7 @@ function load(
                       labelData,
                       filterRate
                     );
-                  }else{
+                  } else {
                     drawScatterPlot(
                       scatterData,
                       op.labelColorScale,
@@ -2047,7 +2045,7 @@ function load(
                       labelData,
                       filterRate
                     );
-                  }     
+                  }
                 } else {
                   if (filterRate === 0) {
                     drawScatterPlot(
