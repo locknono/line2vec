@@ -94,6 +94,7 @@ var op = (function () {
         sample_method: sample_method,
         folderName:folderName,
         img_root_path:img_root_path,
-        originalLineColor:originalLineColor,
+        originalLineColor:0xC2C2C2,
+        lineOpacity:0.5
     }
 }())
