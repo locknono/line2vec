@@ -817,7 +817,7 @@ function load(
               // e.layer.pm.toggleEdit(options);
               map.removeLayer(circle);
               var containerPoint1 = e.layer._point;
-              
+
               var clickSourceLatLng = e.layer._latlng;
               minRadius = e.layer._radius;
               console.log('e: ', e);
@@ -1403,7 +1403,7 @@ function load(
                     changeVolumeArray(volumeData);
                     var hourLineNumber = getHourLineNumber(volumeData);
                     avgVolumeData = getAvgVolumeData(volumeData);
-                    var scales = getArcScale(avgVolumeData, minRadius);
+                    var scales = getArcScale(avgVolumeData, parseFloat(circle.attr("r")));
                     getArcArray(
                       volumeData,
                       avgVolumeData,
@@ -1600,7 +1600,7 @@ function load(
 
         function drawLines(scatterData, comDetecFlag) {
           line.clear();
-          let ebtArray=[];
+          let ebtArray = [];
           for (var i = 0; i < scatterData.length; i++) {
             if (comDetecFlag == false) {
               line.lineStyle(0.1, op.originalLineColor, op.lineOpacity);
@@ -1622,8 +1622,16 @@ function load(
             line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
             //  line.endFill();
           }
-          
-          for(let i =0;i<ebtArray.length;i++){
+          /* ebtCounter={};
+          ebtArray.map(e=>{
+            if(ebtCounter[e.label]===undefined){
+              ebtCounter[e.label]=1
+            }else{
+              ebtCounter[e.label]+=1;
+            }
+          });
+          console.log('ebtCounter: ', ebtCounter); */
+          for (let i = 0; i < ebtArray.length; i++) {
             if (comDetecFlag == false) {
               line.lineStyle(0.1, "0x000000", op.lineOpacity);
               let layerSourcePoint = project(ebtArray[i].scor);
