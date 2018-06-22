@@ -26,11 +26,11 @@ var op = (function () {
     function getSampleFile() {
         this.folderName = this.res_path + 'BSlinedetail_label' + this.sample_rate.toString() + "_seq";
         this.sample_method = "";
-        if ($("#checkBtw").is(":checked")) {
-            this.sample_method += "1";
-        }
         if ($("#checkOverlap").is(":checked")) {
             this.sample_method += "0";
+        }
+        if ($("#checkBtw").is(":checked")) {
+            this.sample_method += "1";
         }
         if ($("#checkComm").is(":checked")) {
             this.sample_method += "2";
