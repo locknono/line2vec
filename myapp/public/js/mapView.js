@@ -385,6 +385,7 @@ function load(
         var d3Overlay = L.d3SvgOverlay(
           function (selection, projection) {
             map.off("pm:create");
+
             function drawArtLine(timeString, random = false) {
               new Promise(function (resolve, reject) {
                 $.ajax({
@@ -634,7 +635,7 @@ function load(
                         .attr("stroke-linejoin", "round")
                         .attr("d", function (d) {
                           //return lineJoin(d[0], d[1], d[2], d[3], 1);
-                           return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
+                          return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
                         });
 
                     }
@@ -812,10 +813,10 @@ function load(
               var circle = e.layer;
               lastLayer = e.layer;
               lastLayers.push(e.layer);
-              op.drawZoom=map.getZoom();
+              op.drawZoom = map.getZoom();
               // e.layer.pm.toggleEdit(options);
               map.removeLayer(circle);
-              var containerPoint1 = e.layer._point;  
+              var containerPoint1 = e.layer._point;
               var clickSourceLatLng = e.layer._latlng;
               minRadius = e.layer._radius;
               console.log('minRadius: ', minRadius);
@@ -1340,10 +1341,15 @@ function load(
               $("#amount1").val($("#filterSlider").slider("value"));
 
               $("#sample").click(function (e) {
-                console.log(map.getZoom());
+                console.log('op.drawZoom: ', op.drawZoom);
                 console.log(minRadius);
-                // let curZoom=
-                minRadius=minRadius*(map.getZoom())
+                console.log('minRadius: ', minRadius);
+                let curZoom = map.getZoom();
+                console.log('curZoom: ', curZoom);
+                var zoomDiff = curZoom - op.drawZoom;
+                console.log('zoomDiff: ', zoomDiff);
+               // minRadius = zoomDiff > 0 ? Math.pow(Math.sqrt(2),zoomDiff) * minRadius:minRadius;
+                console.log('minRadius: ', minRadius);
                 sampleFlag = true;
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
@@ -1433,7 +1439,7 @@ function load(
                       .attr("name", (lastLayers.length - 1).toString())
                       .selectAll("path")
                       .data(allArcArray[allArcArray.length - 1])
-                      
+
                       .enter()
                       .append("path")
                       .attr("d", function (d) {
@@ -1465,7 +1471,7 @@ function load(
                         transformArray[transformArray.length - 1].x +
                         "," +
                         transformArray[transformArray.length - 1].y +
-                        
+
                         ")"
                       );
                     bars[bars.length - 1] = circleBars;
@@ -1594,11 +1600,12 @@ function load(
 
         function drawLines(scatterData, comDetecFlag) {
           line.clear();
+          let ebtArray=[];
           for (var i = 0; i < scatterData.length; i++) {
             if (comDetecFlag == false) {
               line.lineStyle(0.1, op.originalLineColor, op.lineOpacity);
-              if(scatterData[i].ebt > 100){
-                line.lineStyle(0.1, "0x000000", op.lineOpacity);
+              if (scatterData[i].ebt > 100) {
+                ebtArray.push(scatterData[i]);
               }
             } else {
               line.lineStyle(
@@ -1615,6 +1622,17 @@ function load(
             line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
             //  line.endFill();
           }
+          for(let i =0;i<ebtArray.length;i++){
+            if (comDetecFlag == false) {
+              line.lineStyle(0.1, "0x000000", op.lineOpacity);
+              let layerSourcePoint = project(ebtArray[i].scor);
+              let layerTargetPoint = project(ebtArray[i].tcor);
+              //  ////
+              line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+              line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+            }
+          }
+
           leafletRenderer.render(container);
         }
 
