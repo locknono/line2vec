@@ -35,9 +35,6 @@ var op = (function () {
         if ($("#checkComm").is(":checked")) {
             this.sample_method += "2";
         }
-        if(this.sample_method===''){
-            this.sample_method='012'
-        }
         this.folderName+=this.sample_method;
         return this.folderName + "/0.csv";
     }
