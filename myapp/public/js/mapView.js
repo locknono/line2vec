@@ -6,7 +6,7 @@ var map = L.map("map", {
   renderer: L.canvas()
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
-  "https://api.mapbox.com/styles/v1/lockyes/cjipnxop538w02spbcw7r50n4/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
+  "https://api.mapbox.com/styles/v1/lockyes/cjirepczz27ck2rmsc5ybf978/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
   layer =
   'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
 L.tileLayer(osmUrl, {
@@ -990,8 +990,8 @@ function load(
                   var endTime = i * 3 + 2;
                   timeString = stratTime.toString() + "-" + endTime.toString();
                   drawArtLine(timeString);
-                  selection.selectAll(".timeArcPath").style("fill", "#CCCCCC");
-                  d3.select(this).style("fill", "#858585");
+                  selection.selectAll(".timeArcPath").style("fill", op.timeArcColor);
+                  d3.select(this).style("fill",op.selectedTimeArcColor);
                 });
 
               var circle = selection
@@ -1261,8 +1261,8 @@ function load(
                     var endTime = i * 3 + 2;
                     timeString = stratTime.toString() + "-" + endTime.toString();
                     drawArtLine(timeString);
-                    selection.selectAll(".timeArcPath").style("fill", "##CCCCCC");
-                    selection.select(this).style("fill", "#858585");
+                    selection.selectAll(".timeArcPath").style("fill",op.arcColor);
+                    selection.select(this).style("fill",op.selectedTimeArcColor);
                   });
               }
               circle.call(drag);
@@ -1631,14 +1631,16 @@ function load(
             }
           });
            */
-          for (let i = 0; i < ebtArray.length; i++) {
-            if (comDetecFlag == false) {
-              line.lineStyle(0.1, "0x000000", op.lineOpacity);
-              let layerSourcePoint = project(ebtArray[i].scor);
-              let layerTargetPoint = project(ebtArray[i].tcor);
-              //  ////
-              line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
-              line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+          if (op.sample_method==='1'||op.sample_method==='') {
+            for (let i = 0; i < ebtArray.length; i++) {
+              if (comDetecFlag == false) {
+                line.lineStyle(0.1, "0x000000", op.lineOpacity);
+                let layerSourcePoint = project(ebtArray[i].scor);
+                let layerTargetPoint = project(ebtArray[i].tcor);
+                //  ////
+                line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+                line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+              }
             }
           }
 

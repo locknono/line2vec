@@ -16,7 +16,7 @@ var op = (function () {
     var originalScatterImg = img_root_path + 'original.png';
 
     var sample_rate = 40;
-    var sample_method = "012";
+    var sample_method = "";
     var folderName = res_path + 'BSlinedetail_label' + sample_rate.toString() + "_seq";
     
     function changeSampleRate(rate) {
@@ -45,7 +45,7 @@ var op = (function () {
         .scaleOrdinal()
         .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
         .range([
-            "#4B3700", //-1
+            "#A6A6A6", //-1
             "#80b1d3", //0
             "#fdb462",
             "#b3de69",
@@ -92,6 +92,6 @@ var op = (function () {
         lineOpacity:0.8,
         drawZoom:-1,
         timeArcColor:"#A9ACE2",
-        selectedTimeArcColor:"#858585",
+        selectedTimeArcColor:"#A13AE2",
     }
 }())

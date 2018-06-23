@@ -449,6 +449,7 @@ body {
   width: 700px;
   border-width: 0.5px;
   z-index: 1;
+  border-radius:50%;
 }
 #map {
     position: absolute;
@@ -458,4 +459,5 @@ body {
     height:516px;
     z-index: 2;
     background-color: white;
+    border-radius: 50%;
 }
