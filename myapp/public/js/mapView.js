@@ -366,7 +366,7 @@ function load(
         var leafletRenderer = utils.getRenderer();
         var project = utils.latLngToLayerPoint;
         var scale = utils.getScale();
-        console.log('scale: ', scale);
+        
         var arcColor = d3.scaleThreshold();
 
         arcColor
@@ -442,8 +442,8 @@ function load(
                   allTrack.sort(function (a, b) {
                     return b.lineCoors.length - a.lineCoors.length;
                   });
-                  d3.selectAll(".artLine").remove();
-                  d3.selectAll("defs").remove();
+                  d3.select("#map").selectAll(".artLine").remove();
+                  d3.select("#map").selectAll("defs").remove();
                   var lineGenarator = d3
                     .line()
                     .x(function (d) {
@@ -820,8 +820,8 @@ function load(
 
               var clickSourceLatLng = e.layer._latlng;
               minRadius = e.layer._radius;
-              console.log('e: ', e);
-              console.log('minRadius: ', minRadius);
+              
+              
 
               transformArray.push(containerPoint1);
               //get selected map data
@@ -1343,13 +1343,13 @@ function load(
               $("#amount1").val($("#filterSlider").slider("value"));
 
               $("#sample").click(function (e) {
-                console.log('op.drawZoom: ', op.drawZoom);
+                
                 let curZoom = map.getZoom();
-                console.log('curZoom: ', curZoom);
+                
                 var zoomDiff = curZoom - 14;
-                console.log('zoomDiff: ', zoomDiff);
+                
                 //minRadius = zoomDiff > 0 ? Math.pow(2,zoomDiff) * minRadius:minRadius;
-                console.log('minRadius: ', minRadius);
+                
                 sampleFlag = true;
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
@@ -1433,7 +1433,7 @@ function load(
                       });
                     selection.call(tip);
                     d3.selectAll("[name='" + (lastLayers.length - 1).toString() + "']").remove();
-                    console.log('allArcArray: ', allArcArray);
+                    
                     circleBars = selection
                       .append("g")
                       .attr("name", (lastLayers.length - 1).toString())
@@ -1487,8 +1487,8 @@ function load(
                   );
 
                   if (selectAllFlag === true) {
-                    console.log("draw all lines");
-                    console.log('sampledScatterData: ', sampledScatterData);
+                    
+                    
                     drawLines(sampledScatterData, comDetecFlag);
                     selectedCircles = sampledScatterData;
                   } else {
@@ -1630,7 +1630,7 @@ function load(
               ebtCounter[e.label]+=1;
             }
           });
-          console.log('ebtCounter: ', ebtCounter); */
+           */
           for (let i = 0; i < ebtArray.length; i++) {
             if (comDetecFlag == false) {
               line.lineStyle(0.1, "0x000000", op.lineOpacity);
@@ -2017,7 +2017,7 @@ function load(
           unbindEvents();
           $("#comDetec").on("click", function () {
             comDetecFlag = !comDetecFlag;
-            console.log('comDetecFlag: ', comDetecFlag);
+            
             if (comDetecFlag == true) {
               addCommunityRect(
                 scatterData,
@@ -2044,7 +2044,7 @@ function load(
                     }
                   }
                 } else {
-                  console.log("filter")
+                  
                   for (var i = 0; i < filterData.length; i++) {
                     if (scatterData[i].label == d) {
                       labelData.push(scatterData[i]);
@@ -2095,8 +2095,8 @@ function load(
                   }
                 }
 
-                console.log('comDetecFlag: ', comDetecFlag);
-                console.log('labelData: ', labelData);
+                
+                
 
               });
             } else {
