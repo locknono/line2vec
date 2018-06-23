@@ -38,7 +38,7 @@ var op = (function () {
         this.folderName+=this.sample_method;
         return this.folderName + "/0.csv";
     }
-
+    
     
     //style
     var labelColorScale = d3
@@ -65,12 +65,9 @@ var op = (function () {
             "#FDA318", //16
             "#fb8072", //17
         ]);
-    var originalLineColor=0x3C3B3B;
+        
     var minArtLineWidth = 1,
-        maxArtLineWidth = 15,
-        circleBarStartColor = "#fff4b3",
-        circleBarEndColor = "#F22613",
-        scatterColor = 0xd9d9d9;
+        maxArtLineWidth = 15;
     return {
         system_name: system_name,
         root_path: root_path,
@@ -78,8 +75,8 @@ var op = (function () {
         track_file: track_file,
         minArtLineWidth: minArtLineWidth,
         maxArtLineWidth: maxArtLineWidth,
-        circleBarStartColor: circleBarStartColor,
-        circleBarEndColor: circleBarEndColor,
+        circleBarStartColor: "#fff4b3",
+        circleBarEndColor: "#F22613",
         scatterColor: 0xC2C2C2,
         res_path: res_path,
         pixel_file: pixel_file,
