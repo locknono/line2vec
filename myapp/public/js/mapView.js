@@ -971,9 +971,9 @@ function load(
                 .style("stroke", "#fff")
                 .style("fill", function (d, i) {
                   if (i == 2) {
-                    return "#858585";
+                    return op.selectedTimeArcColor;
                   }
-                  return "#CCCCCC";
+                  return op.timeArcColor;
                 })
                 .style("pointer-events", "auto")
                 .style("cursor", "crosshair")
