@@ -69,9 +69,6 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
           maxEbt > selectedMapLines[i].ebt ? maxEbt : selectedMapLines[i].ebt;
       }
       var avgEbt = Tc_sum_ebt / selectedMapLines.length;
-      //
-      //
-
       var Tc_center = [0, 0];
       for (var i = 0; i < selectedMapLines.length; i++) {
         Tc_center[0] += selectedMapLines[i].x;
@@ -92,20 +89,11 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
         Math.pow(Tc_center[0] - Tc_p[0], 2) +
           Math.pow(Tc_center[1] - Tc_p[1], 2)
       );
-      //
-      //
-
       var variance = d3.variance(sumVolumeData);
-      ////
       var maxFlow = d3.max(sumVolumeData);
-      ////
       var avgFlow = d3.sum(sumVolumeData) / selectedMapLines.length;
-      ////
       var minFlow = d3.min(sumVolumeData);
-      ////
       var lineNumber = selectedMapLines.length;
-      ////
-      ////
       var commNumber = 0;
       var labelArray = [];
       for (var i = 0; i < selectedMapLines.length; i++) {
@@ -114,14 +102,10 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
           commNumber++;
         }
       }
-      ////
       var edgebtw = 0;
       for (var i = 0; i < selectedMapLines.length; i++) {
         edgebtw += selectedMapLines[i].ebt;
       }
-      ////
-      ////
-      ////
       var data = [
         lineNumber,
         crossovers,
@@ -132,8 +116,6 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
         maxFlow,
         avgFlow
       ];
-      ////////
-      ///  传一个最大线的长度
       var Tc_data = [
         avgEbt,
         maxEbt,
@@ -169,17 +151,13 @@ function getRadarData(
   maxFlow
 ) {
   oLines = getSelectedData(selectedMapData, scatterData);
-  ////////
   sLines = getSelectedData(selectedMapData, sampledScatterData);
-  ////////
   var p = getCenter(oLines);
-  //
   var data = [];
   Promise.all([
     getEachRadarData(oLines, p, maxFlow),
     getEachRadarData(sLines, p, maxFlow)
   ]).then(function(values) {
-    ////
     var maxArray = [];
     for (var j = 0; j < 8; j++) {
       maxArray.push(d3.max([values[0][j], values[1][j]]));
@@ -188,8 +166,6 @@ function getRadarData(
     for (var j = 0; j < 8; j++) {
       minArray.push(d3.min([values[0][j], values[1][j]]));
     }
-    ////
-    ////
     getRadarRadius(values, minArray, maxArray);
     return values;
   });
@@ -215,7 +191,6 @@ function getRadarRadius(data, minArray, maxArray) {
     }
     allRadiusArray.push(radius);
   }
-  ////////
   addRadarView(allRadiusArray, data);
 }
 
@@ -279,14 +254,12 @@ function addText(center, maxRadius, svg) {
     [16, 252],
     [6, 160],
     [18, 172],
-    //[0, 175],
     [35, 80],
     [147, 40],
     [270, 71],
     [318, 167],
     [303, 180]
   ];
-  
   for (var i = 0; i < textPosition.length; i++) {
     svg
       .append("text")
@@ -296,13 +269,10 @@ function addText(center, maxRadius, svg) {
       .text(textArray[i]);
   }
 }
-
 function addRadarView(allRadiusArray, data) {
   var margin = { top: 20, left: 20, right: 20, bottom: 20 };
   var svgWidth = parseFloat(d3.select("#raderSvg").attr("width"));
   var svgHeight = parseFloat(d3.select("#raderSvg").attr("height"));
-  ////////////
-  ////////////
   var width = svgWidth - margin.left - margin.right;
   var height = svgHeight - margin.top - margin.bottom;
   var svg = d3.select("#raderSvg");
@@ -315,9 +285,7 @@ function addRadarView(allRadiusArray, data) {
   var minRadius = 40;
   var pad = 20;
   var maxRadius = minRadius + 4 * pad; //120
-
   var colorScale = d3.scaleOrdinal().range([op.oColor, op.ourColor]);
-  // var colorScale = d3.scaleOrdinal().range(["#639EDC", "#4aa973", "#f3a534"]);
   var textSacle = d3
     .scaleOrdinal()
     .range(["original", "our method", "random sample"]);
@@ -364,15 +332,6 @@ function addRadarView(allRadiusArray, data) {
       .style("stroke-opacity", 0.6)
       .style("fill-opacity", 0.1);
   }
-  /*
-    圆心坐标：(x0,y0)
-    半径：r
-    角度：a0
-
-    则圆上任一点为：（x1,y1）
-    x1   =   x0   +   r   *   cos(ao   *   3.14   /180   )
-    y1   =   y0   +   r   *   sin(ao   *   3.14   /180   )
-  */
   let a0 = 360 / 8;
   var lineEndPoint = [];
   for (var i = 0; i < 8; i++) {
@@ -381,7 +340,6 @@ function addRadarView(allRadiusArray, data) {
     let lineEndPointY =
       center[1] + maxRadius * Math.sin(a0 * (i + 1) * Math.PI / 180);
     lineEndPoint.push([lineEndPointX, lineEndPointY]);
-
     svg
       .append("line")
       .attr("x1", center[0])
@@ -390,7 +348,6 @@ function addRadarView(allRadiusArray, data) {
       .attr("y2", lineEndPointY)
       .attr("stroke", "white");
   }
-  ////////
   var allEndPoints = getAllEndPoints(center, allRadiusArray);
   addRader(line, allEndPoints, svg, colorScale, data);
   addText(center, maxRadius, svg);
@@ -406,7 +363,6 @@ function getRadarPoint(center, radius) {
       center[1] + radius[i] * Math.sin(a0 * (i + 1) * Math.PI / 180);
     endPoints.push([lineEndPointX, lineEndPointY]);
   }
-  ////
   return endPoints;
 }
 function getAllEndPoints(center, radiusArray) {
@@ -428,32 +384,15 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
       return colorScale(i);
     })
     .attr("fill-opacity", " 0.35")
-    //    设置路径信息
     .attr("d", function(d, i) {
       return line(allEndPoints[i]);
     })
     .on("mouseover", function(d, i) {
-      ////////
-      ////////
-      ////////
       d3.select(this).style("fill-opacity", 0.7);
     })
     .on("mouseout", function(d, i) {
       d3.select(this).style("fill-opacity", 0.35);
     });
-  /*for (var i = 0; i < allEndPoints.length; i++) {
-    for (var j = 0; j < allEndPoints[i].length; j++) {
-      svg
-        .append("circle")
-        .attr("cx", allEndPoints[i][j][0])
-        .attr("cy", allEndPoints[i][j][1])
-        .attr("r", 2)
-        .attr("fill", colorScale(i))
-        .on("mouseover", function(d, i) {});
-    }
-  }
-  */
-  //////
   for (var j = 0; j < allEndPoints.length; j++) {
     svg
       .append("g")
@@ -490,7 +429,6 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
       
   }
 }
-
 var tip = d3
   .tip()
   .attr("class", "d3-tip")
