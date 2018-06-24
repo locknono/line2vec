@@ -73,10 +73,10 @@ function addTimingView() {
     for (var i = 0; i < 5; i++) {
       value_arr[i] = (i + 1) * max / 5;
     }
-    console.log(axis_arr);
+    
 
-    console.log(data[0][0]["2-2"] == null);
-    // console.log(track_arr);
+    
+    // 
     // function()
 
     // Extract the list of dimensions and create a scale for each.
@@ -109,7 +109,7 @@ function addTimingView() {
         }
       }))
     );
-    console.log(dimensions);
+    
     // Add grey background lines for context.
     background = svg
       .append("g")

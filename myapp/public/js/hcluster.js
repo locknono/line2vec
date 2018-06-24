@@ -307,7 +307,7 @@ var hcluster = function() {
         distance += data[setA[ndxA]]._distances[setB[ndxB]];
       }
     }
-//	console.log(distance / (setA.length*(1 + yuzhi*setB.length)));
+//	
     return distance / setA.length / setB.length;
   };
 
@@ -374,7 +374,7 @@ var hcluster = function() {
         indexes: clusters[nearestPair[0]].indexes.concat(clusters[nearestPair[1]].indexes),
         children: [ clusters[nearestPair[0]], clusters[nearestPair[1]] ],
       };
-      verbose && console.log(newCluster);
+      verbose && 
       clustersGivenK.push(clusters.map(function(c) { return c.indexes; }));
 
       // remove merged nodes and push new node

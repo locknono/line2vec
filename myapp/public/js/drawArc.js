@@ -21,7 +21,7 @@ var flowSliderValue = 0;
 var pos = [];
 map.on('click', function (e) {
     pos.push([e.latlng.lat, e.latlng.lng]);
-    console.log('[e.latlng.lat, e.latlng.lng]: ', [e.latlng.lat, e.latlng.lng]);
+    
 
 })
 
@@ -91,7 +91,7 @@ for (let i = 0; i < allTrack.length; i++) {
     thisTimeTrackSet[indices.toString()] = allTrack[i].value;
 }
 thisTimeTrackSet['17,6'] = 10;
-console.log('thisTimeTrackSet: ', thisTimeTrackSet);
+
 underMap(thisTimeTrackSet);
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
 
@@ -255,7 +255,7 @@ var d3Overlay = L.d3SvgOverlay(
             .attr("cx", d => projection.latLngToLayerPoint(d).x)
             .attr("cy", d => projection.latLngToLayerPoint(d).y)
             .attr("r", 3)
-            .on("mouseover", (d, i) => console.log(i))
+            .on("mouseover", (d, i) => 
             .style("z-index", 2);
 
         function drawStraightLine(allTrack) {

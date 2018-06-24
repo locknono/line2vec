@@ -17,7 +17,7 @@ function addhistogram(fileName) {
   var g = svg
     .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  //////console.log(width);
+  //////
   var x0 = d3
     .scaleBand()
     .rangeRound([0, width])

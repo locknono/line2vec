@@ -238,16 +238,12 @@ function constructCurve(allSelectedMapLines) {
     }
     tclines.push(nooblines);
   }
-  //////////////////
   return tclines;
 }
 
 function getArcScale(avgVolumeData, minRadius) {
   var max = d3.max(avgVolumeData);
-  //////////////
   var min = d3.min(avgVolumeData);
-  //////////////
-
   var radiusLinear = d3
     .scaleLinear()
     .domain([min, max])
