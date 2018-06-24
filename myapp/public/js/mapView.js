@@ -987,13 +987,6 @@ function load(
               $("#amount1").val($("#filterSlider").slider("value"));
 
               $("#sample").click(function (e) {
-
-                let curZoom = map.getZoom();
-
-                var zoomDiff = curZoom - 14;
-
-                //minRadius = zoomDiff > 0 ? Math.pow(2,zoomDiff) * minRadius:minRadius;
-
                 sampleFlag = true;
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
@@ -1131,8 +1124,6 @@ function load(
                   );
 
                   if (selectAllFlag === true) {
-
-
                     drawLines(sampledScatterData, comDetecFlag);
                     selectedCircles = sampledScatterData;
                   } else {
@@ -1209,31 +1200,6 @@ function load(
                 allSelectedMapLines = sampledAllSelectedMapLines;
               });
             }
-
-            d3.select(".leaflet-pm-icon-delete").on("click", function () {
-              if ($(".leaflet-pm-icon-delete").attr("name") === "false") {
-                //selection.selectAll(".svgCircle").on(".drag", null);
-                $(".leaflet-pm-icon-delete").attr("name", "true");
-                selection.selectAll(".svgCircle").style("cursor", "default");
-                selection.selectAll(".svgCircle").on("click", function () {
-                  d3.select(this).remove();
-                  let index = parseFloat(d3.select(this).attr("id"));
-                  bars[index].remove();
-                  bars[index] = [];
-                  allSelectedMapLines[index] = [];
-                  lastLayers[index] = [];
-                  //  lastLayers.splice(parseFloat(d3.select(this).attr("id")), 1);
-                  ////
-                  multidrawLines(allSelectedMapLines);
-                });
-              } else {
-                //删除click的时候也触发drag
-                selection.selectAll(".svgCircle").style("cursor", "move");
-                // selection.selectAll(".svgCircle").call(drag);
-                $(".leaflet-pm-icon-delete").attr("name", "false");
-                selection.selectAll(".svgCircle").on("click", null);
-              }
-            });
           }, {
             zoomDraw: false
           }
@@ -1313,101 +1279,6 @@ function load(
           leafletRenderer.render(container);
         }
 
-        function dragDrawLines(selectedMapLines) {
-          dragLineGraphics.clear();
-          for (var i = 0; i < selectedMapLines.length; i++) {
-            if (comDetecFlag == true) {
-              dragLineGraphics.lineStyle(
-                0.05,
-                op.labelColorScale(selectedMapLines[i].label).replace("#", "0x"),
-                0.5
-              );
-            } else {
-              dragLineGraphics.lineStyle(0.05, op.originalLineColor, 0.5);
-            }
-
-            let layerSourcePoint = project(selectedMapLines[i].scor);
-            let layerTargetPoint = project(selectedMapLines[i].tcor);
-            dragLineGraphics.moveTo(layerSourcePoint.x, layerSourcePoint.y);
-            dragLineGraphics.lineTo(layerTargetPoint.x, layerTargetPoint.y);
-          }
-          leafletRenderer.render(container);
-        }
-
-        function multidrawLines(allSelectedMapLines) {
-          multiLineGraphics.clear();
-          artLine = constructCurve(allSelectedMapLines);
-          for (var index = 0; index < artLine.length; index++) {
-            tempNoob = artLine[index];
-            for (var i = 0; i < tempNoob.length; i++) {
-              tempL = tempNoob[i];
-              var tcSource = tempL[0];
-              multiLineGraphics.lineStyle(
-                tcSource.width,
-                op.labelColorScale(tcSource.label).replace("#", "0x"),
-                0.2
-              );
-              let layerSourcePoint = project(tcSource.scor);
-              multiLineGraphics.moveTo(layerSourcePoint.x, layerSourcePoint.y);
-              for (var j = 0; j < tempL.length - 2; j++) {
-                var tcmidP1 = tempL[j + 1];
-                var tcmidP2 = tempL[j + 2];
-                //var tcTarget = tempL[j + 3];
-
-                let midPoint1 = project(tcmidP1.scor);
-                let midPoint2 = project(tcmidP1.scor);
-                let layerTargetPoint = project(tcmidP2.tcor);
-                multiLineGraphics.lineStyle(
-                  tcmidP2.width,
-                  op.labelColorScale(tcSource.label).replace("#", "0x"),
-                  j / tempL.length
-                );
-                multiLineGraphics.bezierCurveTo(
-                  midPoint1.x,
-                  midPoint1.y,
-                  midPoint2.x,
-                  midPoint2.y,
-                  layerTargetPoint.x,
-                  layerTargetPoint.y
-                );
-              }
-              var tcTarget = tempL[tempL.length - 1];
-              let ePt1 = project(tcTarget.scor);
-              let ePt2 = project(tcTarget.tcor);
-              let tcx1 = {};
-              let tcx2 = {};
-              var sizeT = 0.2;
-              multiLineGraphics.lineTo(ePt1.x, ePt1.y);
-              if (ePt1.x - ePt2.x == 0) {
-                tcx1.x = ePt2.x - sizeT;
-                tcx2.x = ePt2.x + sizeT;
-                if (ePt1.y > ePt2.y) {
-                  tcx1.y = ePt2.y + sizeT;
-                  tcx2.y = ePt2.y + sizeT;
-                } else {
-                  tcx1.y = ePt2.y - sizeT;
-                  tcx2.y = ePt2.y - sizeT;
-                }
-              } else {
-                var k = (ePt1.y - ePt2.y) / (ePt2.x - ePt1.x);
-                var sx, sy;
-                sx = ePt2.x + Math.sin(Math.atan(k)) * sizeT;
-                sy = ePt2.y - Math.cos(Math.atan(k)) * sizeT;
-
-                tcx1.x = sx + Math.cos(Math.atan(-1 / k)) * sizeT;
-                tcx2.x = sx - Math.cos(Math.atan(-1 / k)) * sizeT;
-                tcx1.y = sy + Math.sin(Math.atan(-1 / k)) * sizeT;
-                tcx2.y = sy - Math.sin(Math.atan(-1 / k)) * sizeT;
-              }
-              // multiLineGraphics.moveTo(ePt2.x, ePt2.y);
-              // multiLineGraphics.lineTo(tcx1.x, tcx1.y);
-              // multiLineGraphics.lineTo(tcx2.x, tcx2.y);
-              // multiLineGraphics.lineTo(ePt2.x, ePt2.y);
-              multiLineGraphics.drawCircle(ePt2.x, ePt2.y, 0.1);
-            }
-          }
-          leafletRenderer.render(container);
-        }
         var xyScale = getScatterXYScale(
             scatterData,
             scatterPlotWidth,
@@ -1532,35 +1403,6 @@ function load(
               );
               allSelectedCirclesGraphics.endFill();
             }
-          }
-          renderer.render(stage);
-        }
-
-        function dragDrawCircles(selectedMapLines) {
-          var xyScale = getScatterXYScale(
-              scatterData,
-              scatterPlotWidth,
-              scatterPlotHeight
-            ),
-            xScale = xyScale[0],
-            yScale = xyScale[1];
-          dragDrawCricleGraphics.clear();
-          for (var i = 0; i < selectedMapLines.length; i++) {
-            if (comDetecFlag == false) {
-              dragDrawCricleGraphics.beginFill(selectedColor);
-            } else {
-              dragDrawCricleGraphics.beginFill(
-                op.labelColorScale(selectedMapLines[i].label).replace("#", "0x"),
-                1
-              );
-            }
-
-            dragDrawCricleGraphics.drawCircle(
-              xScale(selectedMapLines[i].x),
-              yScale(selectedMapLines[i].y),
-              1.5
-            );
-            dragDrawCricleGraphics.endFill();
           }
           renderer.render(stage);
         }
