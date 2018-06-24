@@ -91,7 +91,8 @@ var op = (function () {
         originalLineColor:0xa0a0a0,
         lineOpacity:0.8,
         drawZoom:-1,
-        timeArcColor:"#A9ACE2",
-        selectedTimeArcColor:"#A13AE2",
+        timeArcColor:"#557BF0",
+        timeArcOpacity:0.5,
+        selectedTimeArcOpacity:1,
     }
 }())

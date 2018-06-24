@@ -203,7 +203,7 @@ function load(
     getScatterData(linedetail_labelFile),
     getScatterData(linedetail_label_sampleFile)
   ]).then(function (values) {
-    
+
     var mapData = values[0];
     var scatterData = values[1];
     var sampledScatterData = values[2];
@@ -326,7 +326,7 @@ function load(
     }
 
     /* getScatterData('data/CHIlinedetail_label.csv').then(e=>{
-      console.log('e: ', e);
+      
       drawScatterPlot(
         e,
         op.labelColorScale,
@@ -422,7 +422,7 @@ function load(
                 });
               }).then(function (resData) {
                 var allTrack = resData.allTrack;
-                console.log('allTrack: ', allTrack);
+
 
                 $("#selectedNumber").text("Selected Flows:" + allTrack.length);
                 var thisTimeTrackSet = resData.thisTimeTrackSet;
@@ -453,7 +453,7 @@ function load(
                 });
 
                 function drawStraightLine(allTrack) {
-                  console.log('allTrack: ', allTrack);
+
                   allTrack.sort(function (a, b) {
                     return b.lineCoors.length - a.lineCoors.length;
                   });
@@ -922,8 +922,6 @@ function load(
                     );
                   });
                 selection.call(tip);
-                console.log('allArcArray: ', allArcArray);
-                console.log('avgVolumeData: ', avgVolumeData);
                 circleBars = selection
                   .append("g")
                   .attr("name", (lastLayers.length - 1).toString())
@@ -986,12 +984,16 @@ function load(
                 .attr("d", function (d) {
                   return arc(d);
                 })
-                .style("stroke", "#fff")
+                .style("stroke", "#F6F6F4")
+                .style("stroke-opacity", 1)
                 .style("fill", function (d, i) {
+                  return op.timeArcColor
+                })
+                .style("opacity", (d, i) => {
                   if (i == 2) {
-                    return op.selectedTimeArcColor;
+                    return op.selectedTimeArcOpacity;
                   }
-                  return op.timeArcColor;
+                  return op.timeArcOpacity;
                 })
                 .style("pointer-events", "auto")
                 .style("cursor", "crosshair")
@@ -1004,12 +1006,12 @@ function load(
                   ")"
                 )
                 .on("click", function (d, i) {
-                  var stratTime = i * 3;
-                  var endTime = i * 3 + 2;
+                  let stratTime = i * 3;
+                  let endTime = i * 3 + 2;
                   timeString = stratTime.toString() + "-" + endTime.toString();
                   drawArtLine(timeString);
-                  selection.selectAll(".timeArcPath").style("fill", op.timeArcColor);
-                  d3.select(this).style("fill", op.selectedTimeArcColor);
+                  selection.selectAll(".timeArcPath").style("opacity", op.timeArcOpacity);
+                  d3.select(this).style("opacity", op.selectedTimeArcOpacity);
                 });
 
               var circle = selection
@@ -1253,12 +1255,8 @@ function load(
                   .attr("d", function (d) {
                     return arc(d);
                   })
-                  .style("stroke", "#fff")
                   .style("fill", function (d, i) {
-                    if (i == 2) {
-                      return "#858585";
-                    }
-                    return "#CCCCCC";
+                    return op.timeArcColor;
                   })
                   .style("pointer-events", "auto")
                   .style("cursor", "crosshair")
@@ -1275,8 +1273,8 @@ function load(
                     var endTime = i * 3 + 2;
                     timeString = stratTime.toString() + "-" + endTime.toString();
                     drawArtLine(timeString);
-                    selection.selectAll(".timeArcPath").style("fill", op.arcColor);
-                    selection.select(this).style("fill", op.selectedTimeArcColor);
+                    selection.selectAll(".timeArcPath").style("opacity", op.timeArcOpacity);
+                    selection.select(this).style("opacity ", op.selectedTimeArcOpacity);
                   });
               }
               circle.call(drag);
@@ -1656,7 +1654,7 @@ function load(
                 line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
               }
             }
-          }
+          } 
 
           leafletRenderer.render(container);
         }
