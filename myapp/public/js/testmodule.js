@@ -1,14 +1,5 @@
-function testModule(){
-    
-    
-    
-    
-    
-    
-    
-    
-}
+function testModule() {}
 
-export function testexport(){
+export function testexport() {
     testModule();
 }

@@ -62,7 +62,7 @@ function getScatterXYScale(scatterData, scatterPlotWidth, scatterPlotHeight) {
 
 function drawScatterPlot(
   scatterData,
-  labelColorScale,
+  labelColorScale = op.labelColorScale,
   scatterPlotWidth,
   scatterPlotHeight,
   stage,
@@ -195,9 +195,7 @@ function baseshowflux(sitesname) {
       success: function (data) {
         resolve(data);
       },
-      error: function () {
-        ////////////////
-      }
+      error: function () {}
     });
   });
 }
@@ -281,8 +279,6 @@ function getArcArray(
   scales
 ) {
   var lineNumberArray = getHourLineNumber(volumeData);
-  ////
-  //var scales = getArcScale(avgVolumeData, minRadius);
   var arcArray = [];
   var thisPad = 2 * Math.PI / 24;
   for (var i = 0; i < avgVolumeData.length; i++) {

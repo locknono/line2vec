@@ -18,7 +18,7 @@ var op = (function () {
     var sample_rate = 40;
     var sample_method = "";
     var folderName = res_path + 'BSlinedetail_label' + sample_rate.toString() + "_seq";
-    
+
     function changeSampleRate(rate) {
         this.sample_rate = rate;
     }
@@ -35,10 +35,10 @@ var op = (function () {
         if ($("#checkComm").is(":checked")) {
             this.sample_method += "2";
         }
-        this.folderName+=this.sample_method;
+        this.folderName += this.sample_method;
         return this.folderName + "/0.csv";
     }
-    
+
     //style
     var labelColorScale = d3
         .scaleOrdinal()
@@ -64,7 +64,7 @@ var op = (function () {
             "#FDA318", //16
             "#fb8072", //17
         ]);
-        
+
     var minArtLineWidth = 1,
         maxArtLineWidth = 15;
     return {
@@ -85,15 +85,15 @@ var op = (function () {
         changeSampleRate: changeSampleRate,
         getSampleFile: getSampleFile,
         sample_method: sample_method,
-        folderName:folderName,
-        img_root_path:img_root_path,
-        originalLineColor:0xa0a0a0,
-        lineOpacity:0.8,
-        drawZoom:-1,
-        timeArcColor:"#557BF0",
-        timeArcOpacity:0.5,
-        selectedTimeArcOpacity:1,
-        oColor:"#0D9DFF",
-        ourColor:'#E8E60C',
+        folderName: folderName,
+        img_root_path: img_root_path,
+        originalLineColor: 0xa0a0a0,
+        lineOpacity: 0.8,
+        drawZoom: -1,
+        timeArcColor: "#557BF0",
+        timeArcOpacity: 0.5,
+        selectedTimeArcOpacity: 1,
+        oColor: "#0D9DFF",
+        ourColor: '#E8E60C',
     }
 }())
