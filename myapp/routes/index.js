@@ -92,10 +92,6 @@ router.post("/drawArtLine", function (req, res) {
   let sampleRate=req.body.sample_rate;
 
   let sampleFlag=req.body.sampleFlag;
-  console.log('sampleFlag: ', sampleFlag);
-  console.log('sampleFlag: ', typeof sampleFlag);
-
-  console.log('sampleRate: ', sampleRate);
   let trackFileName = path.resolve(__dirname, '../public/data/BS/18Data_track.json');
   var data = JSON.parse(
     fs.readFileSync(trackFileName)
@@ -114,8 +110,6 @@ router.post("/drawArtLine", function (req, res) {
       }
     }
   }
-
-  console.log("InCircle")
   var thisTimeTrackSet = {};
   var sampledSourceTragetArray = [];
   //得到采样后的轨迹集合:
@@ -131,7 +125,6 @@ router.post("/drawArtLine", function (req, res) {
       var sampleFileName = path.resolve(__dirname, '../public/' + sFile);
     }
   }
-  console.log('sampleFileName: ', sampleFileName);
   var sampledScatterData = d3.csvParse(
     fs
     .readFileSync(
@@ -168,7 +161,6 @@ router.post("/drawArtLine", function (req, res) {
       sampledScatterData[i].target + "-" + sampledScatterData[i].source
     );
   }
-  console.log("stArray")
   var flag = 1;
   //thisTimeAllTrack是一个三维数组，每个元素代表一个人的轨迹，每个人的轨迹数组中的每一个元素这个人轨迹的一段
   //这一段中包含了站点的信息，顺序存储
@@ -274,15 +266,11 @@ router.post("/drawArtLine", function (req, res) {
   }
 
   res.setHeader("Access-Control-Allow-Origin", "*");
-
-  console.log("trackSetEnd");
-
   /*let writeFileName = path.resolve(__dirname, '../public/data/BS/track/random.json');
 
   fs.writeFileSync(writeFileName, JSON.stringify(thisTimeTrackSet))
   console.log("writeEnd")
   */
-
   var resData = {
     allTrack: allTrack,
     thisTimeTrackSet: thisTimeTrackSet,

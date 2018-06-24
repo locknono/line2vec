@@ -69,8 +69,8 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
           maxEbt > selectedMapLines[i].ebt ? maxEbt : selectedMapLines[i].ebt;
       }
       var avgEbt = Tc_sum_ebt / selectedMapLines.length;
-      //console.log("avgEbt",avgEbt);
-      //console.log("maxEbt",maxEbt);
+      //
+      //
 
       var Tc_center = [0, 0];
       for (var i = 0; i < selectedMapLines.length; i++) {
@@ -92,20 +92,20 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
         Math.pow(Tc_center[0] - Tc_p[0], 2) +
           Math.pow(Tc_center[1] - Tc_p[1], 2)
       );
-      //console.log("center-transform",tran);
-      //console.log("dis",Tc_dis);
+      //
+      //
 
       var variance = d3.variance(sumVolumeData);
-      ////console.log("variance: ", variance);
+      ////
       var maxFlow = d3.max(sumVolumeData);
-      ////console.log("maxFlow: ", maxFlow);
+      ////
       var avgFlow = d3.sum(sumVolumeData) / selectedMapLines.length;
-      ////console.log("avgFlow: ", avgFlow);
+      ////
       var minFlow = d3.min(sumVolumeData);
-      ////console.log("minFlow: ", minFlow);
+      ////
       var lineNumber = selectedMapLines.length;
-      ////console.log("volumeData.length", volumeData.length);
-      ////console.log("lineNumber: ", lineNumber);
+      ////
+      ////
       var commNumber = 0;
       var labelArray = [];
       for (var i = 0; i < selectedMapLines.length; i++) {
@@ -114,14 +114,14 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
           commNumber++;
         }
       }
-      ////console.log("commNumber: ", commNumber);
+      ////
       var edgebtw = 0;
       for (var i = 0; i < selectedMapLines.length; i++) {
         edgebtw += selectedMapLines[i].ebt;
       }
-      ////console.log("selectedMapLines", selectedMapLines);
-      ////console.log("edgebtw: ", edgebtw);
-      ////console.log("crossovers: ", crossovers);
+      ////
+      ////
+      ////
       var data = [
         lineNumber,
         crossovers,
@@ -132,7 +132,7 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
         maxFlow,
         avgFlow
       ];
-      ////////console.log("eachData", data);
+      ////////
       ///  传一个最大线的长度
       var Tc_data = [
         avgEbt,
@@ -169,17 +169,17 @@ function getRadarData(
   maxFlow
 ) {
   oLines = getSelectedData(selectedMapData, scatterData);
-  ////////console.log("oLines: ", oLines);
+  ////////
   sLines = getSelectedData(selectedMapData, sampledScatterData);
-  ////////console.log("sLines: ", sLines);
+  ////////
   var p = getCenter(oLines);
-  //console.log("1");
+  //
   var data = [];
   Promise.all([
     getEachRadarData(oLines, p, maxFlow),
     getEachRadarData(sLines, p, maxFlow)
   ]).then(function(values) {
-    ////console.log("RADAR DATA", values);
+    ////
     var maxArray = [];
     for (var j = 0; j < 8; j++) {
       maxArray.push(d3.max([values[0][j], values[1][j]]));
@@ -188,8 +188,8 @@ function getRadarData(
     for (var j = 0; j < 8; j++) {
       minArray.push(d3.min([values[0][j], values[1][j]]));
     }
-    ////console.log("maxArray: ", maxArray);
-    ////console.log("minArray: ", minArray);
+    ////
+    ////
     getRadarRadius(values, minArray, maxArray);
     return values;
   });
@@ -215,7 +215,7 @@ function getRadarRadius(data, minArray, maxArray) {
     }
     allRadiusArray.push(radius);
   }
-  ////////console.log("allRadiusArray: ", allRadiusArray);
+  ////////
   addRadarView(allRadiusArray, data);
 }
 
@@ -301,8 +301,8 @@ function addRadarView(allRadiusArray, data) {
   var margin = { top: 20, left: 20, right: 20, bottom: 20 };
   var svgWidth = parseFloat(d3.select("#raderSvg").attr("width"));
   var svgHeight = parseFloat(d3.select("#raderSvg").attr("height"));
-  ////////////console.log(svgWidth);
-  ////////////console.log(svgHeight);
+  ////////////
+  ////////////
   var width = svgWidth - margin.left - margin.right;
   var height = svgHeight - margin.top - margin.bottom;
   var svg = d3.select("#raderSvg");
@@ -390,7 +390,7 @@ function addRadarView(allRadiusArray, data) {
       .attr("y2", lineEndPointY)
       .attr("stroke", "white");
   }
-  ////////console.log("allRadiusArray: ", allRadiusArray);
+  ////////
   var allEndPoints = getAllEndPoints(center, allRadiusArray);
   addRader(line, allEndPoints, svg, colorScale, data);
   addText(center, maxRadius, svg);
@@ -406,7 +406,7 @@ function getRadarPoint(center, radius) {
       center[1] + radius[i] * Math.sin(a0 * (i + 1) * Math.PI / 180);
     endPoints.push([lineEndPointX, lineEndPointY]);
   }
-  ////console.log(endPoints);
+  ////
   return endPoints;
 }
 function getAllEndPoints(center, radiusArray) {
@@ -418,7 +418,7 @@ function getAllEndPoints(center, radiusArray) {
 }
 
 function addRader(line, allEndPoints, svg, colorScale, data) {
-  //////console.log('data: ', data);
+  //////
   svg
     .selectAll(".path")
     .data(data)
@@ -433,9 +433,9 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
       return line(allEndPoints[i]);
     })
     .on("mouseover", function(d, i) {
-      ////////console.log(data);
-      ////////console.log(data[i]);
-      ////////console.log(i);
+      ////////
+      ////////
+      ////////
       d3.select(this).style("fill-opacity", 0.7);
     })
     .on("mouseout", function(d, i) {
@@ -453,7 +453,7 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
     }
   }
   */
-  //////console.log("allEndPoints: ", allEndPoints);
+  //////
   for (var j = 0; j < allEndPoints.length; j++) {
     svg
       .append("g")
@@ -501,7 +501,7 @@ var tip = d3
   .attr("class", "d3-tip")
   .offset([-10, 0])
   .html(function(d, i) {
-    ////console.log(i);
+    ////
     return (
       "<strong>Flow:</strong> <span style='color:red'>" +
       d3.format(".4")(avgVolumeData[i]) +

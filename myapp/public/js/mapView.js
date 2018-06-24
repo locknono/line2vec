@@ -203,6 +203,7 @@ function load(
     getScatterData(linedetail_labelFile),
     getScatterData(linedetail_label_sampleFile)
   ]).then(function (values) {
+    
     var mapData = values[0];
     var scatterData = values[1];
     var sampledScatterData = values[2];
@@ -324,6 +325,18 @@ function load(
         .style("left", 0);
     }
 
+    /* getScatterData('data/CHIlinedetail_label.csv').then(e=>{
+      console.log('e: ', e);
+      drawScatterPlot(
+        e,
+        op.labelColorScale,
+        scatterPlotWidth,
+        scatterPlotHeight,
+        stage,
+        scatterCircleGraphics,
+        comDetecFlag=true
+      )
+    }) */
     drawScatterPlot(
       scatterData,
       op.labelColorScale,
@@ -366,7 +379,7 @@ function load(
         var leafletRenderer = utils.getRenderer();
         var project = utils.latLngToLayerPoint;
         var scale = utils.getScale();
-        
+
         var arcColor = d3.scaleThreshold();
 
         arcColor
@@ -822,8 +835,8 @@ function load(
 
               var clickSourceLatLng = e.layer._latlng;
               minRadius = e.layer._radius;
-              
-              
+
+
 
               transformArray.push(containerPoint1);
               //get selected map data
@@ -916,7 +929,7 @@ function load(
                   .attr("name", (lastLayers.length - 1).toString())
                   .selectAll("path")
                   .data(allArcArray[allArcArray.length - 1])
-                  
+
                   .enter()
                   .append("path")
                   .attr("d", function (d) {
@@ -996,7 +1009,7 @@ function load(
                   timeString = stratTime.toString() + "-" + endTime.toString();
                   drawArtLine(timeString);
                   selection.selectAll(".timeArcPath").style("fill", op.timeArcColor);
-                  d3.select(this).style("fill",op.selectedTimeArcColor);
+                  d3.select(this).style("fill", op.selectedTimeArcColor);
                 });
 
               var circle = selection
@@ -1144,7 +1157,7 @@ function load(
                     avgVolumeData,
                     parseFloat(circle.attr("r"))
                   );
-                  //////////////
+
 
                   dragEndChangeArcArray(
                     volumeData,
@@ -1161,15 +1174,11 @@ function load(
                     volumeData,
                     maxValue
                   );
-
-                  //////////////
-
                   var tip = d3
                     .tip()
                     .attr("class", "d3-tip")
                     .offset([-10, 0])
                     .html(function (d, i) {
-                      //////////////
                       return (
                         "<strong>Flow:</strong> <span style='color:red'>" +
                         d3.format(".4")(avgVolumeData[i]) +
@@ -1266,8 +1275,8 @@ function load(
                     var endTime = i * 3 + 2;
                     timeString = stratTime.toString() + "-" + endTime.toString();
                     drawArtLine(timeString);
-                    selection.selectAll(".timeArcPath").style("fill",op.arcColor);
-                    selection.select(this).style("fill",op.selectedTimeArcColor);
+                    selection.selectAll(".timeArcPath").style("fill", op.arcColor);
+                    selection.select(this).style("fill", op.selectedTimeArcColor);
                   });
               }
               circle.call(drag);
@@ -1348,13 +1357,13 @@ function load(
               $("#amount1").val($("#filterSlider").slider("value"));
 
               $("#sample").click(function (e) {
-                
+
                 let curZoom = map.getZoom();
-                
+
                 var zoomDiff = curZoom - 14;
-                
+
                 //minRadius = zoomDiff > 0 ? Math.pow(2,zoomDiff) * minRadius:minRadius;
-                
+
                 sampleFlag = true;
                 if (selectedMapData.length !== 0) {
                   drawArtLine(timeString);
@@ -1438,7 +1447,7 @@ function load(
                       });
                     selection.call(tip);
                     d3.selectAll("[name='" + (lastLayers.length - 1).toString() + "']").remove();
-                    
+
                     circleBars = selection
                       .append("g")
                       .attr("name", (lastLayers.length - 1).toString())
@@ -1492,8 +1501,8 @@ function load(
                   );
 
                   if (selectAllFlag === true) {
-                    
-                    
+
+
                     drawLines(sampledScatterData, comDetecFlag);
                     selectedCircles = sampledScatterData;
                   } else {
@@ -1636,7 +1645,7 @@ function load(
             }
           });
            */
-          if (op.sample_method==='1'||op.sample_method==='') {
+          if (op.sample_method === '1' || op.sample_method === '') {
             for (let i = 0; i < ebtArray.length; i++) {
               if (comDetecFlag == false) {
                 line.lineStyle(0.1, "0x000000", op.lineOpacity);
@@ -2024,7 +2033,7 @@ function load(
           unbindEvents();
           $("#comDetec").on("click", function () {
             comDetecFlag = !comDetecFlag;
-            
+
             if (comDetecFlag == true) {
               addCommunityRect(
                 scatterData,
@@ -2051,7 +2060,7 @@ function load(
                     }
                   }
                 } else {
-                  
+
                   for (var i = 0; i < filterData.length; i++) {
                     if (scatterData[i].label == d) {
                       labelData.push(scatterData[i]);
@@ -2102,8 +2111,8 @@ function load(
                   }
                 }
 
-                
-                
+
+
 
               });
             } else {
