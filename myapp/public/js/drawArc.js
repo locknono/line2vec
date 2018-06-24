@@ -35,40 +35,24 @@ var pos = [
     [28.00660116543689, 120.66919431175789],
     [28.011451016795185, 120.6667910119953],
     [28.016376423563354, 120.66936597602665],
-    [28.019710417208586, 120.6651602014421],
+    [28.01954616555166, 120.6634435587545],
     [28.013269654756684, 120.66001027337934],
     [28.00182687974899, 120.6493670887163],
     [28.006222261603636, 120.6476504460287],
-    [28.00470663294399, 120.64447465705672],
-    [28.008419885285228, 120.64284384650348],
+    [28.002496222771683, 120.64138470021904],
+    [28.010377420656653, 120.64224302156285],
     [28.01508826200817, 120.64044054674088],
     [28.00781364874755, 120.67657587531454],
     [28.00182687974899, 120.67202677219241],  
     [28.006676946043598, 120.66490270503894],
     [28.00781364874755, 120.66164108393254],
     [28.022665461634933, 120.64945292085069],
-    [28.026226561244727, 120.65966694484182]
+    [28.026226561244727, 120.65966694484182],
+    [27.99582706656591, 120.65649115586979],
+    [27.994311291686518, 120.66885098322038]
 ];
 var allTrack = [{
-        lineCoors: [pos[4], pos[5], pos[6]],
-        value: 5
-    }, {
-        lineCoors: [pos[17], pos[6], pos[8]],
-        value: 5
-    }, {
-        lineCoors: [pos[16], pos[8]],
-        value: 5
-    }, {
-        lineCoors: [pos[4], pos[18], pos[7], pos[8]],
-        value: 5
-    }, {
         lineCoors: [pos[13], pos[11]],
-        value: 5
-    }, {
-        lineCoors: [pos[12], pos[11]],
-        value: 5
-    }, {
-        lineCoors: [pos[0], pos[1], pos[2]],
         value: 5
     }, {
         lineCoors: [pos[0], pos[2], pos[0]],
@@ -84,6 +68,10 @@ var allTrack = [{
         value: 5
     }, {
         lineCoors: [pos[4], pos[19], pos[10]],
+        value: 5
+    },
+    {
+        lineCoors: [pos[23], pos[17], pos[6], pos[8], pos[9]],
         value: 5
     }
     /* {
@@ -122,7 +110,7 @@ function getLineNumberScale(lineNumberArray, minRadius) {
     var lineNumberScale = d3
         .scaleLinear()
         .domain([min, max])
-        .range([minRadius + 23, minRadius + 50]);
+        .range([minRadius + 23, minRadius + 70]);
     return lineNumberScale;
 }
 
@@ -131,9 +119,8 @@ var svg = d3.select("#svg");
 var thisPad = 2 * Math.PI / 24;
 
 var arcArray = [];
-var lineNumberArray = [1, 1, 1, 1, 2, 4, 8, 9, 5, 4, 6, 5, 7, 4, 3, 3, 3, 7, 10, 15, 11, 12, 7, 3];
-var avgVolumeData = [1, 1, 1, 1, 2, 4, 12, 10, 5, 4, 6, 5, 7, 4, 3, 3, 3, 7, 10, 15, 11, 12, 7, 3];
-
+var lineNumberArray = [1, 1, 1, 1, 2, 4, 10, 9, 7, 4, 6, 5, 7, 4, 3, 4, 3, 7, 10, 16, 22, 15, 7, 3];
+var avgVolumeData = [1, 1, 1, 1, 2, 4, 18, 13, 10, 4, 6, 5, 7, 4, 3, 3, 3, 7, 15, 16, 22, 15, 7, 3];
 for (var i = 0; i < avgVolumeData.length; i++) {
     var thisArc = new Object();
     thisArc.startAngle = thisPad * i + thisPad / 12;
@@ -170,10 +157,13 @@ var timeArc = svg
     })
     .style("stroke", "#fff")
     .style("fill", function (d, i) {
-        if (i == 2) {
-            return op.selectedTimeArcColor;
-        }
         return op.timeArcColor;
+    })
+    .style("opacity", (d, i) => {
+        if (i == 2) {
+            return op.selectedTimeArcOpacity;
+        }
+        return op.timeArcOpacity;
     })
     .style("pointer-events", "auto")
     .style("cursor", "crosshair")
@@ -302,7 +292,7 @@ var d3Overlay = L.d3SvgOverlay(
             var widthScale = d3
                 .scaleLinear()
                 .domain([minValue, 8])
-                .range([6, 6]);
+                .range([8, 8]);
             for (let i = artLineEndIndex; i >= artLineStartIndex; i--) {
                 if (i > allTrack.length - 1) {
                     continue;

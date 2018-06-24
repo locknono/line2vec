@@ -1,29 +1,24 @@
 function underMap(thisTimeTrackSet) {
-  //
-  ////
-
-  var a = '#fff4b3'; 
-  var b ='#F22613'; 
+  console.log('thisTimeTrackSet: ', thisTimeTrackSet);
+  var a = '#fff4b3';
+  var b = '#F22613';
   var circleBarsInterpolate = d3.interpolate(a, b);
 
   var svgWidth = 700;
   var svgHeight = 160;
 
   var svg = d3.select("#underMapView");
-  /* .append("svg")
-    .attr("width", svgWidth)
-    .attr("height", svgHeight)
-    .attr("id", "underMapView")
-    .style("position", "absolute")
-    .style("top", "0px")
-    .style("left", "0px");
-    */
   svg.selectAll(".underMapRectG").remove();
   var rectG = svg.append("g").attr("class", "underMapRectG");
 
-  var margin = { top: 25, bottom: 10, left: 10, right: 10 };
+  var margin = {
+    top: 25,
+    bottom: 10,
+    left: 10,
+    right: 10
+  };
 
-  var sortedKeys = Object.keys(thisTimeTrackSet).sort(function(a, b) {
+  var sortedKeys = Object.keys(thisTimeTrackSet).sort(function (a, b) {
     return b.split(",").length - 1 - (a.split(",").length - 1);
   });
   ////
@@ -32,7 +27,7 @@ function underMap(thisTimeTrackSet) {
 
   ////
 
-  var sortedColorKeys = Object.keys(thisTimeTrackSet).sort(function(a, b) {
+  var sortedColorKeys = Object.keys(thisTimeTrackSet).sort(function (a, b) {
     return thisTimeTrackSet[b] - thisTimeTrackSet[a];
   });
   ////
@@ -86,7 +81,7 @@ function underMap(thisTimeTrackSet) {
   var recordArray = [];
 
   var thisTimeTrackSetLength = Object.keys(thisTimeTrackSet).length;
-  
+
   for (var i = 0; i < sortedKeys.length; i++) {
     var thisKey = sortedKeys[i];
     var rectArray = thisKey.split(",");
@@ -97,13 +92,10 @@ function underMap(thisTimeTrackSet) {
       var time = 0;
       for (var key in thisTimeTrackSet) {
         time = time + 1;
-        //////
-        //////
-        ////
         //把每条长轨迹都分割成最小的两点形成的轨迹
         //thiskey指代长轨迹
         //key指代短的被别人走过的轨迹
-        
+
         //两点形成的轨迹，不在人走过的轨迹中
         if (thisTimeTrackSet.hasOwnProperty(thisLineName) == false) {
           rectArray[s] = {
@@ -139,7 +131,7 @@ function underMap(thisTimeTrackSet) {
           };
         }
       }
-      
+
       for (var j = 0; j < rectArray.length - 1; j++) {
         rectG
           .append("rect")
@@ -148,14 +140,11 @@ function underMap(thisTimeTrackSet) {
           .attr("width", rectWidth)
           .attr("height", rectHeight)
           .style("stroke", "none")
-          .style("fill", function(d) {
+          .style("fill", function (d) {
             return circleBarsInterpolate(colorScale(rectArray[j].colorValue));
           });
       }
     }
   }
-
   return recordArray;
 }
-
-
