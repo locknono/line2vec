@@ -28,7 +28,7 @@ function addhistogram(fileName) {
   var y = d3.scaleLinear().rangeRound([height, 0]);
 
   d3.interpolateYlGnBu;
-  var z = d3.scaleOrdinal().range(["#0D9DFF", "#E8E60C"]);
+  var z = d3.scaleOrdinal().range([op.oColor, op.ourColor]);
 
   d3.csv(
     fileName,
@@ -123,7 +123,7 @@ function addhistogram(fileName) {
         .attr("fill", "#000")
         .attr("font-weight", "bold")
         .attr("text-anchor", "start")
-        .text("Freq");
+        .text("Freq(x²)");
 
       var legend = g
         .append("g")

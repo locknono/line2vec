@@ -422,62 +422,6 @@ function load(
                 });
               }).then(function (resData) {
                 var allTrack = resData.allTrack;
-                var pos = [
-                  [28.012890774380505, 120.65331536689774],
-                  [28.013118102766168, 120.65486034531659],
-                  [28.01001123996367, 120.6551178417197],
-                  [28.006752726597025, 120.65554700239161],
-                  [28.0031151999035, 120.66129775539501],
-                  [28.00341833181879, 120.6684218225485],
-                  [28.00660116543689, 120.66919431175789],
-                  [28.011451016795185, 120.6667910119953],
-                  [28.016376423563354, 120.66936597602665],
-                  [28.01954616555166, 120.6634435587545],
-                  [28.01543942495543, 120.65960498371504],
-                  [28.00182687974899, 120.6493670887163],
-                  [28.006222261603636, 120.6476504460287],
-                  [28.002496222771683, 120.64138470021904],
-                  [28.010377420656653, 120.64224302156285],
-                  [28.01508826200817, 120.64044054674088],
-                  [28.00781364874755, 120.67657587531454],
-                  [28.00182687974899, 120.67202677219241],  
-                  [28.006676946043598, 120.66490270503894],
-                  [28.00781364874755, 120.66164108393254],
-                  [28.022665461634933, 120.64945292085069],
-                  [28.026226561244727, 120.65966694484182],
-                  [27.99582706656591, 120.65649115586979],
-                  [27.994311291686518, 120.66885098322038],
-                  [28.002268871969473, 120.65297203836022]
-              ];
-              var allTrack = [{
-                      lineCoors: [pos[17], pos[6]],
-                      value: 10
-                  }, {
-                      lineCoors: [pos[13], pos[11]],
-                      value: 1
-                  }, {
-                      lineCoors: [pos[2], pos[3], pos[2]],
-                      value: 5
-                  }, {
-                      lineCoors: [pos[4], pos[3]],
-                      value: 10
-                  }, {
-                      lineCoors: [pos[15], pos[14], pos[11]],
-                      value: 3
-                  }, {
-                      lineCoors: [pos[4], pos[19], pos[10]],
-                      value: 5
-                  },
-                  {
-                      lineCoors: [pos[23], pos[17], pos[6], pos[8], pos[9]],
-                      value: 8
-                  },
-                  {
-                      lineCoors: [pos[22], pos[24], pos[11]],
-                      value: 5
-                  },
-              ];
-              
                 $("#selectedNumber").text("Selected Flows:" + allTrack.length);
                 var thisTimeTrackSet = resData.thisTimeTrackSet;
                 maxValue = d3.max(allTrack, function (d) {
@@ -1667,8 +1611,10 @@ function load(
         function drawLines(scatterData, comDetecFlag) {
           line.clear();
           let ebtArray = [];
-          for (var i = 0; i < scatterData.length; i++) {
-            if (comDetecFlag == false) {
+          let interArray = [];
+          for (let i = 0; i < scatterData.length; i++) {
+            //style
+            if (comDetecFlag === false) {
               line.lineStyle(0.1, op.originalLineColor, op.lineOpacity);
               if (scatterData[i].ebt > 100) {
                 ebtArray.push(scatterData[i]);
@@ -1680,14 +1626,47 @@ function load(
                 op.lineOpacity
               );
             }
-            //  line.beginFill(op.labelColorScale(scatterData[i].label).replace('#', '0x'), 0.2);
-            let layerSourcePoint = project(scatterData[i].scor);
-            let layerTargetPoint = project(scatterData[i].tcor);
-            //  ////
-            line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
-            line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
-            //  line.endFill();
+
+            if (comDetecFlag === false) {
+              let layerSourcePoint = project(scatterData[i].scor);
+              let layerTargetPoint = project(scatterData[i].tcor);
+              line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+              line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+            } else {
+              if (scatterData[i].label === -1) {
+                interArray.push(scatterData[i]);
+              }
+            }
           }
+          if(interArray.length>0){
+            line.lineStyle(
+              0.1,
+              op.labelColorScale(interArray[0].label).replace("#", "0x"),
+              op.lineOpacity
+            );
+            for (let i = 0; i < interArray.length; i++) {
+              let layerSourcePoint = project(interArray[i].scor);
+              let layerTargetPoint = project(interArray[i].tcor);
+              line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+              line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+            }
+          }
+          
+          for (let i = 0; i < scatterData.length; i++) {
+            if (scatterData[i].label !== -1) {
+              line.lineStyle(
+                0.1,
+                op.labelColorScale(scatterData[i].label).replace("#", "0x"),
+                op.lineOpacity
+              );
+              let layerSourcePoint = project(scatterData[i].scor);
+              let layerTargetPoint = project(scatterData[i].tcor);
+              line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+              line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+            }
+          }
+          //  line.endFill();
+
           /* ebtCounter={};
           ebtArray.map(e=>{
             if(ebtCounter[e.label]===undefined){
@@ -1697,7 +1676,7 @@ function load(
             }
           });
            */
-          if (op.sample_method === '1' || op.sample_method === '') {
+          /* if (op.sample_method === '1' || op.sample_method === '') {
             for (let i = 0; i < ebtArray.length; i++) {
               if (comDetecFlag == false) {
                 line.lineStyle(0.1, "0x000000", op.lineOpacity);
@@ -1708,8 +1687,7 @@ function load(
                 line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
               }
             }
-          } 
-
+          } */
           leafletRenderer.render(container);
         }
 
