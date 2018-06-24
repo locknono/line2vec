@@ -37,7 +37,6 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
       }
       changeVolumeArray(volumeData);
       var sumVolumeData = getSumVolumeData(volumeData);
-      var flowAccount = selectedMapLines.length;
       var crossovers = 0;
       var intersanctionArray = [];
       for (var i = 0; i < selectedMapLines.length; i++) {

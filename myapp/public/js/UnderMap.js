@@ -1,11 +1,11 @@
 function underMap(thisTimeTrackSet) {
-  
+
   var a = '#fff4b3';
   var b = '#F22613';
   var circleBarsInterpolate = d3.interpolate(a, b);
   var svg = d3.select("#underMapView");
-  var svgWidth=$('#underMapView').width();
-  var svgHeight=$('#underMapView').height();
+  var svgWidth = $('#underMapView').width();
+  var svgHeight = $('#underMapView').height();
   svg.selectAll(".underMapRectG").remove();
   var rectG = svg.append("g").attr("class", "underMapRectG");
 
@@ -29,23 +29,23 @@ function underMap(thisTimeTrackSet) {
 
   var minColorValue =
     thisTimeTrackSet[sortedColorKeys[sortedColorKeys.length - 1]];
-    
+
   var maxFlow = sortedKeys[0].split(",").length;
-  
+
   var minFlow = sortedKeys[sortedKeys.length - 1].split(",").length;
 
   var rectWidth = (svgWidth - margin.left - margin.right) / sortedKeys.length;
   var rectHeight = (svgHeight - margin.top - margin.bottom) / maxFlow;
-  
+
 
   var startPosition = [margin.left, svgHeight - margin.bottom - rectHeight];
 
   var rowNumber = parseInt(
     (svgHeight - margin.bottom - margin.top) / rectHeight
   );
-  
+
   var colNumber = parseInt((svgWidth - margin.left - margin.right) / rectWidth);
-  
+
   svg.selectAll("line").remove();
   for (var i = 0; i < rowNumber; i++) {
     svg
