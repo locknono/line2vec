@@ -409,6 +409,7 @@ function load(
                 });
               }).then(function (resData) {
                 var allTrack = resData.allTrack;
+                console.log('allTrack: ', allTrack);
 
                 $("#selectedNumber").text("Selected Flows:" + allTrack.length);
                 var thisTimeTrackSet = resData.thisTimeTrackSet;
@@ -439,6 +440,7 @@ function load(
                 });
 
                 function drawStraightLine(allTrack) {
+                  console.log('allTrack: ', allTrack);
                   allTrack.sort(function (a, b) {
                     return b.lineCoors.length - a.lineCoors.length;
                   });
@@ -452,7 +454,7 @@ function load(
                     .y(function (d) {
                       return projection.latLngToLayerPoint(d).y;
                     })
-                    .curve(d3.curveCatmullRomOpen);
+                    .curve(d3.curveCatmullRom);
 
                   var defs = selection.append("defs");
                   var arrowMarker = defs
@@ -907,11 +909,14 @@ function load(
                     );
                   });
                 selection.call(tip);
+                console.log('allArcArray: ', allArcArray);
+                console.log('avgVolumeData: ', avgVolumeData);
                 circleBars = selection
                   .append("g")
                   .attr("name", (lastLayers.length - 1).toString())
                   .selectAll("path")
                   .data(allArcArray[allArcArray.length - 1])
+                  
                   .enter()
                   .append("path")
                   .attr("d", function (d) {
