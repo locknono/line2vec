@@ -19,7 +19,6 @@ function getFluxData(URL) {
       if (error) {
         console.error(error);
       }
-      ////console.log(data);
       resolve(data);
     });
   });
