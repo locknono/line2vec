@@ -210,12 +210,12 @@ router.post("/drawArtLine", function (req, res) {
     }
   }
   var allTrack = [];
-  for (var key in thisTimeTrackSet) {
+  for (let key in thisTimeTrackSet) {
     keyArray = key.split(",");
-    var track = {};
-    var track2 = [];
-    for (var i = 0; i < keyArray.length; i++) {
-      for (var j = 0; j < selectedMapData.length; j++) {
+    let track = {};
+    let track2 = [];
+    for (let i = 0; i < keyArray.length; i++) {
+      for (let j = 0; j < selectedMapData.length; j++) {
         if (keyArray[i] === selectedMapData[j].stationID) {
           track2.push([
             selectedMapData[j].stationLat,

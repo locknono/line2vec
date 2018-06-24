@@ -20,9 +20,9 @@ var artLineEndIndex = 1000;
 var flowSliderValue = 0;
 var pos = [];
 map.on('click', function (e) {
-    console.log([e.latlng.lat, e.latlng.lng]);
     pos.push([e.latlng.lat, e.latlng.lng]);
-    console.log('pos: ', pos);
+    console.log('[e.latlng.lat, e.latlng.lng]: ', [e.latlng.lat, e.latlng.lng]);
+
 })
 
 var pos = [
@@ -36,7 +36,7 @@ var pos = [
     [28.011451016795185, 120.6667910119953],
     [28.016376423563354, 120.66936597602665],
     [28.01954616555166, 120.6634435587545],
-    [28.013269654756684, 120.66001027337934],
+    [28.01543942495543, 120.65960498371504],
     [28.00182687974899, 120.6493670887163],
     [28.006222261603636, 120.6476504460287],
     [28.002496222771683, 120.64138470021904],
@@ -49,42 +49,51 @@ var pos = [
     [28.022665461634933, 120.64945292085069],
     [28.026226561244727, 120.65966694484182],
     [27.99582706656591, 120.65649115586979],
-    [27.994311291686518, 120.66885098322038]
+    [27.994311291686518, 120.66885098322038],
+    [28.002268871969473, 120.65297203836022]
 ];
 var allTrack = [{
-        lineCoors: [pos[13], pos[11]],
-        value: 5
+        lineCoors: [pos[17], pos[6]],
+        value: 10
     }, {
-        lineCoors: [pos[0], pos[2], pos[0]],
-        value: 5
+        lineCoors: [pos[13], pos[11]],
+        value: 1
     }, {
         lineCoors: [pos[2], pos[3], pos[2]],
         value: 5
     }, {
         lineCoors: [pos[4], pos[3]],
-        value: 5
+        value: 10
     }, {
-        lineCoors: [pos[14], pos[11]],
-        value: 5
+        lineCoors: [pos[15], pos[14], pos[11]],
+        value: 3
     }, {
         lineCoors: [pos[4], pos[19], pos[10]],
         value: 5
     },
     {
         lineCoors: [pos[23], pos[17], pos[6], pos[8], pos[9]],
+        value: 8
+    },
+    {
+        lineCoors: [pos[22], pos[24], pos[11]],
         value: 5
-    }
-    /* {
-        lineCoors: [pos[15], pos[14],pos[15]],
-        value: 5
-    },{
-        lineCoors: [pos[14], pos[13],pos[14]],
-        value: 5
-    } */
+    },
 ];
+
+var thisTimeTrackSet = {};
+for (let i = 0; i < allTrack.length; i++) {
+    let indices = [];
+    for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
+        let pointIndex = pos.indexOf(allTrack[i].lineCoors[j]);
+        indices.push(pointIndex);
+    }
+    thisTimeTrackSet[indices.toString()] = allTrack[i].value;
+}
+thisTimeTrackSet['17,6'] = 10;
+console.log('thisTimeTrackSet: ', thisTimeTrackSet);
+underMap(thisTimeTrackSet);
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
-
-
 
 var arc = d3
     .arc()
@@ -239,9 +248,7 @@ svg
 
 var d3Overlay = L.d3SvgOverlay(
     function (selection, projection) {
-
         drawStraightLine(allTrack);
-
         selection.selectAll("circle").data(pos)
             .enter()
             .append("circle")
@@ -255,7 +262,7 @@ var d3Overlay = L.d3SvgOverlay(
             allTrack.sort(function (a, b) {
                 return b.lineCoors.length - a.lineCoors.length;
             });
-            console.log('allTrack: ', allTrack);
+
             d3.select("#map").selectAll(".artLine").remove();
             d3.select("#map").selectAll("defs").remove();
             var lineGenarator = d3
@@ -292,8 +299,8 @@ var d3Overlay = L.d3SvgOverlay(
             var widthScale = d3
                 .scaleLinear()
                 .domain([minValue, 8])
-                .range([8, 8]);
-            for (let i = artLineEndIndex; i >= artLineStartIndex; i--) {
+                .range([6, 10]);
+            for (let i = artLineStartIndex; i <= artLineEndIndex; i++) {
                 if (i > allTrack.length - 1) {
                     continue;
                 }
@@ -351,9 +358,7 @@ var d3Overlay = L.d3SvgOverlay(
                     path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
                     path.lineTo(projection.latLngToLayerPoint(coors[1]).x, projection.latLngToLayerPoint(coors[1]).y);
                 } else if (coorsSet.size > 2) {
-                    console.log("draw");
                     var path = lineGenarator(allTrack[i].lineCoors);
-                    console.log('path: ', path);
                 }
 
                 var path = selection
@@ -362,7 +367,7 @@ var d3Overlay = L.d3SvgOverlay(
                     .attr("id", function () {
                         return "artLine" + i;
                     })
-                    .attr("stroke-width", widthScale(Math.log2(allTrack[i].value)))
+                    .attr("stroke-width", widthScale((allTrack[i].value)))
                     .attr("fill", "none")
                     .style("stroke-linecap", "round")
                     .attr("d", path);
@@ -423,7 +428,7 @@ var d3Overlay = L.d3SvgOverlay(
                         .attr("stroke-linejoin", "round")
                         .attr("d", function (d) {
                             //return lineJoin(d[0], d[1], d[2], d[3], 1);
-                            return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
+                            return lineJoin(d[0], d[1], d[2], d[3], widthScale((allTrack[i].value)));
                         });
 
                 }
@@ -433,7 +438,7 @@ var d3Overlay = L.d3SvgOverlay(
                         t = [0],
                         i = 0,
                         dt = precision;
-                    dt = 2;
+                    dt = 1;
                     while ((i += dt) < n) t.push(i);
                     t.push(n);
                     return t.map(function (t) {
@@ -510,7 +515,7 @@ var d3Overlay = L.d3SvgOverlay(
                       "stroke",
                       "url(#" + linearGradient.attr("id") + ")"
                     )
-                    .attr("stroke-width", widthScale(Math.log2(allTrack[i].value)))
+                    .attr("stroke-width", widthScale((allTrack[i].value))
                     .attr("fill", "none")
                     .attr("d", lineGenarator(allTrack[i].lineCoors))
                     /* .attr("marker-start",
