@@ -94,5 +94,7 @@ var op = (function () {
         timeArcColor:"#557BF0",
         timeArcOpacity:0.5,
         selectedTimeArcOpacity:1,
+        oColor:"#0D9DFF",
+        ourColor:'#E8E60C',
     }
 }())

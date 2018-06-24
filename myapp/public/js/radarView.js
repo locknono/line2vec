@@ -316,7 +316,7 @@ function addRadarView(allRadiusArray, data) {
   var pad = 20;
   var maxRadius = minRadius + 4 * pad; //120
 
-  var colorScale = d3.scaleOrdinal().range(["#0D9DFF", "#E8E60C"]);
+  var colorScale = d3.scaleOrdinal().range([op.oColor, op.ourColor]);
   // var colorScale = d3.scaleOrdinal().range(["#639EDC", "#4aa973", "#f3a534"]);
   var textSacle = d3
     .scaleOrdinal()
@@ -486,13 +486,8 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
         return d3.format(".4")(data[j][i]);
       })
       .attr("fill", colorScale(j))
-      .attr("fill-opacity", 0.8)
-      .on("mouseover", function(d, i) {
-        d3.select(this).style("fill-opacity", 1);
-      })
-      .on("mouseout", function(d, i) {
-        d3.select(this).style("fill-opacity", 0.0);
-      });
+      .attr("fill-opacity", 0.8);
+      
   }
 }
 
