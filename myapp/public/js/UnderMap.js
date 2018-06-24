@@ -20,19 +20,15 @@ function underMap(thisTimeTrackSet) {
     return b.split(",").length - 1 - (a.split(",").length - 1);
   });
   var maxFlow = sortedKeys[0].split(",").length;
-  var minFlow = sortedKeys[sortedKeys.length - 1].split(",").length;
 
   var sortedColorKeys = Object.keys(thisTimeTrackSet).sort(function (a, b) {
     return thisTimeTrackSet[b] - thisTimeTrackSet[a];
   });
   var maxColorValue = thisTimeTrackSet[sortedColorKeys[0]];
 
-  var minColorValue =
-    thisTimeTrackSet[sortedColorKeys[sortedColorKeys.length - 1]];
+  var minColorValue = thisTimeTrackSet[sortedColorKeys[sortedColorKeys.length - 1]];
 
   var maxFlow = sortedKeys[0].split(",").length;
-
-  var minFlow = sortedKeys[sortedKeys.length - 1].split(",").length;
 
   var rectWidth = (svgWidth - margin.left - margin.right) / sortedKeys.length;
   var rectHeight = (svgHeight - margin.top - margin.bottom) / maxFlow;

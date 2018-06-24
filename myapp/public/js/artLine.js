@@ -1,6 +1,5 @@
 function drawArtLine() {
     get3hourData("data/18Data_track.json").then(function (data) {});
-
     function getInCircleTrack(originalTrack) {
         var allInCircleTrack = [];
         var inCircleTrack = [];
