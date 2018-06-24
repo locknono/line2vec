@@ -3,7 +3,8 @@ var scatterPlotWidth = 360,
   scatterPlotHeight = 380;
 
 var map = L.map("map", {
-  renderer: L.canvas()
+  renderer: L.canvas(),
+  zoomControl: false,
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
   "https://api.mapbox.com/styles/v1/lockyes/cjirepczz27ck2rmsc5ybf978/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
@@ -17,7 +18,6 @@ L.tileLayer(osmUrl, {
   //访问令牌
   accessToken: "your.mapbox.access.token"
 }).addTo(map);
-map.zoomControl.remove();
 var options = {
   position: "topleft", // toolbar position, options are 'topleft', 'topright', 'bottomleft', 'bottomright'
   drawMarker: false, // adds button to draw markers
@@ -60,7 +60,6 @@ var selectedMapLines = [];
 var filterRate = 0;
 var trackLength = 0;
 var sampleFlag = false;
-// add leaflet.pm controls to the map
 
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
 
@@ -353,18 +352,10 @@ function load(
       .range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]);
     var arc = d3
       .arc()
-      .startAngle(function (d) {
-        return d.startAngle;
-      })
-      .endAngle(function (d) {
-        return d.endAngle;
-      })
-      .innerRadius(function (d) {
-        return d.innerRadius;
-      })
-      .outerRadius(function (d) {
-        return d.outerRadius;
-      });
+      .startAngle(d => d.startAngle)
+      .endAngle(d => d.endAngle)
+      .innerRadius(d => d.innerRadius)
+      .outerRadius(d => d.outerRadius);
 
     function calDis(stationPoint, clickSourceLatLng) {
       return Math.sqrt(
@@ -373,28 +364,20 @@ function load(
       );
     }
 
-    leafletPixiOverlay = L.pixiOverlay(function (utils) {
+    var leafletPixiOverlay = L.pixiOverlay(function (utils) {
+
         var zoom = utils.getMap().getZoom();
         var container = utils.getContainer();
         var leafletRenderer = utils.getRenderer();
         var project = utils.latLngToLayerPoint;
-        var scale = utils.getScale();
 
-        var arcColor = d3.scaleThreshold();
-
-        arcColor
+        var arcColor = d3.scaleThreshold()
           .domain([0, 2, 4, 8, 16, 32, 64, 128, 256, 512])
           .range([0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]);
-        //   container.interactive = true;
-        //  container.cursor = 'crosshair';
-        //  container.on("click", function () {
-        //       ////
-        //   })
 
         $(".leaflet-pm-icon-circle").unbind();
 
         //one svg layer will be added to the map when drag or zoom 
-        //map works fine when drag after post,but zoom fails
         var d3Overlay = L.d3SvgOverlay(
           function (selection, projection) {
             map.off("pm:create");
@@ -487,7 +470,7 @@ function load(
                     .attr("d", arrow_path)
                     .style("z-index", 5000)
                     .style("fill", "#000000");
-                  minValue = 0;
+                  let minValue = 0;
                   var widthScale = d3
                     .scaleLinear()
                     .domain([minValue, 8])
@@ -568,35 +551,10 @@ function load(
                     var color = d3.interpolate(d3.interpolateYlGnBu(0), d3.interpolateYlGnBu(1));
 
                     if (coorsSet.size === 2 && coors.length === 2) {
-                      /*  let projectCoor1 = projection.latLngToLayerPoint(coors[0]);
-                       let projectCoor2 = projection.latLngToLayerPoint(coors[1]); */
                       var colorDefs = selection.append("defs");
                       var linearGradient = colorDefs
                         .append("linearGradient")
                         .attr("id", "Gradient")
-                      /* if (projectCoor1.x < projectCoor2.x && projectCoor1.y < projectCoor2.y) {
-                        linearGradient.attr("x1", "0%")
-                          .attr("y1", "0%")
-                          .attr("x2", "100%")
-                          .attr("y2", "100%")
-                      } else if (projectCoor1.x > projectCoor2.x && projectCoor1.y < projectCoor2.y) {
-                        linearGradient.attr("x1", "100%")
-                          .attr("y1", "0%")
-                          .attr("x2", "0%")
-                          .attr("y2", "100%")
-                      }
-                      if (projectCoor1.x < projectCoor2.x && projectCoor1.y > projectCoor2.y) {
-                        linearGradient.attr("x1", "0%")
-                          .attr("y1", "100%")
-                          .attr("x2", "100%")
-                          .attr("y2", "0%")
-                      }
-                      if (projectCoor1.x > projectCoor2.x && projectCoor1.y > projectCoor2.y) {
-                        linearGradient.attr("x1", "100%")
-                          .attr("y1", "100%")
-                          .attr("x2", "0%")
-                          .attr("y2", "0%")
-                      } */
                       linearGradient
                         .append("stop")
                         .attr("offset", "0%")
@@ -625,11 +583,6 @@ function load(
                       path.style("stroke", function () {
                         return "url(#" + linearGradient.attr("id") + ")"
                       })
-
-                      /* path.style("stroke", function () {
-                        var colorDefs = selection.append("defs");
-                        return "black"
-                      }) */
                     }
                     if (coorsSet.size >= 2 /*|| (coorsSet.size===2&&coors.length===2)*/ ) {
                       var path = selection.selectAll("[id='artLine" + i + "']").remove();
@@ -647,10 +600,8 @@ function load(
                         .attr("stroke-linecap", "round")
                         .attr("stroke-linejoin", "round")
                         .attr("d", function (d) {
-                          //return lineJoin(d[0], d[1], d[2], d[3], 1);
                           return lineJoin(d[0], d[1], d[2], d[3], widthScale(Math.log2(allTrack[i].value)));
                         });
-
                     }
 
                     function samples(path, precision) {
@@ -687,19 +638,6 @@ function load(
                         b = [p2[0] + u12[0] * r, p2[1] + u12[1] * r],
                         c = [p2[0] - u12[0] * r, p2[1] - u12[1] * r],
                         d = [p1[0] - u12[0] * r, p1[1] - u12[1] * r];
-                      /*  if (p0) { // clip ad and dc using average of u01 and u12
-                         var u01 = perp(p0, p1),
-                           e = [p1[0] + u01[0] + u12[0], p1[1] + u01[1] + u12[1]];
-                         a = lineIntersect(p1, e, a, b);
-                         d = lineIntersect(p1, e, d, c);
-                         
-                       }
-                       if (p3) { // clip ab and dc using average of u12 and u23
-                         var u23 = perp(p2, p3),
-                           e = [p2[0] + u23[0] + u12[0], p2[1] + u23[1] + u12[1]];
-                         b = lineIntersect(p2, e, a, b);
-                         c = lineIntersect(p2, e, d, c);
-                       } */
                       return "M" + a + "L" + b + " " + c + " " + d + "Z";
                     }
 
@@ -724,69 +662,20 @@ function load(
                         u01d = Math.sqrt(u01x * u01x + u01y * u01y);
                       return [u01x / u01d, u01y / u01d];
                     }
-
-                    /* if (
-                      allTrack[i].value >= flowSliderValue
-                    ) {
-                      selection
-                        .append("path")
-                        .attr("class", "artLine")
-                        .style(
-                          "stroke",
-                          "url(#" + linearGradient.attr("id") + ")"
-                        )
-                        .attr("stroke-width", widthScale(Math.log2(allTrack[i].value)))
-                        .attr("fill", "none")
-                        .attr("d", lineGenarator(allTrack[i].lineCoors))
-                        /* .attr("marker-start",
-                          "url(#arrow)")  
-                        .attr("marker-mid", d => {
-                          if (allTrack[i].lineCoors.length <= 2) {
-                            return "none"
-                          } else {
-                            return "url(#arrow)"
-                          }
-                        })
-                        .attr("marker-end", function (d) {
-                          if (allTrack[i].lineCoors.length > 2) {
-                            return "none"
-                          } else {
-                            return "url(#arrow)"
-                          }
-                        }) 
-
-                      /*   //   .attr("marker-mid", "url(#arrow)")
-                        var path = d3.path();
-                        for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
-                          if (j === 0) {
-                            path.moveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[0]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[0]).y);
-
-                          }
-                          if (j % 3 === 0 && j !== 0) {
-                            path.bezierCurveTo(map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 2]).y,
-                              map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j - 1]).y,
-                              map.latLngToLayerPoint(allTrack[i].lineCoors[j]).x, map.latLngToLayerPoint(allTrack[i].lineCoors[j]).y)
-                          }
-                        } */
                   }
                 }
 
-                var recordArray = underMap(thisTimeTrackSet);
-                var rectWidth = d3
+                underMap(thisTimeTrackSet);
 
+                var rectWidth = d3
                   .select(".underMapRectG")
                   .select("rect")
                   .attr("width");
 
-                var rectHeight = d3
-                  .select(".underMapRectG")
-                  .select("rect")
-                  .attr("height");
-
                 var rectBrush = d3
                   .brushX()
                   .extent([
-                    [10, 20],
+                    [10, 23],
                     [690, 150]
                   ])
                   .on("start brush", rectBrushed)
@@ -796,6 +685,7 @@ function load(
                   .select("#underMapView")
                   .selectAll(".underMapBrush")
                   .remove();
+
                 d3
                   .select("#underMapView")
                   .append("g")
@@ -827,19 +717,16 @@ function load(
               lastLayer = e.layer;
               lastLayers.push(e.layer);
               op.drawZoom = map.getZoom();
-              // e.layer.pm.toggleEdit(options);
               map.removeLayer(circle);
               var containerPoint1 = e.layer._point;
 
               var clickSourceLatLng = e.layer._latlng;
-              minRadius = e.layer._radius;
-
-
+              var minRadius = e.layer._radius;
 
               transformArray.push(containerPoint1);
               //get selected map data
               selectedMapData = [];
-              for (var i = 0; i < mapData.length; i++) {
+              for (let i = 0; i < mapData.length; i++) {
                 let stationPoint = mapData[i].stationLocation;
                 if (
                   calDis(
@@ -870,7 +757,6 @@ function load(
                   }
                 }
               }
-
 
               allSelectedMapLines.push(selectedMapLines);
 
@@ -1026,259 +912,7 @@ function load(
                 .style("stroke-width", "2px")
                 .style("stroke-opacity", "0.7")
                 .style("cursor", "move");
-
-              drag = d3
-                .drag()
-                .on("start", dragStarted)
-                .on("drag", draged)
-                .on("end", dragEnd);
-
               circle.attr("zoomScale", map.getZoom());
-
-              function dragStarted() {
-                selection.selectAll(".artLine").remove();
-                selection.selectAll(".timeArc").remove();
-                bars[parseFloat(circle.attr("id"))].remove();
-                SVGcurrentZoom = map.getZoom();
-                circle
-                  .attr("cx", d3.mouse(this)[0])
-                  .attr("cy", d3.mouse(this)[1]);
-                bars[parseFloat(circle.attr("id"))].attr(
-                  "transform",
-                  "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
-                );
-                map.dragging.disable();
-                dragDrawLines(allSelectedMapLines[parseFloat(circle.attr("id"))]);
-                dragDrawCircles(
-                  allSelectedMapLines[parseFloat(circle.attr("id"))]
-                );
-                allSelectedMapLines[parseFloat(circle.attr("id"))] = [];
-                multidrawCircles(allSelectedMapLines, comDetecFlag);
-              }
-
-              function draged() {
-                circle
-                  .attr("cx", d3.mouse(this)[0])
-                  .attr("cy", d3.mouse(this)[1]);
-                bars[parseFloat(circle.attr("id"))].attr("transform",
-                  "translate(" + d3.mouse(this)[0] + "," + d3.mouse(this)[1] + ")"
-                );
-                selectedMapData = [];
-                selectedMapLines = [];
-                let clickPoint = {
-                  x: map.mouseEventToLayerPoint(d3.event.sourceEvent).x,
-                  y: map.mouseEventToLayerPoint(d3.event.sourceEvent).y
-                };
-                let thisCircleZoomScale = map.getZoomScale(SVGcurrentZoom, parseFloat(circle.attr("zoomScale")));
-                for (var i = 0; i < mapData.length; i++) {
-                  let stationPoint = mapData[i].stationLocation;
-                  if (
-                    calDis(projection.latLngToLayerPoint(stationPoint), clickPoint) <=
-                    parseFloat(circle.attr("r")) * thisCircleZoomScale
-                  ) {
-                    selectedMapData.push(mapData[i]);
-                  }
-                }
-                if (sampled === true) {
-                  var data = sampledScatterData;
-                } else if (sampled === false) {
-                  var data = scatterData;
-                }
-                for (var i = 0; i < data.length; i++) {
-                  for (var j = 0; j < selectedMapData.length; j++) {
-                    if (data[i].source != selectedMapData[j].stationID) {
-                      continue;
-                    }
-                    for (var s = 0; s < selectedMapData.length; s++) {
-                      if (data[i].target == selectedMapData[s].stationID) {
-                        selectedMapLines.push(data[i]);
-                      }
-                    }
-                  }
-                }
-                var AllLength = 0;
-                for (var i = 0; i < allSelectedMapLines.length; i++) {
-                  if (i === parseFloat(circle.attr("id"))) {
-                    continue;
-                  }
-                  AllLength += allSelectedMapLines[i].length;
-                }
-                AllLength += selectedMapLines.length;
-                $("#selectedNumber").text("Selected Flows:" + AllLength);
-                dragDrawLines(selectedMapLines);
-                dragDrawCircles(selectedMapLines);
-              }
-
-              function dragEnd() {
-                ////////////
-                var originalLLines = [];
-                for (var i = 0; i < scatterData.length; i++) {
-                  for (var j = 0; j < selectedMapData.length; j++) {
-                    if (scatterData[i].source != selectedMapData[j].stationID) {
-                      continue;
-                    }
-                    for (var s = 0; s < selectedMapData.length; s++) {
-                      if (scatterData[i].target == selectedMapData[s].stationID) {
-                        originalLLines.push(data[i]);
-                      }
-                    }
-                  }
-                }
-                ////////
-
-                bars[parseFloat(circle.attr("id"))].remove();
-
-                transformArray[parseFloat(circle.attr("id"))] = {
-                  x: d3.mouse(this)[0],
-                  y: d3.mouse(this)[1]
-                };
-                dragLineGraphics.clear();
-                leafletRenderer.render(container);
-                map.dragging.enable();
-                allSelectedMapLines[parseFloat(circle.attr("id"))] = selectedMapLines;
-
-                var AllLength = 0;
-                for (var i = 0; i < allSelectedMapLines.length; i++) {
-                  AllLength += allSelectedMapLines[i].length;
-                }
-                $("#selectedNumber").text("Selected Flows:" + AllLength);
-                drawArtLine(timeString);
-                dragDrawCricleGraphics.clear();
-                multidrawCircles(allSelectedMapLines, comDetecFlag);
-                baseshowflux(getSitesName(selectedMapLines)).then(function (
-                  volumeData
-                ) {
-
-                  changeVolumeArray(volumeData);
-
-                  var hourLineNumber = getHourLineNumber(volumeData);
-                  avgVolumeData = getAvgVolumeData(volumeData);
-                  var scales = getArcScale(
-                    avgVolumeData,
-                    parseFloat(circle.attr("r"))
-                  );
-
-
-                  dragEndChangeArcArray(
-                    volumeData,
-                    avgVolumeData,
-                    parseFloat(circle.attr("r")),
-                    allArcArray,
-                    scales,
-                    parseFloat(circle.attr("id"))
-                  );
-                  getRadarData(
-                    selectedMapData,
-                    scatterData,
-                    sampledScatterData,
-                    volumeData,
-                    maxValue
-                  );
-                  var tip = d3
-                    .tip()
-                    .attr("class", "d3-tip")
-                    .offset([-10, 0])
-                    .html(function (d, i) {
-                      return (
-                        "<strong>Flow:</strong> <span style='color:red'>" +
-                        d3.format(".4")(avgVolumeData[i]) +
-                        "</span><br></br><strong>Line Number:</strong> <span style='color:red'>" +
-                        d3.format(".4")(hourLineNumber[i]) +
-                        "</span>"
-                      );
-                    });
-                  selection.call(tip);
-                  var thisBars = selection
-                    .append("g")
-                    .selectAll("path")
-                    .attr("name", circle.attr("id"))
-                    .data(allArcArray[parseFloat(circle.attr("id"))])
-                    .enter()
-                    .append("path")
-                    .attr("d", function (d) {
-                      return arc(d);
-                    })
-                    .attr("class", "arcs")
-                    .style("stroke", "steelblue")
-                    .style("stroke-width", "0.2px")
-                    .style("fill", function (d, i) {
-                      let scales = getArcScale(avgVolumeData, minRadius);
-                      return circleBarsInterpolate(
-                        1 - scales[1](avgVolumeData[i])
-                      );
-                    })
-                    .style("pointer-events", "auto")
-                    .style("cursor", "crosshair")
-                    .on("click", function () {
-                      d3
-                        .selectAll(".arcs")
-                        .style("stroke", "steelblue")
-                        .style("stroke-width", "0.2px");
-                      d3
-                        .select(this)
-                        .style("stroke", "#B25C00")
-                        .style("stroke-width", "3px");
-                      // ////
-                    })
-                    .on("mouseover", tip.show)
-                    .on("mouseout", tip.hide)
-                    .attr(
-                      "transform",
-                      "translate(" +
-                      transformArray[parseFloat(circle.attr("id"))].x +
-                      "," +
-                      transformArray[parseFloat(circle.attr("id"))].y +
-                      ")"
-                    );
-                  bars[parseFloat(circle.attr("id"))] = thisBars;
-                });
-
-                var timeArcArray = [];
-                for (var i = 0; i < 8; i++) {
-                  var thisArc = {};
-                  thisArc.startAngle = 2 * Math.PI / 8 * i;
-                  thisArc.endAngle = 2 * Math.PI / 8 * (i + 1);
-                  thisArc.innerRadius = minRadius + 4;
-                  thisArc.outerRadius = minRadius + 13;
-                  timeArcArray.push(thisArc);
-                }
-                var timeArc = selection
-                  .append("g")
-                  .attr("class", "timeArc")
-                  .selectAll("path")
-                  .data(timeArcArray)
-                  .enter()
-                  .append("path")
-                  .attr("class", "timeArcPath")
-                  .attr("d", function (d) {
-                    return arc(d);
-                  })
-                  .style("fill", function (d, i) {
-                    return op.timeArcColor;
-                  })
-                  .style("pointer-events", "auto")
-                  .style("cursor", "crosshair")
-                  .attr(
-                    "transform",
-                    "translate(" +
-                    transformArray[parseFloat(circle.attr("id"))].x +
-                    "," +
-                    transformArray[parseFloat(circle.attr("id"))].y +
-                    ")"
-                  )
-                  .on("click", function (d, i) {
-                    var stratTime = i * 3;
-                    var endTime = i * 3 + 2;
-                    timeString = stratTime.toString() + "-" + endTime.toString();
-                    drawArtLine(timeString);
-                    selection.selectAll(".timeArcPath").style("opacity", op.timeArcOpacity);
-                    selection.select(this).style("opacity ", op.selectedTimeArcOpacity);
-                  });
-              }
-              circle.call(drag);
-              circle.on("pm:centerplaced", function (e) {
-                ////
-              });
               $(".leaflet-pm-icon-delete").attr("name", "false");
             }); //create 的括号
 
@@ -1701,7 +1335,6 @@ function load(
         }
 
         function multidrawLines(allSelectedMapLines) {
-          //////
           multiLineGraphics.clear();
           artLine = constructCurve(allSelectedMapLines);
           for (var index = 0; index < artLine.length; index++) {

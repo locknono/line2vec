@@ -28,9 +28,10 @@ function getSelectedData(selectedMapData, data) {
   }
   return selectedMapLines;
 }
+
 function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
-  return new Promise(function(resolve, reject) {
-    baseshowflux(getSitesName(selectedMapLines)).then(function(volumeData) {
+  return new Promise(function (resolve, reject) {
+    baseshowflux(getSitesName(selectedMapLines)).then(function (volumeData) {
       if (volumeData.length === 0) {
         return;
       }
@@ -57,7 +58,7 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
         }
       }
       var avgIntersaction = crossovers / selectedMapLines.length;
-      var maxIntersantion = d3.max(intersanctionArray, function(d) {
+      var maxIntersantion = d3.max(intersanctionArray, function (d) {
         return d3.max(d);
       });
       //ebt
@@ -87,7 +88,7 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
       Tc_dis /= selectedMapLines.length;
       var tran = Math.sqrt(
         Math.pow(Tc_center[0] - Tc_p[0], 2) +
-          Math.pow(Tc_center[1] - Tc_p[1], 2)
+        Math.pow(Tc_center[1] - Tc_p[1], 2)
       );
       var variance = d3.variance(sumVolumeData);
       var maxFlow = d3.max(sumVolumeData);
@@ -157,7 +158,7 @@ function getRadarData(
   Promise.all([
     getEachRadarData(oLines, p, maxFlow),
     getEachRadarData(sLines, p, maxFlow)
-  ]).then(function(values) {
+  ]).then(function (values) {
     var maxArray = [];
     for (var j = 0; j < 8; j++) {
       maxArray.push(d3.max([values[0][j], values[1][j]]));
@@ -199,6 +200,7 @@ function directTC(o, p, q) {
   cd2 = (p[0] - o[0]) * (q[1] - o[1]);
   return cd1 - cd2;
 }
+
 function onLineSegmentTC(o, p, q) {
   minx = o[0] < p[0] ? o[0] : p[0];
   maxx = o[0] > p[0] ? o[0] : p[0];
@@ -206,6 +208,7 @@ function onLineSegmentTC(o, p, q) {
   maxy = o[1] > p[1] ? o[1] : p[1];
   return q[0] >= minx && q[0] <= maxx && q[1] >= miny && q[1] <= maxy;
 }
+
 function crossTC(p1, q1, p2, q2) {
   d1 = directTC(p2, q2, p1);
   d2 = directTC(p2, q2, q1);
@@ -233,6 +236,7 @@ function getTextPosition(center, maxRadius) {
   var textPosition = getRadarPoint(center, radius);
   return textPosition;
 }
+
 function addText(center, maxRadius, svg) {
   var textArray = [
     "avg Ebt",
@@ -269,8 +273,14 @@ function addText(center, maxRadius, svg) {
       .text(textArray[i]);
   }
 }
+
 function addRadarView(allRadiusArray, data) {
-  var margin = { top: 20, left: 20, right: 20, bottom: 20 };
+  var margin = {
+    top: 20,
+    left: 20,
+    right: 20,
+    bottom: 20
+  };
   var svgWidth = parseFloat(d3.select("#raderSvg").attr("width"));
   var svgHeight = parseFloat(d3.select("#raderSvg").attr("height"));
   var width = svgWidth - margin.left - margin.right;
@@ -311,10 +321,10 @@ function addRadarView(allRadiusArray, data) {
   }
   var line = d3
     .line()
-    .x(function(d) {
+    .x(function (d) {
       return d[0];
     })
-    .y(function(d) {
+    .y(function (d) {
       return d[1];
     })
     .curve(d3.curveCardinalClosed.tension(0.3));
@@ -365,6 +375,7 @@ function getRadarPoint(center, radius) {
   }
   return endPoints;
 }
+
 function getAllEndPoints(center, radiusArray) {
   var allEndPoints = [];
   for (var i = 0; i < 2; i++) {
@@ -380,17 +391,17 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
     .data(data)
     .enter()
     .append("path")
-    .attr("fill", function(d, i) {
+    .attr("fill", function (d, i) {
       return colorScale(i);
     })
     .attr("fill-opacity", " 0.35")
-    .attr("d", function(d, i) {
+    .attr("d", function (d, i) {
       return line(allEndPoints[i]);
     })
-    .on("mouseover", function(d, i) {
+    .on("mouseover", function (d, i) {
       d3.select(this).style("fill-opacity", 0.7);
     })
-    .on("mouseout", function(d, i) {
+    .on("mouseout", function (d, i) {
       d3.select(this).style("fill-opacity", 0.35);
     });
   for (var j = 0; j < allEndPoints.length; j++) {
@@ -400,40 +411,40 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
       .data(data[j])
       .enter()
       .append("circle")
-      .attr("cx", function(d, i) {
+      .attr("cx", function (d, i) {
         return allEndPoints[j][i][0];
       })
-      .attr("cy", function(d, i) {
+      .attr("cy", function (d, i) {
         return allEndPoints[j][i][1];
       })
       .attr("r", 2.6)
       .attr("fill", colorScale(j))
-      .on("mouseover", function(d, i) {});
+      .on("mouseover", function (d, i) {});
     svg
       .append("g")
       .selectAll("#text1")
       .data(data[j])
       .enter()
       .append("text")
-      .attr("x", function(d, i) {
+      .attr("x", function (d, i) {
         return allEndPoints[j][i][0];
       })
-      .attr("y", function(d, i) {
+      .attr("y", function (d, i) {
         return allEndPoints[j][i][1];
       })
-      .text(function(d, i) {
+      .text(function (d, i) {
         return d3.format(".4")(data[j][i]);
       })
       .attr("fill", colorScale(j))
       .attr("fill-opacity", 1);
-      
+
   }
 }
 var tip = d3
   .tip()
   .attr("class", "d3-tip")
   .offset([-10, 0])
-  .html(function(d, i) {
+  .html(function (d, i) {
     ////
     return (
       "<strong>Flow:</strong> <span style='color:red'>" +
