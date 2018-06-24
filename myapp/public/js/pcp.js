@@ -1,5 +1,5 @@
 ﻿function drawMDS_PCP(selectedMapLines) {
-  console.time("drawMDS_PCP");
+  
   var width_mds = 280,
     height_mds = 160;
   d3
@@ -26,26 +26,26 @@
 
   
   d3.json("data/All.json", function(data) {
-    console.log("data: ", data);
+    
 
     // d3.csv("cars.csv", function(error, cars) {
     //Json文件数据处理
-    /*  console.log("all.json",data);
+    /*  
     var track_arr = new Array(200);
     for (var i = 0; i < 200; i++) {
       track_arr[i] = data[0][i]["Track"];
     }
     */
     track_arr = getSitesName(selectedMapLines);
-    console.log("track_arr", track_arr);
+    
     var dict = {};
-    console.log(data[0].length);
+    
     for (var i = 0; i < data[0].length; i++) {
       dict[data[0][i]["Track"]] = i;
     }
-    console.log("data:", data);
-    console.log(dict);
-    console.log(dict["913-1515"]);
+    
+    
+    
 
     function get_matrix(track_arr) {
       matrix = new Array(4);
@@ -65,7 +65,7 @@
       return matrix;
     }
     matrix_arr = get_matrix(track_arr);
-    console.log("matrix_arr", matrix_arr);
+    
     var arr = new Array(4);
     for (var h = 0; h < 4; h++) {
       arr[h] = numeric.transpose(mds.classic(matrix_arr[h]));
@@ -79,12 +79,12 @@
         if (max < axis_arr[i][h]) max = axis_arr[i][h];
       }
     }
-    console.log(axis_arr);
+    
     value_arr = new Array(5);
     for (var i = 0; i < 5; i++) {
       value_arr[i] = (i + 1) * max / 5;
     }
-    console.log("axis_arr", axis_arr);
+    
     var mds_matrix = new Array(track_arr.length);
     for (var i = 0; i < track_arr.length; i++) {
       mds_matrix[i] = new Array(track_arr.length);
@@ -95,7 +95,7 @@
         mds_matrix[i][j] = Math.sqrt(mds_matrix[i][j]);
       }
     }
-    console.log("mds_matrix", mds_matrix);
+    
 
     var mds_arr = mds.classic(mds_matrix, 2);
     var maxMdsX = (maxMdsY = -10),
@@ -108,7 +108,7 @@
     }
     var norMdsX = maxMdsX - minMdsX,
       norMdsY = maxMdsX - minMdsY;
-    console.log("mds_arr", mds_arr);
+    
     svg_points = svg_mds
       .selectAll("#points")
       .data(mds_arr)
@@ -130,10 +130,10 @@
     for (var i = 0; i < mds_arr.length; i++) {
       mds_arr[i].name = matrix_arr[0][i]["Track"];
     }
-    console.log("mds_arr: ", mds_arr);
+    
     nodes = HclusterYear(mds_arr);
 
-    console.log("nodes", nodes);
+    
 
     var rectMargin = {
       top: 5,
@@ -169,27 +169,27 @@
     function brushRectEnd() {
       mapLines=[];
       var brushRectLineArray = [];
-      console.log("aaa");
-      console.log(d3.event.selection);
-      console.log("rectY", svg_mds.selectAll("rect").attr("y"));
+      
+      
+      
       var rectNumber = parseInt(
         (d3.event.selection[1] - d3.event.selection[0]) / rectHeight
       );
-      console.log("rectNumber: ", rectNumber);
+      
       var startIndex = parseInt((d3.event.selection[0] - 5) / rectHeight);
-      console.log("startIndex: ", startIndex);
+      
       if (rectNumber > nodes[index].length) {
         rectNumber = nodes[index].length;
       }
-      console.log("index: ", index);
+      
       for (var j = startIndex; j < startIndex + rectNumber; j++) {
-        console.log("nodes[index][j]", nodes[index][j]);
+        
         for (var s = 0; s < nodes[index][j].length; s++) {
-          console.log("nodes[index][j][s]", nodes[index][j][s]);
+          
           brushRectLineArray.push(nodes[index][j][s].name);
         }
       }
-      console.log("brushRectLineArray: ", brushRectLineArray);
+      
 
       for (var i = 0; i < brushRectLineArray.length; i++) {
         for (var j = 0; j < selectedMapLines.length; j++) {
@@ -205,7 +205,7 @@
           }
         }
       }
-      console.log("mapLines: ", mapLines);
+      
     }
 
     //add initial rects
@@ -217,7 +217,7 @@
         }
       }
     }
-    console.log("maxLength: ", maxLength);
+    
     var gRect = svg_mds.append("g").attr("class", "rect");
     var rectWidthScale = d3
       .scaleLinear()
@@ -304,8 +304,8 @@
       }
       return nodes;
     }
-    //console.log("data[0][0]['2-2'] == null", data[0][0]["2-2"] == null);
-    // console.log(track_arr);
+    //
+    // 
     // function()
 
 
@@ -350,8 +350,8 @@
 
     //add parallel coordinates
     // Extract the list of dimensions and create a scale for each.
-    console.log("axis_arr",axis_arr);
-    console.log("axis_arr[0]",axis_arr[0]);
+    
+    
 
     x.domain(
       (dimensions = d3.keys(axis_arr[0]).filter(function(d) {
@@ -383,7 +383,7 @@
       }))
     );
 
-    console.log("dimensions", dimensions);
+    
     // Add grey background lines for context.
     background = svg
       .append("g")
@@ -431,8 +431,8 @@
       var max=d3.max(axis_arr,function(d){
         return d3.max(axis_arr);
       })
-      console.log('min: ', min);
-      console.log('max: ', max);
+      
+      
     
       var yAxisSacle=d3.scaleLinear()
       .domain([min,max])
@@ -448,8 +448,8 @@
       .append("g")
       .attr("class", "axis")
       .each(function(d) {
-        console.log("d",d);
-        console.log("y[d]",y[d]);
+        
+        
         d3.select(this).call(axis.ticks(5).scale(y[d]));
       })
       .append("text")
@@ -499,7 +499,7 @@
       );
     }
 
-    console.timeEnd("drawMDS_PCP");
+    
   });
 
   function maxDistance(data) {

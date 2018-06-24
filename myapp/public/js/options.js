@@ -39,7 +39,6 @@ var op = (function () {
         return this.folderName + "/0.csv";
     }
     
-    
     //style
     var labelColorScale = d3
         .scaleOrdinal()

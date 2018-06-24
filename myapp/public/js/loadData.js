@@ -17,7 +17,7 @@ function getFluxData(URL) {
   return new Promise(function(resolve, reject) {
     d3.json(URL, (error, data) => {
       if (error) {
-        console.error(error);
+        
       }
       resolve(data);
     });
@@ -52,7 +52,7 @@ function getPixelData(mDataURL) {
   return new Promise(function(resolve, reject) {
     d3.json(mDataURL, (error, mData) => {
       if (error) {
-        console.error(error);
+        
       }
       for (var i = 0; i < mData.length; i++) {
         for (var j = 0; j < mData[i].length; j++) {
@@ -79,7 +79,7 @@ function getEdgeBundlingData(URL) {
   return new Promise(function(resolve, reject) {
     d3.csv(URL, (error, data) => {
       if (error) {
-        console.error(error);
+        
       }
       data.map(element => {
         element.x = parseFloat(element.x);

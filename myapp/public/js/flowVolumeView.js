@@ -187,7 +187,7 @@ function flowvolumeView(volumeData) {
   }
   
   function flowVolumeView2(volumeDatas) {
-    ////console.log(volumeDatas);
+    ////
     var fvSvg = d3.select("#flowvolumeSvg");
     fvSvg
       .selectAll(".g")
