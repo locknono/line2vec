@@ -486,7 +486,7 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
         return d3.format(".4")(data[j][i]);
       })
       .attr("fill", colorScale(j))
-      .attr("fill-opacity", 0.8);
+      .attr("fill-opacity", 1);
       
   }
 }

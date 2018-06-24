@@ -1620,13 +1620,8 @@ function load(
                 ebtArray.push(scatterData[i]);
               }
             } else {
-              line.lineStyle(
-                0.1,
-                op.labelColorScale(scatterData[i].label).replace("#", "0x"),
-                op.lineOpacity
-              );
+              line.lineStyle(0.1, op.labelColorScale(scatterData[i].label).replace("#", "0x"), op.lineOpacity);
             }
-
             if (comDetecFlag === false) {
               let layerSourcePoint = project(scatterData[i].scor);
               let layerTargetPoint = project(scatterData[i].tcor);
@@ -1638,33 +1633,29 @@ function load(
               }
             }
           }
-          if(interArray.length>0){
-            line.lineStyle(
-              0.1,
-              op.labelColorScale(interArray[0].label).replace("#", "0x"),
-              op.lineOpacity
-            );
+
+          if (interArray.length > 0) {
+            line.lineStyle(0.1, op.labelColorScale(interArray[0].label).replace("#", "0x"), op.lineOpacity);
             for (let i = 0; i < interArray.length; i++) {
               let layerSourcePoint = project(interArray[i].scor);
               let layerTargetPoint = project(interArray[i].tcor);
               line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
               line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
             }
-          }
-          
-          for (let i = 0; i < scatterData.length; i++) {
-            if (scatterData[i].label !== -1) {
-              line.lineStyle(
-                0.1,
-                op.labelColorScale(scatterData[i].label).replace("#", "0x"),
-                op.lineOpacity
-              );
-              let layerSourcePoint = project(scatterData[i].scor);
-              let layerTargetPoint = project(scatterData[i].tcor);
-              line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
-              line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+
+            for (let i = 0; i < scatterData.length; i++) {
+              if (scatterData[i].label !== -1) {
+                line.lineStyle(0.1, op.labelColorScale(scatterData[i].label).replace("#", "0x"), op.lineOpacity);
+                let layerSourcePoint = project(scatterData[i].scor);
+                let layerTargetPoint = project(scatterData[i].tcor);
+                line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+                line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
+              }
             }
           }
+
+
+
           //  line.endFill();
 
           /* ebtCounter={};
