@@ -123,7 +123,13 @@ function addhistogram(fileName) {
         .attr("fill", "#000")
         .attr("font-weight", "bold")
         .attr("text-anchor", "start")
-        .text("Freq(x²)");
+        .text("Freq(2  )");
+      svg.append("text")
+      .attr("x", 39)
+      .attr("y",7)
+      .style("font-size",7)
+      .style("font-weight","bold")
+      .text("x");
 
       var legend = g
         .append("g")
