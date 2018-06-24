@@ -1653,9 +1653,6 @@ function load(
               }
             }
           }
-
-
-
           //  line.endFill();
 
           /* ebtCounter={};
@@ -1800,13 +1797,10 @@ function load(
             line.clear();
             line.lineStyle(0.1, 0x3446b0, 0.5);
             for (var i = 0; i < bundleData.length; i++) {
-              //line.lineStyle(0.1,bundleData[i].label,0.5);
               let layerSourcePoint = project(bundleData[i].scor);
               let layerTargetPoint = project(bundleData[i].tcor);
               let midPoint = project(bundleData[i].midcor);
               line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
-              //  line.lineTo(midPoint.x, midPoint.y);
-              //  line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
               line.bezierCurveTo(
                 midPoint.x,
                 midPoint.y,
@@ -1836,14 +1830,11 @@ function load(
         drawMapCircle(mapData);
 
         function brushEnded() {
-          if (sampled === true && selectedCircles.length < 500) {
-            //  drawFluxMatrix(selectedCircles);
-          } else if (sampled === true && selectedCircles.length > 500) {
+          if (sampled === true && selectedCircles.length < 500) {} else if (sampled === true && selectedCircles.length > 500) {
             var array = [];
             for (var i = 0; i < 500; i++) {
               array.push(selectedCircles[i]);
             }
-            //   drawFluxMatrix(array);
           }
         }
 
@@ -1921,7 +1912,6 @@ function load(
             xScale = xyScale[0],
             yScale = xyScale[1];
           dragDrawCricleGraphics.clear();
-          //   dragDrawCricleGraphics.lineStyle(1, 0x373B3A, 1);
           for (var i = 0; i < selectedMapLines.length; i++) {
             if (comDetecFlag == false) {
               dragDrawCricleGraphics.beginFill(selectedColor);
@@ -1943,7 +1933,6 @@ function load(
         }
 
         function drawSelectedCircle(thisPointData) {
-          ////////////
           if (sampled === false) {
             var xyScale = getScatterXYScale(
                 scatterData,
@@ -2299,7 +2288,6 @@ function load(
             renderer.render(stage);
             leafletRenderer.render(container);
             $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
-            // renderer.render(stage);
           });
 
           $("#edgeBundle").on("click", function () {

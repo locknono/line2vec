@@ -9,7 +9,6 @@ function download_sprite_as_png(renderer, sprite, fileName) {
   }, 'image/png');
 }
 
-
 function calDistance(point1, point2) {
   return Math.sqrt(
     Math.pow(point1.x - point2.x, 2) + Math.pow(point1.y - point2.y, 2)
@@ -150,8 +149,6 @@ function drawScatterPlot(
 function unbindEvents() {
   $("#BrushButton").unbind();
   $("#reset").unbind();
-  //$("#word2vec").unbind();
-  //$("#sample").unbind();
   $("#initialize").unbind();
   $("#selectAll").unbind();
   $("#selectPointButton").unbind();
@@ -291,17 +288,6 @@ function getArcArray(
   ////
   //var scales = getArcScale(avgVolumeData, minRadius);
   var arcArray = [];
-  /* var startAngleArray = [];
-  var areaPad = 2 * Math.PI / 24;
-  var barPad = areaPad / 6;
-  for (var i = 0; i < 24; i++) {
-    for (var j = 0; j < 6; j++) {
-      if (j >= 1 && j <= 4) {
-        startAngleArray.push(areaPad * i + barPad * (j - 1));
-      }
-    }
-  }
-  */
   var thisPad = 2 * Math.PI / 24;
   for (var i = 0; i < avgVolumeData.length; i++) {
     var thisArc = new Object();
@@ -313,19 +299,6 @@ function getArcArray(
     );
     arcArray.push(thisArc);
   }
-  ////////////////
-  /*for (var i = 0; i < avgVolumeData.length; i++) {
-    var thisArc = new Object();
-    thisArc.startAngle = startAngleArray[parseInt(i / 24) + (i % 24) * 4];
-    thisArc.endAngle =
-      startAngleArray[parseInt(i / 24) + (i % 24) * 4] + barPad;
-    thisArc.innerRadius = minRadius + 3;
-    thisArc.outerRadius = getLineNumberScale(volumeData, minRadius)(
-      lineNumberArray[i]
-    );
-    arcArray.push(thisArc);
-  }
-  */
   allArcArray.push(arcArray);
 }
 
@@ -338,20 +311,7 @@ function dragEndChangeArcArray(
   index
 ) {
   var lineNumberArray = getHourLineNumber(volumeData);
-  ////
-  //var scales = getArcScale(avgVolumeData, minRadius);
   var arcArray = [];
-  /* var startAngleArray = [];
-  var areaPad = 2 * Math.PI / 24;
-  var barPad = areaPad / 6;
-  for (var i = 0; i < 24; i++) {
-    for (var j = 0; j < 6; j++) {
-      if (j >= 1 && j <= 4) {
-        startAngleArray.push(areaPad * i + barPad * (j - 1));
-      }
-    }
-  }
-  */
   var thisPad = 2 * Math.PI / 24;
   for (var i = 0; i < avgVolumeData.length; i++) {
     var thisArc = new Object();
@@ -567,5 +527,3 @@ function empty() {
 function count() {
   return this.dataStore.length;
 }
-
-// }
