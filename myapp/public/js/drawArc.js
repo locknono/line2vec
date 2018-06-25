@@ -25,7 +25,6 @@ map.on('click', function (e) {
 })
 
 var pos = [
-
     [28.009378021913943, 120.68640929667299],
     [28.00884863563417, 120.68829380964686],
     [28.011798040345514, 120.6918915162334],
@@ -58,30 +57,30 @@ var pos = [
     [28.011638789130146, 120.7100513685272],
     [28.0154955868209, 120.70551140545376],
     [28.012773155729636, 120.70576838449564]
-
 ];
 var allTrack = [{
-        lineCoors: [pos[23],pos[28], pos[2], pos[4], pos[7], pos[30]],
+        lineCoors: [pos[23], pos[28], pos[2], pos[4], pos[7], pos[30]],
         value: 10
     },
     {
-        lineCoors: [pos[10], pos[9], pos[24], pos[5], pos[31],pos[27],pos[8]],
+        lineCoors: [pos[10], pos[9], pos[24], pos[5], pos[31], pos[27], pos[8]],
         value: 5
     }, {
-        lineCoors: [pos[12], pos[11], pos[24], pos[5], pos[31],pos[27],pos[8]],
+        lineCoors: [pos[12], pos[11], pos[24], pos[5], pos[31], pos[27], pos[8]],
         value: 10
     },
     {
-        lineCoors: [pos[15], pos[16], pos[26], pos[25],pos[29]],
+        lineCoors: [pos[15], pos[16], pos[26], pos[25], pos[29]],
         value: 7
     }, {
         lineCoors: [pos[18], pos[17], pos[29]],
         value: 6
     },
-    
 ];
 
 var thisTimeTrackSet = {};
+console.log('thisTimeTrackSet: ', thisTimeTrackSet);
+
 for (let i = 0; i < allTrack.length; i++) {
     let indices = [];
     for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
@@ -90,7 +89,7 @@ for (let i = 0; i < allTrack.length; i++) {
     }
     thisTimeTrackSet[indices.toString()] = allTrack[i].value;
 }
-thisTimeTrackSet['18,17'] = 3;
+console.log('thisTimeTrackSet: ', thisTimeTrackSet);
 
 underMap(thisTimeTrackSet);
 var circleBarsInterpolate = d3.interpolate(op.circleBarStartColor, op.circleBarEndColor);
@@ -254,7 +253,7 @@ var d3Overlay = L.d3SvgOverlay(
             .append("circle")
             .attr("cx", d => projection.latLngToLayerPoint(d).x)
             .attr("cy", d => projection.latLngToLayerPoint(d).y)
-            .attr("r", 3)
+            .attr("r", 1)
             .on("mouseover", (d, i) => {
                 console.log(i)
             })

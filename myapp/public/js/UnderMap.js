@@ -19,6 +19,7 @@ function underMap(thisTimeTrackSet) {
   var sortedKeys = Object.keys(thisTimeTrackSet).sort(function (a, b) {
     return b.split(",").length - 1 - (a.split(",").length - 1);
   });
+  console.log('sortedKeys: ', sortedKeys);
   var maxFlow = sortedKeys[0].split(",").length;
 
   var sortedColorKeys = Object.keys(thisTimeTrackSet).sort(function (a, b) {
@@ -121,7 +122,6 @@ function underMap(thisTimeTrackSet) {
           };
         }
       }
-
       for (var j = 0; j < rectArray.length - 1; j++) {
         rectG
           .append("rect")

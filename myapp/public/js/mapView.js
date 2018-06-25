@@ -408,6 +408,77 @@ function load(
                 var allTrack = resData.allTrack;
                 $("#selectedNumber").text("Selected Flows:" + allTrack.length);
                 var thisTimeTrackSet = resData.thisTimeTrackSet;
+
+                var pos = [
+                  [28.009378021913943, 120.68640929667299],
+                  [28.00884863563417, 120.68829380964686],
+                  [28.011798040345514, 120.6918915162334],
+                  [28.009075515786932, 120.69488960505548],
+                  [28.012176163313764, 120.69745939547441],
+                  [28.009151142398334, 120.69840165196138],
+                  [28.008999889122457, 120.70388387152174],
+                  [28.013688641911546, 120.70439782960554],
+                  [28.014822986920517, 120.70970872980469],
+                  [28.006655436187803, 120.68949304517571],
+                  [28.003932781652267, 120.68692325475676],
+                  [28.00143695455137, 120.69112057910769],
+                  [27.998562900214836, 120.68743721284059],
+                  [27.99561313316453, 120.68795117092436],
+                  [27.994176037918333, 120.69112057910769],
+                  [27.994402948967945, 120.6963458196262],
+                  [27.994402948967945, 120.69917258908704],
+                  [28.00022683575269, 120.70525442641181],
+                  [27.99720147930098, 120.70782421683077],
+                  [27.997655288183218, 120.7114219234173],
+                  [28.001285690444764, 120.7100513685272],
+                  [28.004991599925567, 120.71664716393578],
+                  [28.011268665959744, 120.7172467817002],
+                  [28.012856781311307, 120.68264027072522],
+                  [28.00642855093788, 120.69583186154243],
+                  [28.002495797351937, 120.70259897631227],
+                  [27.99916797065588, 120.7014854004641],  
+                  [28.012251787748113, 120.70833817491459],
+                  [28.012251787748113, 120.68709457411803],
+                  [28.011638789130146, 120.7100513685272],
+                  [28.0154955868209, 120.70551140545376],
+                  [28.012773155729636, 120.70576838449564]
+                ];
+
+                var allTrack = [{
+                    lineCoors: [pos[23], pos[28], pos[2], pos[4], pos[7], pos[30]],
+                    value: 10
+                  },
+                  {
+                    lineCoors: [pos[10], pos[9], pos[24], pos[5], pos[31], pos[27], pos[8]],
+                    value: 5
+                  }, {
+                    lineCoors: [pos[12], pos[11], pos[24], pos[5], pos[31], pos[27], pos[8]],
+                    value: 10
+                  },
+                  {
+                    lineCoors: [pos[15], pos[16], pos[26], pos[25], pos[29]],
+                    value: 7
+                  }, {
+                    lineCoors: [pos[18], pos[17], pos[29]],
+                    value: 6
+                  },
+                  {
+                    lineCoors: [pos[28], pos[2]],
+                    value: 10
+                  },
+                ];
+
+                var thisTimeTrackSet = {};
+                for (let i = 0; i < allTrack.length; i++) {
+                  let indices = [];
+                  for (let j = 0; j < allTrack[i].lineCoors.length; j++) {
+                    let pointIndex = pos.indexOf(allTrack[i].lineCoors[j]);
+                    indices.push(pointIndex);
+                  }
+                  thisTimeTrackSet[indices.toString()] = allTrack[i].value;
+                }
+                thisTimeTrackSet['18,17'] = 3;
+
                 maxValue = d3.max(allTrack, function (d) {
                   return d.value;
                 });
@@ -542,11 +613,11 @@ function load(
                       path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
                       path.lineTo(projection.latLngToLayerPoint(coors[1]).x, projection.latLngToLayerPoint(coors[1]).y);
                     } else if (coorsSet.size > 2) {
-                     /*  let thisTrack = allTrack[i].lineCoors;
-                      if (thisTrack[0][0] == thisTrack[thisTrack.length - 1][0] &&
-                        thisTrack[0][1] == thisTrack[thisTrack.length - 1][1]) {
-                        continue;
-                      } */
+                      /*  let thisTrack = allTrack[i].lineCoors;
+                       if (thisTrack[0][0] == thisTrack[thisTrack.length - 1][0] &&
+                         thisTrack[0][1] == thisTrack[thisTrack.length - 1][1]) {
+                         continue;
+                       } */
                       var path = lineGenarator(allTrack[i].lineCoors);
                     }
 
