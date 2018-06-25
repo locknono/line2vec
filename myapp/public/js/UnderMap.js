@@ -33,7 +33,6 @@ function underMap(thisTimeTrackSet) {
   var rectWidth = (svgWidth - margin.left - margin.right) / sortedKeys.length;
   var rectHeight = (svgHeight - margin.top - margin.bottom) / maxFlow;
 
-
   var startPosition = [margin.left, svgHeight - margin.bottom - rectHeight];
 
   var rowNumber = parseInt(
