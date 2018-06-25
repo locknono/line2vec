@@ -542,11 +542,11 @@ function load(
                       path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
                       path.lineTo(projection.latLngToLayerPoint(coors[1]).x, projection.latLngToLayerPoint(coors[1]).y);
                     } else if (coorsSet.size > 2) {
-                     /*  let thisTrack = allTrack[i].lineCoors;
-                      if (thisTrack[0][0] == thisTrack[thisTrack.length - 1][0] &&
-                        thisTrack[0][1] == thisTrack[thisTrack.length - 1][1]) {
-                        continue;
-                      } */
+                      /*  let thisTrack = allTrack[i].lineCoors;
+                       if (thisTrack[0][0] == thisTrack[thisTrack.length - 1][0] &&
+                         thisTrack[0][1] == thisTrack[thisTrack.length - 1][1]) {
+                         continue;
+                       } */
                       var path = lineGenarator(allTrack[i].lineCoors);
                     }
 
@@ -1235,6 +1235,14 @@ function load(
                 line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
                 line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
               }
+            }
+          } else {
+            for (let i = 0; i < scatterData.length; i++) {
+              line.lineStyle(0.1, op.labelColorScale(scatterData[i].label).replace("#", "0x"), op.lineOpacity);
+              let layerSourcePoint = project(scatterData[i].scor);
+              let layerTargetPoint = project(scatterData[i].tcor);
+              line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
+              line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
             }
           }
           //  line.endFill();
