@@ -6,7 +6,7 @@ var map = L.map("map", {
   renderer: L.canvas(),
   zoomControl: false,
   attributionControl: false,
-  zoomSnap: 0.8
+  zoomSnap: 0.7
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
   "https://api.mapbox.com/styles/v1/lockyes/cjirepczz27ck2rmsc5ybf978/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
@@ -479,7 +479,7 @@ function load(
                     .range([op.minArtLineWidth, op.maxArtLineWidth]);
                   //var wfCounter = 0;
                   for (let i = artLineEndIndex; i >= artLineStartIndex; i--) {
-                    if (i >= allTrack.length - 1) {
+                    if (i > allTrack.length - 1) {
                       continue;
                     }
                     let coors = allTrack[i].lineCoors;
