@@ -80,9 +80,7 @@ function getEachRadarData(selectedMapLines, Tc_p, maxFlow) {
       for (var i = 0; i < selectedMapLines.length; i++) {
         var px = selectedMapLines[i].x,
           py = selectedMapLines[i].y;
-        Tc_dis += Math.sqrt(
-          Math.pow(px - Tc_center[0], 2) + Math.pow(py - Tc_center[1], 2)
-        );
+        Tc_dis += Math.sqrt(Math.pow(px - Tc_center[0], 2) + Math.pow(py - Tc_center[1], 2));
       }
       Tc_dis /= selectedMapLines.length;
       var tran = Math.sqrt(

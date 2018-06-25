@@ -1,0 +1,32 @@
+{
+  "name": "line2vec",
+  "version": "1.0.0",
+  "description": "��l\u0000i\u0000n\u0000e\u00002\u0000v\u0000e\u0000c\u0000\r\u0000 \u0000",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "dependencies": {
+    "connect": "^3.6.6",
+    "express-handlebars": "^3.0.0",
+    "handlebars": "^4.0.11",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/locknono/line2vec.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/locknono/line2vec/issues"
+  },
+  "homepage": "https://github.com/locknono/line2vec#readme"
+}

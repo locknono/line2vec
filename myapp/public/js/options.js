@@ -65,15 +65,13 @@ var op = (function () {
             "#fb8072", //17
         ]);
 
-    var minArtLineWidth = 1,
-        maxArtLineWidth = 15;
     return {
         system_name: system_name,
         root_path: root_path,
         fileList: fileList,
         track_file: track_file,
-        minArtLineWidth: minArtLineWidth,
-        maxArtLineWidth: maxArtLineWidth,
+        minArtLineWidth: 3,
+        maxArtLineWidth: 15,
         circleBarStartColor: "#fff4b3",
         circleBarEndColor: "#F22613",
         scatterColor: 0xC2C2C2,

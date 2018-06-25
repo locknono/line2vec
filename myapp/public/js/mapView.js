@@ -5,6 +5,7 @@ var scatterPlotWidth = 360,
 var map = L.map("map", {
   renderer: L.canvas(),
   zoomControl: false,
+  attributionControl: false,
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
   "https://api.mapbox.com/styles/v1/lockyes/cjirepczz27ck2rmsc5ybf978/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
@@ -475,6 +476,7 @@ function load(
                     .scaleLinear()
                     .domain([minValue, 8])
                     .range([op.minArtLineWidth, op.maxArtLineWidth]);
+                  var wfCounter = 0;
                   for (let i = artLineEndIndex; i >= artLineStartIndex; i--) {
                     if (i >= allTrack.length - 1) {
                       continue;
@@ -488,6 +490,13 @@ function load(
                       coorsSet.add(coors[j][0] + '-' + coors[j][1]);
                     }
                     if (coorsSet.size === 2 && coors.length > 2) {
+                      /* wfCounter += 1;
+                      if (wfCounter > 1) {
+                        continue
+                      } */
+                      /* ifs (i % 2 !== 0) {
+                        continue;
+                      } */
                       var path = d3.path();
                       path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
                       for (let j = 0; j < 2; j++) {
@@ -533,6 +542,11 @@ function load(
                       path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
                       path.lineTo(projection.latLngToLayerPoint(coors[1]).x, projection.latLngToLayerPoint(coors[1]).y);
                     } else if (coorsSet.size > 2) {
+                     /*  let thisTrack = allTrack[i].lineCoors;
+                      if (thisTrack[0][0] == thisTrack[thisTrack.length - 1][0] &&
+                        thisTrack[0][1] == thisTrack[thisTrack.length - 1][1]) {
+                        continue;
+                      } */
                       var path = lineGenarator(allTrack[i].lineCoors);
                     }
 
@@ -550,40 +564,6 @@ function load(
                     //set style
                     var color = d3.interpolate(d3.interpolateYlGnBu(0), d3.interpolateYlGnBu(1));
 
-                    if (coorsSet.size === 2 && coors.length === 2) {
-                      var colorDefs = selection.append("defs");
-                      var linearGradient = colorDefs
-                        .append("linearGradient")
-                        .attr("id", "Gradient")
-                      linearGradient
-                        .append("stop")
-                        .attr("offset", "0%")
-                        .style("stop-color", d3.interpolateYlGnBu(0).toString());
-                      linearGradient
-                        .append("stop")
-                        .attr("offset", "100%")
-                        .style("stop-color", d3.interpolateYlGnBu(1).toString());
-                      path.style("stroke", function () {
-                        return "url(#" + linearGradient.attr("id") + ")"
-                      })
-                      //  path.style("background","-moz-linear-gradient( top,#ccc,#000)")
-                    } else if (coorsSet.size === 2 && coors.length > 2) {
-                      var colorDefs = selection.append("defs");
-                      var linearGradient = colorDefs
-                        .append("linearGradient")
-                        .attr("id", "Gradient")
-                      linearGradient
-                        .append("stop")
-                        .attr("offset", "0%")
-                        .style("stop-color", d3.interpolateYlGnBu(0).toString());
-                      linearGradient
-                        .append("stop")
-                        .attr("offset", "100%")
-                        .style("stop-color", d3.interpolateYlGnBu(1).toString());
-                      path.style("stroke", function () {
-                        return "url(#" + linearGradient.attr("id") + ")"
-                      })
-                    }
                     if (coorsSet.size >= 2 /*|| (coorsSet.size===2&&coors.length===2)*/ ) {
                       var path = selection.selectAll("[id='artLine" + i + "']").remove();
                       path
@@ -596,7 +576,11 @@ function load(
                         .style("stroke", function (d) {
                           return color(d.t);
                         })
-                        .attr("class", "artLine")
+                        .classed("artLine", true)
+                        /* .attr("pointer-events","auto")
+                        .on("mouseover",function(d){
+                          d3.selectAll(this).remove();
+                        }) */
                         .attr("stroke-linecap", "round")
                         .attr("stroke-linejoin", "round")
                         .attr("d", function (d) {
@@ -609,7 +593,7 @@ function load(
                         t = [0],
                         i = 0,
                         dt = precision;
-                      dt = 2;
+                      dt = 1;
                       while ((i += dt) < n) t.push(i);
                       t.push(n);
                       return t.map(function (t) {
@@ -760,7 +744,7 @@ function load(
 
               allSelectedMapLines.push(selectedMapLines);
 
-              multidrawCircles(allSelectedMapLines, comDetecFlag);
+              //multidrawCircles(allSelectedMapLines, comDetecFlag);
               //  multidrawLines(allSelectedMapLines);
 
               drawArtLine(timeString);
@@ -1166,7 +1150,7 @@ function load(
 
                 addRadarView(allRadiusArray, [radarData[0], radarData[index]]);
 
-                multidrawCircles(allSelectedMapLines, comDetecFlag);
+                //multidrawCircles(allSelectedMapLines, comDetecFlag);
                 sampled = true;
                 brush.on("start brush", brushed).on("end", brushEnded);
                 brushTime = 0;
