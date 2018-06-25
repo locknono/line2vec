@@ -476,7 +476,7 @@ function load(
                     .scaleLinear()
                     .domain([minValue, 8])
                     .range([op.minArtLineWidth, op.maxArtLineWidth]);
-                  var wfCounter = 0;
+                  //var wfCounter = 0;
                   for (let i = artLineEndIndex; i >= artLineStartIndex; i--) {
                     if (i >= allTrack.length - 1) {
                       continue;
