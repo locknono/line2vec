@@ -9,7 +9,7 @@ var map = L.map("map", {
   zoomSnap: 0.7
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
-  "https://api.mapbox.com/styles/v1/lockyes/cjiu95o2k4v272rms31a0ey4v/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
+  "https://api.mapbox.com/styles/v1/lockyes/cjiu9kdpe65qd2smmi6tl5ubf/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
   layer =
   'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
 L.tileLayer(osmUrl, {
