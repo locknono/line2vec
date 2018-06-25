@@ -15,6 +15,9 @@ body {
   width: 285px;
   padding: 1px 5px; 
 }
+.selection{
+  stroke:#000;
+}
 /*Custom checkbox*/
 .check-box {
   width: 22px;

@@ -1731,7 +1731,7 @@ function load(
                     .attr("y", brushY)
                     .attr("height", brushHeight)
                     .attr("width", brushWidth)
-                    .attr("stroke", "#fff")
+                    .attr("stroke", "#000")
                     .attr("fill-opacity", 0.3)
                     .attr("shape-rendering", "crispEdges")
                     .attr("fill", "rgb(119,119,119)");

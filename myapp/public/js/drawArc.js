@@ -81,7 +81,7 @@ var allTrack = [{
         lineCoors: [pos[25], pos[32], pos[29]],
         value: 10
     }, {
-        lineCoors: [pos[17], pos[18], pos[29]],
+        lineCoors: [pos[17], pos[18], pos[29],pos[8]],
         value: 3
     },
     {
