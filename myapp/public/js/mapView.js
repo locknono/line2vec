@@ -6,6 +6,7 @@ var map = L.map("map", {
   renderer: L.canvas(),
   zoomControl: false,
   attributionControl: false,
+  zoomSnap:0.9
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
   "https://api.mapbox.com/styles/v1/lockyes/cjirepczz27ck2rmsc5ybf978/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
@@ -408,7 +409,6 @@ function load(
                 var allTrack = resData.allTrack;
                 $("#selectedNumber").text("Selected Flows:" + allTrack.length);
                 var thisTimeTrackSet = resData.thisTimeTrackSet;
-
                 var pos = [
                   [28.009378021913943, 120.68640929667299],
                   [28.00884863563417, 120.68829380964686],
@@ -427,8 +427,8 @@ function load(
                   [27.994176037918333, 120.69112057910769],
                   [27.994402948967945, 120.6963458196262],
                   [27.994402948967945, 120.69917258908704],
-                  [28.00022683575269, 120.70525442641181],
-                  [27.99720147930098, 120.70782421683077],
+                  [28.006269291783926, 120.71185022182046],
+                  [28.009521272845184, 120.71185022182046],
                   [27.997655288183218, 120.7114219234173],
                   [28.001285690444764, 120.7100513685272],
                   [28.004991599925567, 120.71664716393578],
@@ -441,33 +441,31 @@ function load(
                   [28.012251787748113, 120.68709457411803],
                   [28.011638789130146, 120.7100513685272],
                   [28.0154955868209, 120.70551140545376],
-                  [28.012773155729636, 120.70576838449564]
+                  [28.012773155729636, 120.70576838449564],
+                  [28.003244104987505, 120.69865863100327],
+                  [28.004756709003974, 120.70165671982535],  
+                  [28.01077824277483, 120.7074930517905],
+                  [28.006495606600524, 120.70444282811866],
+                  [28.017003434183543, 120.68112565217056],
+                  [28.013071066687907, 120.68557995556337]
                 ];
-
                 var allTrack = [{
-                    lineCoors: [pos[23], pos[28], pos[2], pos[4], pos[7], pos[30]],
-                    value: 10
-                  },
-                  {
-                    lineCoors: [pos[10], pos[9], pos[24], pos[5], pos[31], pos[27], pos[8]],
-                    value: 5
-                  }, {
-                    lineCoors: [pos[12], pos[11], pos[24], pos[5], pos[31], pos[27], pos[8]],
-                    value: 10
-                  },
-                  {
-                    lineCoors: [pos[15], pos[16], pos[26], pos[25], pos[29]],
-                    value: 7
-                  }, {
-                    lineCoors: [pos[18], pos[17], pos[29]],
+                    lineCoors: [pos[17], pos[18], pos[29]],
                     value: 6
                   },
                   {
-                    lineCoors: [pos[28], pos[2]],
-                    value: 10
+                    lineCoors: [pos[25], pos[35], pos[6], pos[34]],
+                    value: 6
+                  },
+                  {
+                    lineCoors: [pos[30], pos[8], pos[27]],
+                    value: 6
+                  },
+                  {
+                    lineCoors: [pos[2], pos[28], pos[2]],
+                    value: 6
                   },
                 ];
-
                 var thisTimeTrackSet = {};
                 for (let i = 0; i < allTrack.length; i++) {
                   let indices = [];
@@ -477,7 +475,6 @@ function load(
                   }
                   thisTimeTrackSet[indices.toString()] = allTrack[i].value;
                 }
-                thisTimeTrackSet['18,17'] = 3;
 
                 maxValue = d3.max(allTrack, function (d) {
                   return d.value;
@@ -549,7 +546,7 @@ function load(
                     .range([op.minArtLineWidth, op.maxArtLineWidth]);
                   //var wfCounter = 0;
                   for (let i = artLineEndIndex; i >= artLineStartIndex; i--) {
-                    if (i >= allTrack.length - 1) {
+                    if (i > allTrack.length - 1) {
                       continue;
                     }
                     let coors = allTrack[i].lineCoors;
@@ -561,13 +558,6 @@ function load(
                       coorsSet.add(coors[j][0] + '-' + coors[j][1]);
                     }
                     if (coorsSet.size === 2 && coors.length > 2) {
-                      /* wfCounter += 1;
-                      if (wfCounter > 1) {
-                        continue
-                      } */
-                      /* ifs (i % 2 !== 0) {
-                        continue;
-                      } */
                       var path = d3.path();
                       path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
                       for (let j = 0; j < 2; j++) {
@@ -613,14 +603,8 @@ function load(
                       path.moveTo(projection.latLngToLayerPoint(coors[0]).x, projection.latLngToLayerPoint(coors[0]).y);
                       path.lineTo(projection.latLngToLayerPoint(coors[1]).x, projection.latLngToLayerPoint(coors[1]).y);
                     } else if (coorsSet.size > 2) {
-                      /*  let thisTrack = allTrack[i].lineCoors;
-                       if (thisTrack[0][0] == thisTrack[thisTrack.length - 1][0] &&
-                         thisTrack[0][1] == thisTrack[thisTrack.length - 1][1]) {
-                         continue;
-                       } */
                       var path = lineGenarator(allTrack[i].lineCoors);
                     }
-
                     var path = selection
                       .append("path")
                       .attr("class", "artLine")
@@ -674,7 +658,6 @@ function load(
                         return a;
                       });
                     }
-
                     // Compute quads of adjacent points [p0, p1, p2, p3].
                     function quads(points) {
                       return d3.range(points.length - 1).map(function (i) {
