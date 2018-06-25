@@ -6,6 +6,7 @@ var map = L.map("map", {
   renderer: L.canvas(),
   zoomControl: false,
   attributionControl: false,
+  zoomSnap: 0.8
 }).setView([28.0092688, 120.658735], 14);
 var osmUrl =
   "https://api.mapbox.com/styles/v1/lockyes/cjirepczz27ck2rmsc5ybf978/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
@@ -1204,6 +1205,9 @@ function load(
                 ebtArray.push(scatterData[i]);
               }
             } else {
+              if (scatterData[i].ebt > 100) {
+                ebtArray.push(scatterData[i]);
+              }
               line.lineStyle(0.1, op.labelColorScale(scatterData[i].label).replace("#", "0x"), op.lineOpacity);
             }
             if (comDetecFlag === false) {
@@ -1256,7 +1260,9 @@ function load(
             }
           });
            */
-          /* if (op.sample_method === '1' || op.sample_method === '') {
+          console.log('ebtArray: ', ebtArray);
+          console.log('op.sample_method: ', op.sample_method);
+          if (op.sample_method === '1' || op.sample_method === '') {
             for (let i = 0; i < ebtArray.length; i++) {
               if (comDetecFlag == false) {
                 line.lineStyle(0.1, "0x000000", op.lineOpacity);
@@ -1267,7 +1273,7 @@ function load(
                 line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
               }
             }
-          } */
+          }
           leafletRenderer.render(container);
         }
 
@@ -1671,7 +1677,7 @@ function load(
                     .attr("y", brushY)
                     .attr("height", brushHeight)
                     .attr("width", brushWidth)
-                    .attr("stroke", "#fff")
+                    .attr("stroke", "#000")
                     .attr("fill-opacity", 0.3)
                     .attr("shape-rendering", "crispEdges")
                     .attr("fill", "rgb(119,119,119)");
