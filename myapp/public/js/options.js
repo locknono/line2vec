@@ -44,27 +44,34 @@ var op = (function () {
         .scaleOrdinal()
         .domain([-1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])
         .range([
-            "#A6A6A6", //-1
-            "#80b1d3", //0
-            "#fdb462",
-            "#b3de69",
-            "#fccde5",
-            "#d9d9d9",
-            "#bc80bd", //5
+            "#a6a6a6", //-1
+            "#47781C", //0
+            "#1f78b4",
+            "#FC6AE5",
+            "#E8CB0C", //3
+            "#bc80bd",
+            "#e41a1c", //5 
             "#ccebc5",
             "#ffed6f",
-            "#8dd3c7",
-            "#ffffb3",
+            "#fdb462", //
+            "#6F7F6B",
             "#FFFF00", //10
             "#CCCCCC",
-            "#E8CB0C",
-            "#FC6AE5",
-            "#47781C",
-            "#6F7F6B", //15
+            "#fccde5",
+            "#b3de69",
+            "#80b1d3",
+            "#ffffb3", //15 
             "#FDA318", //16
             "#fb8072", //17
         ]);
-
+    //1
+    //8
+    //15-9
+    /*
+    '#fb8072', '#80b1d3', '#fdb462', '#b3de69',
+                         '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f', '#8dd3c7', '#ffffb3',
+                         '#CCCCCC',
+                         */
     return {
         system_name: system_name,
         root_path: root_path,
@@ -86,10 +93,10 @@ var op = (function () {
         folderName: folderName,
         img_root_path: img_root_path,
         originalLineColor: 0xa0a0a0,
-        lineOpacity: 1,
+        lineOpacity: 0.6,
         drawZoom: -1,
-        timeArcColor: "#557BF0",
-        timeArcOpacity: 0.5,
+        timeArcColor: "#1B40FF",
+        timeArcOpacity: 0.2,
         selectedTimeArcOpacity: 1,
         oColor: "#0D9DFF",
         ourColor: '#E8E60C',
