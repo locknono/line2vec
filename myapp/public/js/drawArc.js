@@ -2,7 +2,7 @@ var map = L.map("map", {
     renderer: L.canvas()
 }).setView([28.0052688, 120.69815029628458], 14);
 var osmUrl =
-    "https://api.mapbox.com/styles/v1/lockyes/cjirepczz27ck2rmsc5ybf978/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
+    "https://api.mapbox.com/styles/v1/lockyes/cjiva3omz8hrq2so4mfdaurmw/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
     layer =
     'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>';
 L.tileLayer(osmUrl, {
@@ -24,7 +24,7 @@ map.on('click', function (e) {
     console.log([e.latlng.lat, e.latlng.lng]); 
 })
 
-var pos = [
+/* var pos = [
 
     [28.009378021913943, 120.68640929667299],
     [28.00884863563417, 120.68829380964686],
@@ -79,6 +79,62 @@ var allTrack = [{
         value: 6
     },
     
+]; */
+
+var pos = [
+    [28.012890774380505, 120.65331536689774],
+    [28.013118102766168, 120.65486034531659],
+    [28.01001123996367, 120.6551178417197],
+    [28.006752726597025, 120.65554700239161],
+    [28.0031151999035, 120.66129775539501],
+    [28.00341833181879, 120.6684218225485],
+    [28.00660116543689, 120.66919431175789],
+    [28.011451016795185, 120.6667910119953],
+    [28.016376423563354, 120.66936597602665],
+    [28.01954616555166, 120.6634435587545],
+    [28.01543942495543, 120.65960498371504],
+    [28.00182687974899, 120.6493670887163],
+    [28.006222261603636, 120.6476504460287],
+    [28.002496222771683, 120.64138470021904],
+    [28.010377420656653, 120.64224302156285],
+    [28.01508826200817, 120.64044054674088],
+    [28.00781364874755, 120.67657587531454],
+    [28.00182687974899, 120.67202677219241],  
+    [28.006676946043598, 120.66490270503894],
+    [28.00781364874755, 120.66164108393254],
+    [28.022665461634933, 120.64945292085069],
+    [28.026226561244727, 120.65966694484182],
+    [27.99582706656591, 120.65649115586979],
+    [27.994311291686518, 120.66885098322038],
+    [28.002268871969473, 120.65297203836022]
+];
+var allTrack = [{
+        lineCoors: [pos[17], pos[6]],
+        value: 10
+    }, {
+        lineCoors: [pos[13], pos[11]],
+        value: 1
+    }, {
+        lineCoors: [pos[2], pos[3], pos[2]],
+        value: 5
+    }, {
+        lineCoors: [pos[4], pos[3]],
+        value: 10
+    }, {
+        lineCoors: [pos[15], pos[14], pos[11]],
+        value: 3
+    }, {
+        lineCoors: [pos[4], pos[19], pos[10]],
+        value: 5
+    },
+    {
+        lineCoors: [pos[23], pos[17], pos[6], pos[8], pos[9]],
+        value: 8
+    },
+    {
+        lineCoors: [pos[22], pos[24], pos[11]],
+        value: 5
+    },
 ];
 
 var thisTimeTrackSet = {};

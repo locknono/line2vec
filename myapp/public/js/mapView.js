@@ -1222,7 +1222,7 @@ function load(
             }
           }
 
-          if (interArray.length > 0) {
+          if (interArray.length > 0) { //说明一定绘制社区了 
             line.lineStyle(0.1, op.labelColorScale(interArray[0].label).replace("#", "0x"), op.lineOpacity);
             for (let i = 0; i < interArray.length; i++) {
               let layerSourcePoint = project(interArray[i].scor);
@@ -1240,7 +1240,7 @@ function load(
                 line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
               }
             }
-          } else {
+          } else if (interArray == 0 && comDetecFlag === true) {
             for (let i = 0; i < scatterData.length; i++) {
               line.lineStyle(0.1, op.labelColorScale(scatterData[i].label).replace("#", "0x"), op.lineOpacity);
               let layerSourcePoint = project(scatterData[i].scor);
@@ -1262,7 +1262,7 @@ function load(
            */
           console.log('ebtArray: ', ebtArray);
           console.log('op.sample_method: ', op.sample_method);
-          if (op.sample_method === '1' || op.sample_method === '') {
+          /* if (op.sample_method === '1' || op.sample_method === '') {
             for (let i = 0; i < ebtArray.length; i++) {
               if (comDetecFlag == false) {
                 line.lineStyle(0.1, "0x000000", op.lineOpacity);
@@ -1273,7 +1273,7 @@ function load(
                 line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
               }
             }
-          }
+          } */
           leafletRenderer.render(container);
         }
 
