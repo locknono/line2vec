@@ -136,7 +136,7 @@ function drawScatterPlot(
   if (labelData !== undefined) {
     for (var i = 0; i < labelData.length; i++) {
       circle.beginFill(
-        labelColorScale(0x000000)
+        (op.labelColor)
       );
       circle.drawCircle(xScale(labelData[i].x), yScale(labelData[i].y), 1.5);
       circle.endFill();

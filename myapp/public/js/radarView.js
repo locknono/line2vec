@@ -353,6 +353,7 @@ function addRadarView(allRadiusArray, data) {
       .attr("y1", center[1])
       .attr("x2", lineEndPointX)
       .attr("y2", lineEndPointY)
+
       .attr("stroke", "white");
   }
   var allEndPoints = getAllEndPoints(center, allRadiusArray);
@@ -391,6 +392,9 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
     .attr("fill", function (d, i) {
       return colorScale(i);
     })
+    .style("stroke-opacity", 1)
+    .style("stroke-width", 0.36)
+    .style("stroke", "#000")
     .attr("fill-opacity", " 0.35")
     .attr("d", function (d, i) {
       return line(allEndPoints[i]);
@@ -432,8 +436,13 @@ function addRader(line, allEndPoints, svg, colorScale, data) {
       .text(function (d, i) {
         return d3.format(".4")(data[j][i]);
       })
-      .attr("fill", colorScale(j))
-      .attr("fill-opacity", 1);
+      .attr("fill", d => {
+        if (j === 1) {
+          return '#000';
+        }
+        return colorScale(j)
+      })
+      .attr("fill-opacity", 0);
 
   }
 }

@@ -100,5 +100,7 @@ var op = (function () {
         selectedTimeArcOpacity: 1,
         oColor: "#0D9DFF",
         ourColor: '#E8E60C',
+        labelColor: 0x333333,
+        
     }
 }())

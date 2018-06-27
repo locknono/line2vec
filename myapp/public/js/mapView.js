@@ -7,7 +7,7 @@ var map = L.map("map", {
   zoomControl: false,
   attributionControl: false,
   zoomSnap: 0.7
-}).setView([28.0092688, 120.658735], 14);
+}).setView([27.9792688, 120.698735], 11);
 var osmUrl =
   "https://api.mapbox.com/styles/v1/lockyes/cjiva3omz8hrq2so4mfdaurmw/tiles/256/{z}/{x}/{y}?access_token=pk.eyJ1IjoibG9ja3llcyIsImEiOiJjamlvaDExMW8wMDQ2M3BwZm03cTViaWwwIn0.AWuS0iLz_Kbk8IOrnm6EUg",
   layer =
@@ -936,6 +936,7 @@ function load(
                   if (filterFlag === true) {
                     d3.select("#scatterImg").attr("src", op.img_root_path + "blank.png");
                   }
+                  $("#selectedNumber").text("Selected Flows:" + filterData.length);
                   drawScatterPlot(
                     filterData,
                     op.labelColorScale,
@@ -991,6 +992,7 @@ function load(
                 var method = "";
                 var sampledScatterDataFileName = op.getSampleFile();
                 var edgeBtwFileName = op.folderName + "/1.csv";
+                console.log('edgeBtwFileName: ', edgeBtwFileName);
                 var pixelFileName = op.folderName + "/2.json";
                 addhistogram(edgeBtwFileName);
                 pixelView(
@@ -1264,7 +1266,6 @@ function load(
           console.log('op.sample_method: ', op.sample_method);
           /* if (op.sample_method === '1' || op.sample_method === '') {
             for (let i = 0; i < ebtArray.length; i++) {
-              if (comDetecFlag == false) {
                 line.lineStyle(0.1, "0x000000", op.lineOpacity);
                 let layerSourcePoint = project(ebtArray[i].scor);
                 let layerTargetPoint = project(ebtArray[i].tcor);
@@ -1272,7 +1273,6 @@ function load(
                 line.moveTo(layerSourcePoint.x, layerSourcePoint.y);
                 line.lineTo(layerTargetPoint.x, layerTargetPoint.y);
               }
-            }
           } */
           leafletRenderer.render(container);
         }
@@ -1793,11 +1793,6 @@ function load(
               selectedCircles = filterData;
             }
             $("#selectedNumber").text("Selected Flows:" + selectedCircles.length);
-          });
-        }
-        if (firstDraw) {
-          showflux(98, 169).then(function (volumeData) {
-            flowvolumeView(volumeData[0]);
           });
         }
         prevZoom = zoom;
